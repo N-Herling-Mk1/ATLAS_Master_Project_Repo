@@ -2301,15 +2301,15 @@ window.DECK_PROJECTS = [
   "accent2": "#e0e0e0",
   "code": "internal",
   "intro": {
-   "problem": "Background estimates that assume the discriminants factorize fail when they are correlated, and product-form or rigid parametric models of the joint background miss exactly that dependence, especially in sparse tails.",
-   "value": "A flexible kernel model of the joint background could capture the dependence that factorized estimates miss and attach an uncertainty to it, turning a known failure mode into a measured correction.",
-   "approach": "We model marginals and the joint background with kernel density and kernel regression, combine them with maximum-entropy constraints, compare kernel families head to head, and score every variant on closure rather than fit quality alone.",
-   "goals": "The outcome is a framework for comparing kernels on background closure with honest uncertainties, and a recommendation for which kernels remain robust where the data are sparse."
+   "problem": "KERF combines a maximum-entropy synthetic background [@jaynes1957] with kernel-based models of its marginals and of the dependence between them, because ABCD estimates that assume the two discriminants factorize fail when the discriminants are correlated, most of all in sparse tails [@choi2021].",
+   "value": "A background model that keeps the fitted marginals but learns their dependence, rather than removing it during training [@abcdisco2021][@cms2025tec], turns non-closure from a failure into a measured and correctable quantity.",
+   "approach": "The first model built a maximum-entropy background from fitted per-feature marginals with hand-picked copula dependence. KERF keeps those marginals and replaces the copula with an exponential tilt whose functions are chosen from the data by kernel maximal correlation [@renyi1959][@huang2020], extending to a full kernel exponential family [@sriperumbudur2017], with every variant scored on closure through a gated test plan.",
+   "goals": "The end goal is an improved, and potentially novel, data-driven background estimate: a kernel maximum-entropy model whose dependence term comes with honest uncertainties and is benchmarked against extended and Bayesian ABCD methods [@choi2021][@alvarez2024]."
   },
   "questions": [
-   "Can a kernel model of the joint background recover dependence that a factorized estimate misses?",
-   "Which kernel families stay robust in sparse tails?",
-   "Does combining kernels with maximum-entropy constraints improve closure without overfitting?"
+   "Can a kernel-chosen dependence term recover the correlation that a factorized estimate misses?",
+   "Does it improve on the hand-picked copulas of the first maximum-entropy model, especially in the sparse tail where the signal region sits?",
+   "Can a flexible background model stay honest: closing on held-out regions without absorbing injected signal?"
   ],
   "timeline": [
    {
@@ -2356,7 +2356,8 @@ window.DECK_PROJECTS = [
     "venue": "Phys. Rev. 106, 620",
     "url": "https://doi.org/10.1103/PhysRev.106.620",
     "verified": "abstract",
-    "why": "Founding statement of the maximum entropy principle behind the background model"
+    "why": "Founding statement of the maximum entropy principle behind the background model",
+    "key": "jaynes1957"
    },
    {
     "category": "ABCD & decorrelation",
@@ -2366,7 +2367,8 @@ window.DECK_PROJECTS = [
     "venue": "Eur. Phys. J. C 81, 643 (arXiv:1906.10831)",
     "url": "https://link.springer.com/article/10.1140/epjc/s10052-021-09404-1",
     "verified": "full",
-    "why": "Extended ABCD with a correlation correction; main published comparison"
+    "why": "Extended ABCD with a correlation correction; main published comparison",
+    "key": "choi2021"
    },
    {
     "category": "ABCD & decorrelation",
@@ -2376,7 +2378,8 @@ window.DECK_PROJECTS = [
     "venue": "Phys. Rev. D 103, 035021 (arXiv:2007.14400)",
     "url": "https://doi.org/10.1103/PhysRevD.103.035021",
     "verified": "full",
-    "why": "Distance-correlation decorrelation that the remove-the-dependence line builds on"
+    "why": "Distance-correlation decorrelation that the remove-the-dependence line builds on",
+    "key": "abcdisco2021"
    },
    {
     "category": "ABCD & decorrelation",
@@ -2386,7 +2389,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2506.08826",
     "url": "https://arxiv.org/abs/2506.08826",
     "verified": "abstract",
-    "why": "Adds a closure term to decorrelation training; reference closure method"
+    "why": "Adds a closure term to decorrelation training; reference closure method",
+    "key": "cms2025tec"
    },
    {
     "category": "ABCD & decorrelation",
@@ -2396,7 +2400,8 @@ window.DECK_PROJECTS = [
     "venue": "SciPost Phys. Core 7, 043 (arXiv:2402.08001)",
     "url": "https://arxiv.org/abs/2402.08001",
     "verified": "abstract",
-    "why": "Prior art on generalizing ABCD beyond strict independence"
+    "why": "Prior art on generalizing ABCD beyond strict independence",
+    "key": "alvarez2024"
    },
    {
     "category": "ABCD & decorrelation",
@@ -2406,7 +2411,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2211.02486",
     "url": "https://arxiv.org/abs/2211.02486",
     "verified": "abstract",
-    "why": "Prior art on decorrelation in HEP using density models"
+    "why": "Prior art on decorrelation in HEP using density models",
+    "key": "klein2022"
    },
    {
     "category": "Kernel dependence",
@@ -2416,7 +2422,8 @@ window.DECK_PROJECTS = [
     "venue": "Ann. Statist. (arXiv:1207.6076)",
     "url": "https://doi.org/10.1214/13-AOS1140",
     "verified": "abstract",
-    "why": "Shows distance correlation is a kernel (HSIC) statistic"
+    "why": "Shows distance correlation is a kernel (HSIC) statistic",
+    "key": "sejdinovic2013"
    },
    {
     "category": "Kernel dependence",
@@ -2426,7 +2433,8 @@ window.DECK_PROJECTS = [
     "venue": "IEEE Trans. Inf. Theory (arXiv:1907.00393)",
     "url": "https://doi.org/10.1109/TIT.2020.3044622",
     "verified": "abstract",
-    "why": "Estimating maximal-correlation functions that select the dependence term"
+    "why": "Estimating maximal-correlation functions that select the dependence term",
+    "key": "huang2020"
    },
    {
     "category": "Kernel dependence",
@@ -2436,7 +2444,8 @@ window.DECK_PROJECTS = [
     "venue": "Acta Math. Acad. Sci. Hungar. 10",
     "url": "https://static.renyi.hu/renyi_cikkek/1959_on_measures_of_dependence.pdf",
     "verified": "abstract",
-    "why": "Axioms for maximal correlation, which is zero only under independence"
+    "why": "Axioms for maximal correlation, which is zero only under independence",
+    "key": "renyi1959"
    },
    {
     "category": "Kernel MaxEnt",
@@ -2446,7 +2455,8 @@ window.DECK_PROJECTS = [
     "venue": "J. Mach. Learn. Res. 18 (arXiv:1312.3516)",
     "url": "https://www.jmlr.org/papers/v18/16-011.html",
     "verified": "abstract",
-    "why": "Kernel exponential family; the untruncated kernel MaxEnt model"
+    "why": "Kernel exponential family; the untruncated kernel MaxEnt model",
+    "key": "sriperumbudur2017"
    },
    {
     "category": "Density-ratio critics",
@@ -2456,7 +2466,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:1807.03748",
     "url": "https://arxiv.org/abs/1807.03748",
     "verified": "abstract",
-    "why": "InfoNCE critic learns the log density ratio, i.e. the copula"
+    "why": "InfoNCE critic learns the log density ratio, i.e. the copula",
+    "key": "vandenoord2018"
    }
   ],
   "links": [
@@ -2464,6 +2475,41 @@ window.DECK_PROJECTS = [
     "project": "stave",
     "title": "Applied in the barrel program",
     "text": "The barrel is the region where a factorized estimate is least trustworthy and statistics are thinnest. STAVE applies this joint-background model there and scores it against the shared barrel baseline."
+   }
+  ],
+  "tagline": "Maximum-entropy synthetic background with kernel-modeled marginals and dependence",
+  "components": [
+   {
+    "name": "MaxEnt synthetic background",
+    "subtitle": "The first model",
+    "state": "done",
+    "summary": "Per-feature marginals fitted to the total background, sampled as a product (plain ABCD), then with Gaussian and mixture copulas added as dependence rungs [@jaynes1957]."
+   },
+   {
+    "name": "Kernel dependence",
+    "subtitle": "Let the data choose the constraint",
+    "state": "next",
+    "summary": "Keep the marginals fixed and model the linking term as an exponential tilt. Kernel maximal correlation picks the functions [@renyi1959][@huang2020]; distance correlation is itself a kernel statistic, which ties this to the decorrelation line [@sejdinovic2013]. A density-ratio critic is an alternative route to the same term [@vandenoord2018].",
+    "items": [
+     {
+      "label": "Tilt",
+      "detail": "One kernel-chosen pair of functions; plain ABCD is the case where the tilt is zero"
+     },
+     {
+      "label": "Full family",
+      "detail": "A kernel exponential family with the truncation removed, only if the tilt leaves structure behind [@sriperumbudur2017]"
+     },
+     {
+      "label": "Tail bases",
+      "detail": "Kernels that revert to factorization in the corner are avoided where the signal region sits"
+     }
+    ]
+   },
+   {
+    "name": "Gated tests",
+    "subtitle": "Earn each step before the next",
+    "state": "next",
+    "summary": "Toy harness, structure diagnosis, blinded toy closure, held-out pseudo-signal regions on real background, then signal injection to check the model does not absorb signal."
    }
   ],
   "logo": "projects/kerf/logo.webp",
