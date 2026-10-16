@@ -56,6 +56,7 @@
     renderOpen(p.open || []);
     renderTimeline(p.timeline || []);
     renderLiterature(p.literature || []);
+    renderMap(p);
 
     const meta = $("p-meta");
     meta.replaceChildren();
@@ -117,6 +118,7 @@
     const openAll = refs.length <= 12;
     box.replaceChildren(...[...groups].map(([cat, list], gi) => {
       const d = el("details", "lit-group");
+      d.id = `lit-g-${gi}`;
       d.open = openAll || gi === 0;
       const s = el("summary");
       s.append(el("span", "g-name", cat.toUpperCase()), el("span", "g-n", String(list.length)));
@@ -133,6 +135,82 @@
       return d;
     }));
   }
+
+  // ---- page map: in-page jumps (buttons, not anchors: the URL hash is the project route) ----
+  let mapTargets = [], pinned = null;
+  // sections near the page bottom can't scroll to the top, so a click pins the highlight;
+  // any manual scroll input hands control back to the spy
+  ["wheel", "touchmove", "keydown"].forEach((ev) => addEventListener(ev, () => { pinned = null; }, { passive: true }));
+
+  function jump(target) {
+    if (target.tagName === "DETAILS") target.open = true;
+    target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }
+
+  function renderMap(p) {
+    const lit = p.literature || [];
+    const cats = [...new Set(lit.map((r) => r.category))];
+    const items = [
+      { id: "sec-overview", label: "OVERVIEW" },
+      { id: "sec-questions", label: "QUESTIONS", n: p.questions.length },
+      (p.open || []).length && { id: "p-open-wrap", label: "OPEN ITEMS", n: p.open.length },
+      { id: "sec-progress", label: "PROGRESS", n: (p.timeline || []).length },
+      { id: "sec-literature", label: "LITERATURE", n: lit.length,
+        sub: cats.map((c, gi) => ({ id: `lit-g-${gi}`, label: c.toUpperCase(), n: lit.filter((r) => r.category === c).length })) },
+    ].filter(Boolean);
+
+    mapTargets = [];
+    pinned = null;
+    const mk = (it, num) => {
+      const b = el("button", "pm-link");
+      b.type = "button";
+      b.append(el("span", "pm-n", num), el("span", "pm-l", it.label), el("span", "pm-c", it.n != null ? String(it.n) : ""));
+      b.addEventListener("click", () => {
+        const t = $(it.id);
+        if (!t) return;
+        pinned = it.id;                              // trust the click until the user scrolls by hand
+        mapTargets.forEach((m) => m.btn.classList.toggle("on", m.id === it.id));
+        jump(t);
+      });
+      mapTargets.push({ id: it.id, btn: b });
+      return b;
+    };
+    $("pagemap").replaceChildren(...items.map((it, k) => {
+      const li = el("li");
+      li.append(mk(it, pad(k + 1)));
+      if (it.sub && it.sub.length) {
+        const ul = el("ol", "pm-sub");
+        it.sub.forEach((s, j) => { const sl = el("li"); sl.append(mk(s, `${pad(k + 1)}.${j + 1}`)); ul.append(sl); });
+        li.append(ul);
+      }
+      return li;
+    }));
+    spy();
+  }
+
+  // highlight the section(s) whose top most recently passed 35% of the viewport;
+  // side-by-side sections (progress | literature) share a top and light together
+  function spy() {
+    if (pinned) return;
+    const line = innerHeight * 0.35;
+    let best = -Infinity, on = [];
+    for (const t of mapTargets) {
+      const node = $(t.id);
+      if (!node || node.offsetParent === null) continue;
+      const top = Math.round(node.getBoundingClientRect().top);
+      if (top > line) continue;
+      if (top > best + 2) { best = top; on = [t]; }
+      else if (Math.abs(top - best) <= 2) on.push(t);
+    }
+    if (!on.length && mapTargets.length) on = [mapTargets[0]];
+    mapTargets.forEach((t) => t.btn.classList.toggle("on", on.includes(t)));
+  }
+  let spyQueued = false;
+  addEventListener("scroll", () => {
+    if (spyQueued) return;
+    spyQueued = true;
+    requestAnimationFrame(() => { spyQueued = false; spy(); });
+  }, { passive: true });
 
   function go(i, push = true) {
     const n = P.length;

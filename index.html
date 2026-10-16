@@ -6,6 +6,12 @@
 <title>Research Deck</title>
 <meta name="description" content="Research projects in machine learning for particle-physics data: methods, goals, and the questions each project is built to answer.">
 <meta name="theme-color" content="#000000">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta property="og:image" content="assets/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500&display=swap" rel="stylesheet">
@@ -16,7 +22,7 @@
 
 <header class="top">
   <div class="brand">
-    <span class="brand-mark" aria-hidden="true"></span>
+    <img class="brand-mark" src="assets/icons/mark-96.png" alt="" width="44" height="44">
     <div>
       <h1>RESEARCH&nbsp;DECK</h1>
       <p class="byline">Nathan Herling &middot; University of Arizona</p>
@@ -41,17 +47,22 @@
     <figcaption class="scan" aria-hidden="true"></figcaption>
   </figure>
 
-  <article class="dossier">
+  <nav class="pagemap" aria-label="On this page">
+    <h3 class="q-head"><span>PAGE MAP</span><span class="rule"></span></h3>
+    <ol id="pagemap"></ol>
+  </nav>
+
+  <article class="dossier" id="sec-overview">
     <p class="kicker"><span id="k-index">PROJECT 01</span><span class="dot"></span><span id="k-status" class="status">ACTIVE</span></p>
     <h2 id="p-name">&nbsp;</h2>
     <p class="expansion" id="p-exp">&nbsp;</p>
 
     <p class="intro" id="p-intro"></p>
 
-    <h3 class="q-head"><span>QUESTIONS</span><span class="rule"></span></h3>
+    <h3 class="q-head" id="sec-questions"><span>QUESTIONS</span><span class="rule"></span></h3>
     <ol class="questions" id="p-questions"></ol>
 
-    <div id="p-open-wrap" hidden>
+    <div id="p-open-wrap" class="sec-open" hidden>
       <h3 class="q-head"><span>OPEN ITEMS</span><span class="rule"></span></h3>
       <ul class="open-items" id="p-open"></ul>
     </div>
@@ -60,11 +71,11 @@
   </article>
 
   <section class="lower" aria-label="Progress and literature">
-    <div class="tl-col">
+    <div class="tl-col" id="sec-progress">
       <h3 class="q-head"><span>PROGRESS</span><span class="rule"></span></h3>
       <ol class="timeline" id="p-timeline"></ol>
     </div>
-    <div class="lit-col">
+    <div class="lit-col" id="sec-literature">
       <h3 class="q-head"><span>LITERATURE</span><span class="rule"></span><span class="count" id="lit-count"></span></h3>
       <div id="p-lit"></div>
     </div>

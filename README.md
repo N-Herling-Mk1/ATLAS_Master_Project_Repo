@@ -17,6 +17,14 @@ tools/build_deck.py           normalize + validate + leak-scan + bundle
 PUBLIC_SCOPE.md               what may and may not appear here
 ```
 
+## Site icon
+
+`assets/icons/source.png` is the master mark, a 1024×1024 square cropped to the ring. The favicons (`favicon.ico`, 16/32 px PNGs), `apple-touch-icon.png`, the 192/512 manifest icons, and the 96 px header mark are all cut from it. The 16–48 px sizes get a light unsharp mask so the ring and the A stay legible. To change the icon, replace `source.png` and regenerate the sizes.
+
+## Page map
+
+Under the hero logo there is a jump list for the current project: Overview, Questions, Open Items (if any), Progress, Literature, and one entry per literature category. Clicking a category also opens it. The jumps don't change the URL hash, because the hash selects the project. The entry you're reading is highlighted as you scroll.
+
 ## Run locally
 
 Open `index.html` directly, or serve it:
