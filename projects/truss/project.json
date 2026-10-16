@@ -8,15 +8,15 @@
   "accent2": "#c9c9c9",
   "code": "internal",
   "intro": {
-    "problem": "Neural-network architectures in physics analyses are usually chosen by convention, and there is little evidence that the default topology is the right one once the network must satisfy constraints such as background closure as well as discrimination.",
-    "value": "A systematic, statistically scored architecture search could find designs that keep discriminating power while modeling background better, and would replace architecture-by-habit with architecture-by-evidence.",
-    "approach": "We borrow ideas from topology optimization in generative structural design: first calibrate the scale at which adding or removing connections measurably changes performance, then generate candidate topologies from the latent features of trained models and score them on a multi-metric vector, with gates that remove any design that wins by default.",
-    "goals": "The deliverables are a calibrated sensitivity of performance to connection changes, a set of generated architectures evaluated on seeds disjoint from the search, and a Pareto front showing the real trade-offs among them."
+    "problem": "Network architectures in physics analyses are usually chosen by convention, and little evidence says the default topology is right once a network must deliver background closure [@abcdisco2020][@cms2025tec] as well as discrimination.",
+    "value": "A statistically scored topology search, borrowed from generative structural design [@hahn2023][@nie2020], could find networks that keep their discriminating power while closing better, replacing architecture-by-habit with architecture-by-evidence.",
+    "approach": "TRUSS has two components. Testing existing: measure how much adding or removing connections moves the current networks, then relax that grid into learned GRU-style sigmoid gates on connection groups [@cho2014][@louizos2018]. Testing new: generate candidates from the trained models' latent features using gated blocks [@dauphin2017][@srivastava2015], growth [@evci2022] and evolution [@real2018]. Every candidate is trained supervised, and a surrogate fitted to those results makes the search itself supervised [@nie2020].",
+    "goals": "The deliverables are a calibrated connection sensitivity, a population of tested architectures retrained from scratch on seeds disjoint from the search [@zela2019], a random-search baseline beside every search, and a Pareto front of the real trade-offs."
   },
   "questions": [
-    "At what granularity of connection changes does performance measurably move?",
-    "Can the latent features of trained models seed architectures that outperform the conventional default?",
-    "How should architectures be scored so that no design wins by default?"
+    "At what granularity do connection changes measurably move performance, and can learned gates find that structure faster than a grid?",
+    "Can the latent features of trained models seed architectures that beat the current default?",
+    "Can a supervised surrogate trained on our own results predict which untested architectures will close best?"
   ],
   "timeline": [
     {
@@ -50,11 +50,24 @@
       "state": "done"
     },
     {
-      "label": "Stage 1 rebuild: rerun calibration sweep on the corrected baseline",
+      "date": "2026-10-14",
+      "label": "GRU-style gating adopted for connection groups, features and hidden blocks; recurrence ruled out because the inputs have no order",
+      "state": "done"
+    },
+    {
+      "label": "Testing existing: rerun the calibration sweep on the corrected baseline",
       "state": "next"
     },
     {
-      "label": "Stage 2: architecture search (carve, grow, evolve) scored against gates",
+      "label": "Testing existing: learned gates against the calibration grid",
+      "state": "next"
+    },
+    {
+      "label": "Testing new: generate and score candidate architectures",
+      "state": "next"
+    },
+    {
+      "label": "Fit the supervised surrogate once enough candidates are trained",
       "state": "next"
     }
   ],
@@ -67,7 +80,8 @@
       "venue": "Dezeen, 6 March 2023",
       "url": "https://www.dezeen.com/2023/03/06/nasa-uses-ai-to-design-hardware-that-is-three-times-better-in-performance/",
       "verified": "full",
-      "why": "NASA's design loop: optimize, then check every candidate"
+      "why": "NASA's design loop: optimize, then check every candidate",
+      "key": "hahn2023"
     },
     {
       "category": "Topology optimization",
@@ -77,7 +91,8 @@
       "venue": "arXiv:2003.04685",
       "url": "https://arxiv.org/abs/2003.04685",
       "verified": "abstract",
-      "why": "Predicts optimized structures from fields on the starting domain"
+      "why": "Predicts optimized structures from fields on the starting domain",
+      "key": "nie2020"
     },
     {
       "category": "Topology optimization",
@@ -87,7 +102,8 @@
       "venue": "Nature 550, 84-86",
       "url": "https://doi.org/10.1038/nature23911",
       "verified": "abstract",
-      "why": "Density-based optimization of a wing at very large scale"
+      "why": "Density-based optimization of a wing at very large scale",
+      "key": "aage2017"
     },
     {
       "category": "Architecture search",
@@ -97,7 +113,8 @@
       "venue": "arXiv:1806.09055",
       "url": "https://arxiv.org/abs/1806.09055",
       "verified": "abstract",
-      "why": "Relaxes architecture choice so it can be optimized by gradient"
+      "why": "Relaxes architecture choice so it can be optimized by gradient",
+      "key": "liu2018"
     },
     {
       "category": "Architecture search",
@@ -107,7 +124,8 @@
       "venue": "arXiv:1909.09656",
       "url": "https://arxiv.org/abs/1909.09656",
       "verified": "abstract",
-      "why": "Shows how differentiable search fails; motivates strict gates"
+      "why": "Shows how differentiable search fails; motivates strict gates",
+      "key": "zela2019"
     },
     {
       "category": "Architecture search",
@@ -117,7 +135,8 @@
       "venue": "arXiv:2201.05125",
       "url": "https://arxiv.org/abs/2201.05125",
       "verified": "abstract",
-      "why": "Grows networks by adding units where gradients point"
+      "why": "Grows networks by adding units where gradients point",
+      "key": "evci2022"
     },
     {
       "category": "Architecture search",
@@ -127,7 +146,8 @@
       "venue": "arXiv:1802.01548",
       "url": "https://arxiv.org/abs/1802.01548",
       "verified": "abstract",
-      "why": "Evolutionary mutation-and-select search over architectures"
+      "why": "Evolutionary mutation-and-select search over architectures",
+      "key": "real2018"
     },
     {
       "category": "Latent diagnostics",
@@ -137,7 +157,8 @@
       "venue": "arXiv:1706.05806",
       "url": "https://arxiv.org/abs/1706.05806",
       "verified": "abstract",
-      "why": "Compares learned representations across networks"
+      "why": "Compares learned representations across networks",
+      "key": "raghu2017"
     },
     {
       "category": "Decorrelation & ABCD",
@@ -147,7 +168,8 @@
       "venue": "Phys. Rev. Lett. 125, 122001; arXiv:2001.05310",
       "url": "https://doi.org/10.1103/PhysRevLett.125.122001",
       "verified": "abstract",
-      "why": "Distance-correlation penalty for decorrelating classifier outputs"
+      "why": "Distance-correlation penalty for decorrelating classifier outputs",
+      "key": "kasieczka2020"
     },
     {
       "category": "Decorrelation & ABCD",
@@ -157,7 +179,8 @@
       "venue": "Phys. Rev. D 103, 035021; arXiv:2007.14400",
       "url": "https://doi.org/10.1103/PhysRevD.103.035021",
       "verified": "abstract",
-      "why": "Two decorrelated networks define the ABCD background planes"
+      "why": "Two decorrelated networks define the ABCD background planes",
+      "key": "abcdisco2020"
     },
     {
       "category": "Decorrelation & ABCD",
@@ -167,7 +190,8 @@
       "venue": "arXiv:2506.08826",
       "url": "https://arxiv.org/abs/2506.08826",
       "verified": "abstract",
-      "why": "Adds an explicit closure term to the training loss"
+      "why": "Adds an explicit closure term to the training loss",
+      "key": "cms2025tec"
     },
     {
       "category": "Decorrelation & ABCD",
@@ -177,7 +201,113 @@
       "venue": "JHEP 10 (2025) 236; arXiv:2506.08825",
       "url": "https://arxiv.org/abs/2506.08825",
       "verified": "abstract",
-      "why": "Physics search that uses the closure-constrained ABCD method"
+      "why": "Physics search that uses the closure-constrained ABCD method",
+      "key": "cms2025stop"
+    },
+    {
+      "key": "cho2014",
+      "category": "Gating",
+      "authors": "K. Cho et al.",
+      "year": 2014,
+      "title": "Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation",
+      "venue": "EMNLP 2014; arXiv:1406.1078",
+      "url": "https://arxiv.org/abs/1406.1078",
+      "verified": "abstract",
+      "why": "Introduces the GRU and its sigmoid update and reset gates"
+    },
+    {
+      "key": "louizos2018",
+      "category": "Gating",
+      "authors": "C. Louizos, M. Welling, D. P. Kingma",
+      "year": 2017,
+      "title": "Learning Sparse Neural Networks through L0 Regularization",
+      "venue": "ICLR 2018; arXiv:1712.01312",
+      "url": "https://arxiv.org/abs/1712.01312",
+      "verified": "abstract",
+      "why": "Hard-concrete gates that can be driven to exactly open or closed"
+    },
+    {
+      "key": "dauphin2017",
+      "category": "Gating",
+      "authors": "Y. N. Dauphin et al.",
+      "year": 2016,
+      "title": "Language Modeling with Gated Convolutional Networks",
+      "venue": "ICML 2017; arXiv:1612.08083",
+      "url": "https://arxiv.org/abs/1612.08083",
+      "verified": "abstract",
+      "why": "Gated linear units: a drop-in gated replacement for plain layers"
+    },
+    {
+      "key": "srivastava2015",
+      "category": "Gating",
+      "authors": "R. K. Srivastava, K. Greff, J. Schmidhuber",
+      "year": 2015,
+      "title": "Highway Networks",
+      "venue": "arXiv:1505.00387",
+      "url": "https://arxiv.org/abs/1505.00387",
+      "verified": "abstract",
+      "why": "Learned gates that decide how much each layer transforms its input"
+    },
+    {
+      "key": "lim2019",
+      "category": "Gating",
+      "authors": "B. Lim, S. O. Arik, N. Loeff, T. Pfister",
+      "year": 2019,
+      "title": "Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting",
+      "venue": "arXiv:1912.09363",
+      "url": "https://arxiv.org/abs/1912.09363",
+      "verified": "abstract",
+      "why": "Per-feature variable-selection gates that expose learned importances"
+    }
+  ],
+  "components": [
+    {
+      "name": "Testing existing",
+      "subtitle": "Optimize the current networks",
+      "state": "active",
+      "summary": "Start from the networks already in use and find out how sensitive they are to their own topology before inventing anything new. Every result here becomes the baseline the new designs must beat.",
+      "items": [
+        {
+          "label": "Connection calibration",
+          "detail": "Drop or add connections in groups across the three baseline designs, in both detector regions, with every metric recorded"
+        },
+        {
+          "label": "Learned gates",
+          "detail": "GRU-style sigmoid gate on each connection group, relaxed to exactly open or closed [@louizos2018]; must match or beat the calibration grid"
+        },
+        {
+          "label": "Closure-sensitivity pruning",
+          "detail": "Remove units whose closure cost is high and whose classification value is low, from one backward pass"
+        }
+      ]
+    },
+    {
+      "name": "Testing new",
+      "subtitle": "Generate and test new architectures",
+      "state": "next",
+      "summary": "Use the latent features of many trained models to propose architectures that have not been tried, then train and score each one. The inner loop is ordinary supervised training; the outer loop starts as black-box search and becomes supervised once a surrogate is fitted.",
+      "items": [
+        {
+          "label": "Gated blocks",
+          "detail": "Gated linear units and highway layers in place of plain layers [@dauphin2017][@srivastava2015]; per-feature gates for variable selection [@lim2019]"
+        },
+        {
+          "label": "Split latent",
+          "detail": "One shared trunk whose latent dimensions are gated to either network, with the dependence penalty between the two blocks"
+        },
+        {
+          "label": "Grow and evolve",
+          "detail": "Gradient-guided growth [@evci2022], regularized evolution [@real2018], and differentiable search with its known failure modes guarded [@liu2018][@zela2019]"
+        },
+        {
+          "label": "Supervised surrogate",
+          "detail": "Regress the metric vector on architecture parameters plus latent fields, then let it propose the next candidates [@nie2020]"
+        },
+        {
+          "label": "Guardrails",
+          "detail": "Disjoint seeds, winners retrained from scratch, a random-search baseline, and gates against designs that win by default"
+        }
+      ]
     }
   ]
 }

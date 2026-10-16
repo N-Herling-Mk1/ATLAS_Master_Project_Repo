@@ -90,6 +90,8 @@ Labels are leak-scanned like everything else: no numbers, sample names or intern
 
 ### Literature
 
+To cite inline, give the reference a `key` and write `[@key]` in the intro or in any component summary or detail. Citations are numbered by first appearance, link to the entry in the literature list, and open its category when clicked. The build fails if a `[@key]` has no matching entry.
+
 Every entry needs an https `url` to the paper's own page (arXiv abs, DOI or publisher). `verified` records how far the citation was checked: `full` if confirmed on the paper's own page, `abstract` if confirmed from metadata only. It does not say how deeply the paper was read. Titles and venues are leak-scanned too, so an internal note can't pass as a reference.
 
 ## Add a project

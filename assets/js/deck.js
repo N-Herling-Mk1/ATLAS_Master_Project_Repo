@@ -49,8 +49,9 @@
     tg.hidden = !p.tagline;
     tg.textContent = p.tagline || "";
 
+    buildCites(p);
     const t = p.intro;
-    $("p-intro").textContent = [t.problem, t.value, t.approach, t.goals].join(" ");
+    $("p-intro").replaceChildren(...citeNodes([t.problem, t.value, t.approach, t.goals].join(" ")));
 
     const ol = $("p-questions");
     ol.replaceChildren(...p.questions.map((q) => { const li = document.createElement("li"); li.textContent = q; return li; }));
@@ -152,6 +153,50 @@
     if (buf) x.append(document.createTextNode(buf));
   }
 
+  // ---- inline citations: "[@key]" -> numbered superscript linked to the literature list ----
+  const CITE_RE = /((?:\[@[\w-]+\])+)/g;
+  let citeNum = new Map();
+
+  function buildCites(p) {
+    citeNum = new Map();
+    const texts = [p.intro.problem, p.intro.value, p.intro.approach, p.intro.goals];
+    (p.components || []).forEach((c) => { texts.push(c.summary); (c.items || []).forEach((it) => texts.push(it.detail)); });
+    const keys = new Set((p.literature || []).map((r) => r.key).filter(Boolean));
+    texts.join(" ").replace(/\[@([\w-]+)\]/g, (_, k) => { if (keys.has(k) && !citeNum.has(k)) citeNum.set(k, citeNum.size + 1); return _; });
+  }
+
+  function citeNodes(text) {
+    const out = [];
+    text.split(CITE_RE).forEach((part, i) => {
+      if (i % 2 === 0) { if (part) out.push(document.createTextNode(part)); return; }
+      const ks = [...part.matchAll(/\[@([\w-]+)\]/g)].map((m) => m[1]).filter((k) => citeNum.has(k));
+      if (!ks.length) return;
+      const sup = el("sup", "cite");
+      sup.append(document.createTextNode("["));
+      ks.forEach((k, j) => {
+        if (j) sup.append(document.createTextNode(","));
+        const b = el("button", "cite-n", String(citeNum.get(k)));
+        b.type = "button";
+        const ref = (P[cur].literature || []).find((r) => r.key === k);
+        if (ref) b.title = `${ref.authors} (${ref.year}). ${ref.title}`;
+        b.addEventListener("click", () => {
+          const li = $(`ref-${k}`);
+          if (!li) return;
+          const grp = li.closest("details");
+          if (grp) grp.open = true;
+          pinned = "sec-literature";
+          mapTargets.forEach((m) => m.btn.classList.toggle("on", m.id === "sec-literature"));
+          li.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+          li.classList.remove("flash"); void li.offsetWidth; li.classList.add("flash");
+        });
+        sup.append(b);
+      });
+      sup.append(document.createTextNode("]"));
+      out.push(sup);
+    });
+    return out;
+  }
+
   const STATE_TAG = { done: "DONE", active: "IN PROGRESS", next: "PLANNED" };
 
   function renderProgram(comps) {
@@ -164,10 +209,12 @@
       if (c.state) head.append(el("span", "prog-state", STATE_TAG[c.state]));
       li.append(head);
       if (c.subtitle) li.append(el("p", "prog-sub", c.subtitle));
-      li.append(el("p", "prog-sum", c.summary));
+      const sum = el("p", "prog-sum");
+      sum.append(...citeNodes(c.summary));
+      li.append(sum);
       if (c.items && c.items.length) {
         const dl = el("dl", "prog-items");
-        c.items.forEach((it) => dl.append(el("dt", null, it.label), el("dd", null, it.detail)));
+        c.items.forEach((it) => { const dd = el("dd"); dd.append(...citeNodes(it.detail)); dl.append(el("dt", null, it.label), dd); });
         li.append(dl);
       }
       return li;
@@ -237,6 +284,8 @@
       const ul = el("ul", "lit-list");
       list.forEach((r) => {
         const li = el("li");
+        if (r.key) li.id = `ref-${r.key}`;
+        if (r.key && citeNum.has(r.key)) li.append(el("span", "ref-n", `[${citeNum.get(r.key)}] `));
         const a = el("a", null, r.title);
         a.href = r.url; a.target = "_blank"; a.rel = "noopener";
         li.append(el("span", "ref-auth", `${r.authors} (${r.year}). `), a, document.createTextNode(" "), el("span", "ref-venue", r.venue));

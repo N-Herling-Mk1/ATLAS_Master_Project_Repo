@@ -99,7 +99,7 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
         s = intro.get(k, "").strip()
         if not s:
             errs.append(f"{pid}: intro.{k} is empty")
-        elif len(s.split()) > 60:
+        elif len(re.sub(r"\[@[\w-]+\]", "", s).split()) > 60:
             warns.append(f"{pid}: intro.{k} is {len(s.split())} words (parsimony target <= 60)")
     q = p.get("questions", [])
     if not 2 <= len(q) <= 3:
@@ -142,6 +142,15 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
         if key in seen:
             errs.append(f"{pid}: literature {i} duplicates an earlier title")
         seen.add(key)
+
+    # inline citations: every [@key] must resolve to a literature entry
+    lit_keys = [r.get("key") for r in lit if r.get("key")]
+    if len(lit_keys) != len(set(lit_keys)):
+        errs.append(f"{pid}: duplicate literature keys")
+    cite_text = " ".join(list(intro.values()) + [c.get("summary", "") for c in p.get("components", [])]
+                         + [it.get("detail", "") for c in p.get("components", []) for it in c.get("items", [])])
+    for k in sorted(set(re.findall(r"\[@([\w-]+)\]", cite_text)) - set(lit_keys)):
+        errs.append(f"{pid}: citation [@{k}] has no literature entry with that key")
 
     for i, c in enumerate(p.get("components", []), 1):
         if not c.get("name") or not c.get("summary"):
