@@ -197,6 +197,17 @@ img { display: block; max-width: 100%; height: auto; }
 }
 .expansion + .intro, .expansion + .tagline[hidden] + .intro { margin-top: 22px; }
 
+/* ---------- caveat banner (top of dossier) ---------- */
+.caveat {
+  margin: 0 0 18px; padding: 12px 16px; max-width: 72ch;
+  border: 1px solid #f0a52a; border-left-width: 4px;
+  background: color-mix(in srgb, #f0a52a 9%, transparent);
+}
+.cv-head { margin: 0 0 6px; display: flex; gap: 12px; align-items: baseline; font-family: var(--f-mono); letter-spacing: .14em; }
+.cv-tag { font-family: var(--f-display); font-weight: 900; font-size: 13px; color: #f0a52a; }
+.cv-date { font-size: 12px; color: var(--muted); }
+.cv-text { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text); }
+
 /* ---------- inline citations ---------- */
 .cite { font-family: var(--f-mono); font-size: .8em; font-weight: 700; color: var(--muted); white-space: nowrap; line-height: 0; }
 .cite-n { padding: 0 1px; color: var(--a); font: inherit; border-bottom: 1px dotted var(--a-soft); }

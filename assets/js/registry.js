@@ -1934,7 +1934,7 @@ window.DECK_PROJECTS = [
    "problem": "Entropy and mutual information are used loosely in physics machine learning, and defining them meaningfully for mixed continuous and discrete detector features, or for a network's latent space, is not straightforward.",
    "value": "Working definitions would give principled tools for feature selection and redundancy, a way to compare named and latent feature spaces, and a common footing for the tokenization and maximum-entropy lines of work.",
    "approach": "We work chapter by chapter through Stone's Information Theory: A Tutorial Introduction as the guide, rate each concept's fit to detector data, test it with small numerical experiments, and record the open questions it raises.",
-   "goals": "The outcome is a set of practical estimators for entropy and mutual information in named and latent spaces, a notebook of experiments, and a list of open questions that feed the other projects."
+   "goals": "The expected outcome is a glossary of entropy and mutual-information terms as they apply to detector data, a few concept maps linking each idea to the projects that could use it, and a list of open questions; working estimators come only where a project needs one."
   },
   "questions": [
    "How should entropy and mutual information be defined for continuous detector features without arbitrary binning choices?",
@@ -1950,6 +1950,11 @@ window.DECK_PROJECTS = [
    {
     "date": "2026-08",
     "label": "Goal restated: define entropy and mutual information in named and latent feature spaces",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-16",
+    "label": "Scope set as exploration: glossary and concept maps, not a standalone project",
     "state": "done"
    },
    {
@@ -1969,7 +1974,7 @@ window.DECK_PROJECTS = [
     "state": "next"
    },
    {
-    "label": "Deliverable: deck rating each chapter's fit, plus the open-questions list",
+    "label": "Deliverables: glossary, concept maps linking ideas to projects, and the open-questions list",
     "state": "next"
    }
   ],
@@ -2005,6 +2010,11 @@ window.DECK_PROJECTS = [
     "why": "Standard reference for proofs the tutorial text states without derivation"
    }
   ],
+  "caveat": {
+   "date": "Oct-16-2026",
+   "text": "This is an ongoing exploration: a search for working definitions and places to apply them, not a project with a fixed deliverable. The end result will most likely be a glossary and a few idea and concept maps that feed the other projects, rather than a standalone result."
+  },
+  "tagline": "Exploratory: definitions and concept maps for the other projects",
   "logo": "projects/info-theory/logo.webp",
   "thumb": "projects/info-theory/thumb.webp"
  },

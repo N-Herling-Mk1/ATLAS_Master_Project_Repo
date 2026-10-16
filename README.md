@@ -66,6 +66,7 @@ Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump. Swipe on
 
 | `tagline` | optional one-line label under the expansion |
 | `components` | optional list of `{name, subtitle, state, summary, items:[{label, detail}]}`; renders as the PROGRAM section |
+| `caveat` | optional `{date, text}`; amber banner at the top of the project panel, date shown as written |
 | `results` | optional list of `{title, text}`; renders as CURRENT RESULTS, words only (no numbers on the public page) |
 | `links` | optional list of `{project, title, text}`; a card that jumps to another project |
 | `open` | optional list of `{kind, text}`; kind is `question`, `lesson` (learned, not yet applied) or `gap` |

@@ -172,7 +172,7 @@ def leak_scan(p: dict) -> list[str]:
     # Everything a visitor can read. Literature titles/venues are scanned too
     # (an internal note masquerading as a reference is exactly the risk); URLs are not.
     text = " ".join(
-        [p.get("name", ""), p.get("expansion", ""), p.get("tagline", "")]
+        [p.get("name", ""), p.get("expansion", ""), p.get("tagline", ""), (p.get("caveat") or {}).get("text", "")]
         + [f"{c.get('name', '')} {c.get('subtitle', '')} {c.get('summary', '')} "
            + " ".join(f"{it.get('label', '')} {it.get('detail', '')}" for it in c.get("items", []))
            for c in p.get("components", [])]

@@ -44,6 +44,10 @@
     const st = $("k-status");
     st.textContent = p.status.toUpperCase();
     st.className = `status st-${p.status}`;
+    const cv = p.caveat;
+    $("p-caveat").hidden = !cv;
+    $("p-caveat-date").textContent = cv && cv.date ? cv.date.toUpperCase() : "";
+    $("p-caveat-text").textContent = cv ? cv.text : "";
     renderTitle(p);
     const tg = $("p-tagline");
     tg.hidden = !p.tagline;
