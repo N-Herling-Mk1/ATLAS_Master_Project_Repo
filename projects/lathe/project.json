@@ -1,0 +1,283 @@
+{
+  "id": "lathe",
+  "order": 3,
+  "name": "LATHE",
+  "expansion": "Latent Activation Topology of Hidden Embeddings",
+  "status": "planning",
+  "accent": "#22e3ff",
+  "accent2": "#ff8a2a",
+  "code": "internal",
+  "intro": {
+    "problem": "The hidden layers of the classifiers used in long-lived-particle searches are rarely examined, so we do not know how signal and background are arranged in latent space or which structures the network actually relies on.",
+    "value": "A vetted map of latent space would let us diagnose failures, compare training objectives on more than a score, inform architecture design, and connect what a network learned back to physical quantities.",
+    "approach": "We extract hidden-layer activations from models trained under different objectives, project and measure their geometry and topology, and vet every structure against shuffle and seed controls before it is shown in an interactive explorer.",
+    "goals": "The goal is an interactive latent-space explorer whose displayed structures are stable across seeds, together with quantitative measures that link latent directions to named physics inputs."
+  },
+  "questions": [
+    "Does latent geometry differ systematically between training objectives that score alike?",
+    "Which latent structures are stable across seeds, and which are artifacts of the projection?",
+    "Can latent directions be mapped back to named physical inputs?"
+  ],
+  "timeline": [
+    {
+      "date": "2026-10-02",
+      "label": "First Q&A on visualizing what the models' latent spaces learn",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-10",
+      "label": "Follow-up Q&A settles ground rules and a kill test",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-12",
+      "label": "Stage-0 project definition: scope, hypotheses, controls",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-12",
+      "label": "Name LATHE chosen; literature search across five strands",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-12",
+      "label": "Stage-0 deck built with categorized literature",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-14",
+      "label": "Deck exported as an editable presentation",
+      "state": "done"
+    },
+    {
+      "label": "Carve out a held-out probe set and add a training dump hook",
+      "state": "next"
+    },
+    {
+      "label": "Dump a model population; run the positive control, then the pre-registered kill test",
+      "state": "next"
+    }
+  ],
+  "literature": [
+    {
+      "category": "Prediction space",
+      "authors": "Mao et al.",
+      "year": 2024,
+      "title": "The Training Process of Many Deep Networks Explores the Same Low-Dimensional Manifold",
+      "venue": "PNAS 121, e2310002121; arXiv:2305.01604",
+      "url": "https://doi.org/10.1073/pnas.2310002121",
+      "verified": "full",
+      "why": "Models as points in prediction space, embedded with inPCA"
+    },
+    {
+      "category": "Prediction space",
+      "authors": "Mao et al.",
+      "year": 2025,
+      "title": "An Analytical Characterization of Sloppiness in Neural Networks: Insights from Linear Models",
+      "venue": "arXiv:2505.08915",
+      "url": "https://arxiv.org/abs/2505.08915",
+      "verified": "abstract",
+      "why": "Analytic follow-up on the low-dimensional training manifold"
+    },
+    {
+      "category": "Prediction space",
+      "authors": "Klabunde et al.",
+      "year": 2025,
+      "title": "Similarity of Neural Network Models: A Survey of Functional and Representational Measures",
+      "venue": "ACM Computing Surveys; arXiv:2305.06329",
+      "url": "https://doi.org/10.1145/3728458",
+      "verified": "full",
+      "why": "Survey separating functional from representational model similarity"
+    },
+    {
+      "category": "Prediction space",
+      "authors": "Bo et al.",
+      "year": 2025,
+      "title": "Evaluating Representational Similarity Measures from the Lens of Functional Correspondence",
+      "venue": "CCN 2025; arXiv:2411.14633",
+      "url": "https://arxiv.org/abs/2411.14633",
+      "verified": "abstract",
+      "why": "Behavioral similarity metrics agree more than representational ones"
+    },
+    {
+      "category": "Loss surfaces & topology",
+      "authors": "Li et al.",
+      "year": 2018,
+      "title": "Visualizing the Loss Landscape of Neural Nets",
+      "venue": "NeurIPS 2018; arXiv:1712.09913",
+      "url": "https://arxiv.org/abs/1712.09913",
+      "verified": "abstract",
+      "why": "Filter-normalized slices for fair loss-surface comparison"
+    },
+    {
+      "category": "Loss surfaces & topology",
+      "authors": "Garipov et al.",
+      "year": 2018,
+      "title": "Loss Surfaces, Mode Connectivity, and Fast Ensembling of DNNs",
+      "venue": "NeurIPS 2018; arXiv:1802.10026",
+      "url": "https://arxiv.org/abs/1802.10026",
+      "verified": "abstract",
+      "why": "Low-loss paths connect optima; tests whether solutions share a basin"
+    },
+    {
+      "category": "Loss surfaces & topology",
+      "authors": "Horoi et al.",
+      "year": 2022,
+      "title": "Exploring the Geometry and Topology of Neural Network Loss Landscapes",
+      "venue": "IDA 2022; arXiv:2102.00485",
+      "url": "https://arxiv.org/abs/2102.00485",
+      "verified": "full",
+      "why": "PHATE trajectories and homology to measure landscape topology"
+    },
+    {
+      "category": "Loss surfaces & topology",
+      "authors": "Geniesse et al.",
+      "year": 2024,
+      "title": "Visualizing Loss Functions as Topological Landscape Profiles",
+      "venue": "arXiv:2411.12136",
+      "url": "https://arxiv.org/abs/2411.12136",
+      "verified": "abstract",
+      "why": "Landscape topology shifts near performance transitions"
+    },
+    {
+      "category": "Representation similarity",
+      "authors": "Kornblith et al.",
+      "year": 2019,
+      "title": "Similarity of Neural Network Representations Revisited",
+      "venue": "ICML 2019, PMLR 97; arXiv:1905.00414",
+      "url": "https://proceedings.mlr.press/v97/kornblith19a.html",
+      "verified": "full",
+      "why": "CKA for comparing hidden representations across networks"
+    },
+    {
+      "category": "Representation similarity",
+      "authors": "Davari et al.",
+      "year": 2023,
+      "title": "Reliability of CKA as a Similarity Measure in Deep Learning",
+      "venue": "ICLR 2023; arXiv:2210.16156",
+      "url": "https://arxiv.org/abs/2210.16156",
+      "verified": "abstract",
+      "why": "CKA is outlier-sensitive and manipulable; needs guards"
+    },
+    {
+      "category": "Representation similarity",
+      "authors": "Ansuini et al.",
+      "year": 2019,
+      "title": "Intrinsic dimension of data representations in deep neural networks",
+      "venue": "NeurIPS 2019; arXiv:1905.12784",
+      "url": "https://arxiv.org/abs/1905.12784",
+      "verified": "full",
+      "why": "Intrinsic dimension of representations, with untrained and shuffled-label nulls"
+    },
+    {
+      "category": "HEP latent spaces",
+      "authors": "Komiske, Metodiev, Thaler",
+      "year": 2019,
+      "title": "The Metric Space of Collider Events",
+      "venue": "Phys. Rev. Lett. 123, 041801; arXiv:1902.02346",
+      "url": "https://doi.org/10.1103/PhysRevLett.123.041801",
+      "verified": "full",
+      "why": "Defines a distance between collider events"
+    },
+    {
+      "category": "HEP latent spaces",
+      "authors": "Komiske, Metodiev, Thaler",
+      "year": 2020,
+      "title": "The Hidden Geometry of Particle Collisions",
+      "venue": "JHEP 07 (2020) 006; arXiv:2004.04159",
+      "url": "https://doi.org/10.1007/JHEP07(2020)006",
+      "verified": "full",
+      "why": "Treats theories as weighted event collections in a metric space"
+    },
+    {
+      "category": "HEP latent spaces",
+      "authors": "Khot, Neubauer, Roy",
+      "year": 2023,
+      "title": "A Detailed Study of Interpretability of Deep Neural Network based Top Taggers",
+      "venue": "Mach. Learn.: Sci. Technol.; arXiv:2210.04371",
+      "url": "https://doi.org/10.1088/2632-2153/ace0a1",
+      "verified": "full",
+      "why": "Finds dead latent units in taggers; motivates a unit census"
+    },
+    {
+      "category": "HEP latent spaces",
+      "authors": "Cheng",
+      "year": 2019,
+      "title": "Interpretability Study on Deep Learning for Jet Physics at the Large Hadron Collider",
+      "venue": "arXiv:1911.01872",
+      "url": "https://arxiv.org/abs/1911.01872",
+      "verified": "abstract",
+      "why": "Early probe of what jet-physics networks learn internally"
+    },
+    {
+      "category": "HEP latent spaces",
+      "authors": "Thais, Tiourine",
+      "year": 2026,
+      "title": "Do Jet Taggers Learn Physics? Probing and Steering Latent Directions in a Transformer Tagger",
+      "venue": "ML4Jets 2026 talk",
+      "url": "https://indico.global/event/15240/contributions/165307/",
+      "verified": "abstract",
+      "why": "Probes and steers latent directions in a jet tagger"
+    },
+    {
+      "category": "HEP decorrelation",
+      "authors": "Kasieczka, Shih",
+      "year": 2020,
+      "title": "DisCo Fever: Robust Networks Through Distance Correlation",
+      "venue": "Phys. Rev. Lett. 125, 122001; arXiv:2001.05310",
+      "url": "https://doi.org/10.1103/PhysRevLett.125.122001",
+      "verified": "full",
+      "why": "Distance-correlation penalty for decorrelating classifiers"
+    },
+    {
+      "category": "HEP decorrelation",
+      "authors": "Kasieczka, Nachman, Schwartz, Shih",
+      "year": 2021,
+      "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+      "venue": "Phys. Rev. D 103, 035021; arXiv:2007.14400",
+      "url": "https://doi.org/10.1103/PhysRevD.103.035021",
+      "verified": "full",
+      "why": "Double-DisCo: two decorrelated classifiers define the ABCD plane"
+    },
+    {
+      "category": "HEP decorrelation",
+      "authors": "Kitouni et al.",
+      "year": 2021,
+      "title": "Enhancing searches for resonances with machine learning and moment decomposition",
+      "venue": "JHEP 04 (2021) 070; arXiv:2010.09745",
+      "url": "https://doi.org/10.1007/JHEP04(2021)070",
+      "verified": "full",
+      "why": "MoDE: controls classifier dependence on mass via moments"
+    },
+    {
+      "category": "HEP decorrelation",
+      "authors": "Hallin et al.",
+      "year": 2023,
+      "title": "Resonant anomaly detection without background sculpting",
+      "venue": "Phys. Rev. D 107, 114012; arXiv:2210.14924",
+      "url": "https://doi.org/10.1103/PhysRevD.107.114012",
+      "verified": "full",
+      "why": "LaCATHODE: classifying in a flow latent space avoids sculpting"
+    },
+    {
+      "category": "HEP decorrelation",
+      "authors": "Klein, Golling",
+      "year": 2022,
+      "title": "Decorrelation with conditional normalizing flows",
+      "venue": "NeurIPS 2022 workshop; arXiv:2211.02486",
+      "url": "https://arxiv.org/abs/2211.02486",
+      "verified": "abstract",
+      "why": "Flow-based decorrelation of features from a protected variable"
+    },
+    {
+      "category": "HEP decorrelation",
+      "authors": "Tan, Urquijo",
+      "year": 2020,
+      "title": "Decorrelation via Disentanglement",
+      "venue": "4th Inter-experiment ML Workshop, CERN, talk",
+      "url": "https://indico.cern.ch/event/852553/contributions/4059755/",
+      "verified": "abstract",
+      "why": "Isolates a protected variable in a latent subspace"
+    }
+  ]
+}

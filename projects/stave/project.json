@@ -1,0 +1,251 @@
+{
+  "id": "stave",
+  "order": 1,
+  "name": "STAVE",
+  "expansion": "Small-sample Tests of ABCD Variants and Estimators",
+  "status": "active",
+  "accent": "#ff2a3c",
+  "accent2": "#3b6bff",
+  "code": "internal",
+  "intro": {
+    "problem": "The ABCD method estimates background in a signal region from three control regions, but it only works if the two discriminants are independent for background, and in a small-sample detector region both that independence and the statistical test used to check it become fragile.",
+    "value": "A background method validated for low-statistics regions would extend data-driven estimation to regions that may hold real sensitivity, and would separate a closure test that passes on merit from one that passes only because its error bars are too wide to fail.",
+    "approach": "We re-establish clean baselines, then test variants one at a time: decorrelation-penalty sweeps, closure-aware loss terms, kernel models of the joint background, and pretraining on a higher-statistics region transferred to the small one.",
+    "goals": "The outcome is a reproducible baseline and a ranked set of estimator variants scored on closure with honest uncertainties, ending in a recommendation for which estimators hold up in small samples and which do not."
+  },
+  "questions": [
+    "Does a closure test in a small sample carry real evidence, or do wide error bars simply absorb a same-size error?",
+    "Can what a model learns in a high-statistics region transfer to a low-statistics one without importing that region's biases?",
+    "Which estimator choice (penalty, kernel, or pretraining) moves closure, and what does each cost in discrimination?"
+  ],
+  "timeline": [
+    {
+      "date": "2026-10-05",
+      "label": "Literature review of how barrel and endcap are handled in ABCD and LLP searches",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-06",
+      "label": "Kernel-method ideas raised and first barrel plan outlined",
+      "state": "done"
+    },
+    {
+      "date": "2026-10",
+      "label": "Project named STAVE; ideas deck finished, with re-running the baseline as step one",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-13",
+      "label": "Baseline re-run graded with a pre-registered evaluation framework",
+      "state": "active"
+    },
+    {
+      "label": "Compare closure-term loss variants on a replicated grid",
+      "state": "next"
+    },
+    {
+      "label": "Test a kernel classifier against the neural-network baseline",
+      "state": "next"
+    },
+    {
+      "label": "Test pretraining on the larger region and transferring to the smaller one",
+      "state": "next"
+    },
+    {
+      "label": "Plan a kernel-based model of the joint background",
+      "state": "next"
+    }
+  ],
+  "literature": [
+    {
+      "category": "ABCD with ML",
+      "authors": "G. Kasieczka, B. Nachman, M. D. Schwartz, D. Shih",
+      "year": 2020,
+      "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+      "venue": "Phys. Rev. D 103, 035021 (2021); arXiv:2007.14400",
+      "url": "https://arxiv.org/abs/2007.14400",
+      "verified": "full",
+      "why": "Double-DisCo: trains two classifiers to be independent so ABCD closes"
+    },
+    {
+      "category": "ABCD with ML",
+      "authors": "CMS Collaboration",
+      "year": 2025,
+      "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC",
+      "venue": "arXiv:2506.08826",
+      "url": "https://arxiv.org/abs/2506.08826",
+      "verified": "full",
+      "why": "Adds an explicit closure term to the loss, like the closure variants tested here"
+    },
+    {
+      "category": "ABCD with ML",
+      "authors": "CMS Collaboration",
+      "year": 2025,
+      "title": "Search for top squarks in final states with many light-flavor jets and 0, 1, or 2 charged leptons in proton-proton collisions at √s = 13 TeV",
+      "venue": "JHEP 10 (2025) 236",
+      "url": "https://doi.org/10.1007/JHEP10(2025)236",
+      "verified": "abstract",
+      "why": "A published search that uses a closure-trained ABCD classifier"
+    },
+    {
+      "category": "Decorrelation",
+      "authors": "G. Kasieczka, D. Shih",
+      "year": 2020,
+      "title": "DisCo Fever: Robust Networks Through Distance Correlation",
+      "venue": "Phys. Rev. Lett. 125, 122001 (2020); arXiv:2001.05310",
+      "url": "https://arxiv.org/abs/2001.05310",
+      "verified": "full",
+      "why": "The distance-correlation penalty behind every decorrelated baseline here"
+    },
+    {
+      "category": "ABCD extensions",
+      "authors": "S. Choi, H. Oh",
+      "year": 2019,
+      "title": "Improved Extrapolation Methods of Data-driven Background Estimation in High-Energy Physics",
+      "venue": "arXiv:1906.10831",
+      "url": "https://arxiv.org/abs/1906.10831",
+      "verified": "full",
+      "why": "Extends ABCD extrapolation when the two variables are correlated"
+    },
+    {
+      "category": "ABCD extensions",
+      "authors": "E. Alvarez et al.",
+      "year": 2024,
+      "title": "Improvement and generalization of ABCD method with Bayesian inference",
+      "venue": "SciPost Phys. Core 7, 043 (2024); arXiv:2402.08001",
+      "url": "https://arxiv.org/abs/2402.08001",
+      "verified": "full",
+      "why": "Bayesian form of ABCD, relevant when samples are small"
+    },
+    {
+      "category": "Transfer learning",
+      "authors": "J. Ho, B. R. Roberts, S. Han, H. Wang",
+      "year": 2024,
+      "title": "Pretrained Event Classification Model for High Energy Physics Analysis",
+      "venue": "arXiv:2412.10665",
+      "url": "https://arxiv.org/abs/2412.10665",
+      "verified": "full",
+      "why": "Fine-tuning a pretrained classifier helps most when target samples are small"
+    },
+    {
+      "category": "Transfer learning",
+      "authors": "M. Schott, L. Flek",
+      "year": 2026,
+      "title": "Transfer Learning Across Fast- and Full-Simulation Domains in High-Energy Physics",
+      "venue": "arXiv:2605.07471",
+      "url": "https://arxiv.org/abs/2605.07471",
+      "verified": "full",
+      "why": "Moving a model between domains cuts the target data needed"
+    },
+    {
+      "category": "Kernel dependence",
+      "authors": "A. Gretton, O. Bousquet, A. J. Smola, B. Schölkopf",
+      "year": 2005,
+      "title": "Measuring Statistical Dependence with Hilbert-Schmidt Norms",
+      "venue": "ALT 2005, LNCS 3734, pp. 63-77",
+      "url": "https://doi.org/10.1007/11564089_7",
+      "verified": "full",
+      "why": "HSIC, the kernel independence test proposed for the small-sample closure check"
+    },
+    {
+      "category": "Kernel dependence",
+      "authors": "D. Sejdinovic, B. Sriperumbudur, A. Gretton, K. Fukumizu",
+      "year": 2013,
+      "title": "Equivalence of distance-based and RKHS-based statistics in hypothesis testing",
+      "venue": "Ann. Statist. 41(5); arXiv:1207.6076",
+      "url": "https://arxiv.org/abs/1207.6076",
+      "verified": "full",
+      "why": "Shows distance correlation is a kernel statistic, linking DisCo to kernels"
+    },
+    {
+      "category": "ATLAS muon-spectrometer LLP searches",
+      "authors": "ATLAS Collaboration",
+      "year": 2025,
+      "title": "Search for events with one displaced vertex from long-lived neutral particles decaying into hadronic jets in the ATLAS muon spectrometer in pp collisions at √s=13 TeV",
+      "venue": "arXiv:2503.20445",
+      "url": "https://arxiv.org/abs/2503.20445",
+      "verified": "full",
+      "why": "Published practice: separate barrel and endcap networks, ABCD per region"
+    },
+    {
+      "category": "ATLAS muon-spectrometer LLP searches",
+      "authors": "ATLAS Collaboration",
+      "year": 2022,
+      "title": "Search for events with a pair of displaced vertices from long-lived neutral particles decaying into hadronic jets in the ATLAS muon spectrometer in pp collisions at √s=13 TeV",
+      "venue": "Phys. Rev. D 106, 032005 (2022); arXiv:2203.00587",
+      "url": "https://arxiv.org/abs/2203.00587",
+      "verified": "full",
+      "why": "Earlier muon-spectrometer vertex search: barrel and endcap handling"
+    },
+    {
+      "category": "ATLAS muon-spectrometer LLP searches",
+      "authors": "ATLAS Collaboration",
+      "year": 2013,
+      "title": "Standalone vertex finding in the ATLAS muon spectrometer",
+      "venue": "JINST 9 P02001 (2014); arXiv:1311.7070",
+      "url": "https://arxiv.org/abs/1311.7070",
+      "verified": "full",
+      "why": "Why vertex reconstruction differs between barrel and endcap"
+    },
+    {
+      "category": "ATLAS muon-spectrometer LLP searches",
+      "authors": "D. Rousso",
+      "year": 2026,
+      "title": "Searches for massive, long-lived particles in events with displaced vertices with ATLAS",
+      "venue": "arXiv:2604.16789",
+      "url": "https://arxiv.org/abs/2604.16789",
+      "verified": "full",
+      "why": "Recent overview of ATLAS displaced-vertex searches"
+    },
+    {
+      "category": "Other LLP searches",
+      "authors": "ATLAS Collaboration",
+      "year": 2022,
+      "title": "Search for neutral long-lived particles in pp collisions at √s=13 TeV that decay into displaced hadronic jets in the ATLAS calorimeter",
+      "venue": "JHEP 06 (2022) 005; arXiv:2203.01009",
+      "url": "https://arxiv.org/abs/2203.01009",
+      "verified": "full",
+      "why": "How a related LLP search treats detector regions in ML and ABCD"
+    },
+    {
+      "category": "Other LLP searches",
+      "authors": "ATLAS Collaboration",
+      "year": 2024,
+      "title": "Search for neutral long-lived particles that decay into displaced jets in the ATLAS calorimeter in association with leptons or jets using pp collisions at √s=13 TeV",
+      "venue": "JHEP 11 (2024) 036; arXiv:2407.09183",
+      "url": "https://arxiv.org/abs/2407.09183",
+      "verified": "full",
+      "why": "A second calorimeter LLP search, used for comparison"
+    },
+    {
+      "category": "Other LLP searches",
+      "authors": "ATLAS Collaboration",
+      "year": 2023,
+      "title": "Search for magnetic monopoles and stable particles with high electric charges in √s=13 TeV pp collisions with the ATLAS detector",
+      "venue": "JHEP 11 (2023) 112; arXiv:2308.04835",
+      "url": "https://arxiv.org/abs/2308.04835",
+      "verified": "full",
+      "why": "An ABCD estimate split into detector-region slices"
+    },
+    {
+      "category": "Other LLP searches",
+      "authors": "CMS Collaboration",
+      "year": 2024,
+      "title": "Search for long-lived particles decaying in the CMS muon detectors in proton-proton collisions at √s = 13 TeV",
+      "venue": "Phys. Rev. D 110, 032007 (2024); arXiv:2402.01898",
+      "url": "https://arxiv.org/abs/2402.01898",
+      "verified": "full",
+      "why": "CMS keeps its two muon-detector regions as separate ABCD categories"
+    },
+    {
+      "category": "Detector context",
+      "authors": "T. Saito (ATLAS Collaboration)",
+      "year": 2026,
+      "title": "Enhancing the ATLAS Level-1 endcap muon trigger with New Small Wheel integration in Run 3",
+      "venue": "PoS(EPS-HEP2025)565",
+      "url": "https://doi.org/10.22323/1.485.0565",
+      "verified": "full",
+      "why": "How endcap triggering changed in Run 3"
+    }
+  ]
+}

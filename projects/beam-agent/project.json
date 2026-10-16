@@ -1,0 +1,153 @@
+{
+  "id": "beam-agent",
+  "order": 7,
+  "name": "BEAM AGENT",
+  "expansion": "PIPE · HALO · VELOCITY",
+  "status": "active",
+  "accent": "#22c8ff",
+  "accent2": "#ffc21f",
+  "code": "internal",
+  "intro": {
+    "problem": "Research in this area spans dozens of papers, textbooks, and an evolving record of notes and code, and general-purpose language models have none of that local context, so dense, accurate prompts have to be assembled by hand.",
+    "value": "A local agent that indexes this library could give grounded answers that cite their passages, synthesize ideas across sources, and turn a short local request into a dense prompt for a larger model.",
+    "approach": "We build an offline index over the papers and texts, wrap it in an agent loop that chooses its own tools (search the papers, search the record, open code), and add an optional escalation path to a hosted model, vetting retrieval with questions whose correct passages are known.",
+    "goals": "The first goal is a light build whose retrieval passes that vetting, followed by agent actions and cross-source synthesis once retrieval can be trusted."
+  },
+  "questions": [
+    "Can a local index retrieve the right passage reliably enough to be trusted?",
+    "Does local context make the prompts sent to a larger model measurably better?",
+    "Can the agent surface connections across papers that a reader would not see at first glance?"
+  ],
+  "timeline": [
+    {
+      "date": "2026-10-05",
+      "label": "Idea: local, offline research agent over papers, texts and notes",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-06",
+      "label": "Plan deck drafted; agent named BEAM",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-06",
+      "label": "BEAM PIPE locked: tool choice, multi-step loop, proposed actions",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-07",
+      "label": "BEAM HALO added for cross-source synthesis; PDF ingest approach set",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-08",
+      "label": "Decided on a light first build: index only, fully local",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-15",
+      "label": "VELOCITY folded into the BEAM agent design",
+      "state": "done"
+    },
+    {
+      "label": "mk1 build: index a few papers and one textbook chapter",
+      "state": "next"
+    },
+    {
+      "label": "Vet retrieval against known-answer questions, then add the agent loop",
+      "state": "next"
+    }
+  ],
+  "literature": [
+    {
+      "category": "Retrieval",
+      "authors": "Robertson and Zaragoza",
+      "year": 2009,
+      "title": "The Probabilistic Relevance Framework: BM25 and Beyond",
+      "venue": "Foundations and Trends in Information Retrieval 3(4)",
+      "url": "https://doi.org/10.1561/1500000019",
+      "verified": "abstract",
+      "why": "BM25 keyword half of hybrid search, catches rare jargon and symbols"
+    },
+    {
+      "category": "Embedding models",
+      "authors": "Xiao et al.",
+      "year": 2023,
+      "title": "C-Pack: Packed Resources For General Chinese Embeddings",
+      "venue": "arXiv:2309.07597",
+      "url": "https://arxiv.org/abs/2309.07597",
+      "verified": "abstract",
+      "why": "BGE embedder family, named as an off-the-shelf dense retriever"
+    },
+    {
+      "category": "Embedding models",
+      "authors": "Wang et al.",
+      "year": 2022,
+      "title": "Text Embeddings by Weakly-Supervised Contrastive Pre-training",
+      "venue": "arXiv:2212.03533",
+      "url": "https://arxiv.org/abs/2212.03533",
+      "verified": "abstract",
+      "why": "E5 embedder, named as an off-the-shelf dense retriever"
+    },
+    {
+      "category": "Embedding models",
+      "authors": "Nussbaum et al.",
+      "year": 2024,
+      "title": "Nomic Embed: Training a Reproducible Long Context Text Embedder",
+      "venue": "arXiv:2402.01613",
+      "url": "https://arxiv.org/abs/2402.01613",
+      "verified": "abstract",
+      "why": "nomic-embed, named as an off-the-shelf local embedder"
+    },
+    {
+      "category": "Document ingestion",
+      "authors": "Blecher et al.",
+      "year": 2023,
+      "title": "Nougat: Neural Optical Understanding for Academic Documents",
+      "venue": "arXiv:2308.13418 (ICLR 2024)",
+      "url": "https://arxiv.org/abs/2308.13418",
+      "verified": "abstract",
+      "why": "Math-aware PDF-to-LaTeX converter for papers that have no source"
+    },
+    {
+      "category": "Document ingestion",
+      "authors": "Wang et al.",
+      "year": 2024,
+      "title": "MinerU: An Open-Source Solution for Precise Document Content Extraction",
+      "venue": "arXiv:2409.18839",
+      "url": "https://arxiv.org/abs/2409.18839",
+      "verified": "abstract",
+      "why": "Alternative local converter for equation-heavy PDFs"
+    },
+    {
+      "category": "Document ingestion",
+      "authors": "Auer et al.",
+      "year": 2024,
+      "title": "Docling Technical Report",
+      "venue": "arXiv:2408.09869",
+      "url": "https://arxiv.org/abs/2408.09869",
+      "verified": "abstract",
+      "why": "Structure-preserving PDF conversion option for chunking by section"
+    },
+    {
+      "category": "Adaptation (deferred)",
+      "authors": "Zhang et al.",
+      "year": 2024,
+      "title": "RAFT: Adapting Language Model to Domain Specific RAG",
+      "venue": "arXiv:2403.10131",
+      "url": "https://arxiv.org/abs/2403.10131",
+      "verified": "abstract",
+      "why": "Retrieval-aware fine-tuning, held back unless evaluation shows a generation gap"
+    },
+    {
+      "category": "Adaptation (deferred)",
+      "authors": "Hu et al.",
+      "year": 2021,
+      "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+      "venue": "arXiv:2106.09685",
+      "url": "https://arxiv.org/abs/2106.09685",
+      "verified": "abstract",
+      "why": "Small swappable adapters, which keep later retraining cheap"
+    }
+  ]
+}

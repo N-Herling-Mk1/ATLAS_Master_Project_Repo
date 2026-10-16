@@ -1,0 +1,242 @@
+{
+  "id": "gambit",
+  "order": 4,
+  "name": "GAMBIT",
+  "expansion": "Game-Theoretic Analysis of Model Behavior & Interactions",
+  "status": "active",
+  "accent": "#1ff0b0",
+  "accent2": "#ff2a8a",
+  "code": "internal",
+  "intro": {
+    "problem": "A two-network background method needs its input features split between the two networks, and that split is usually chosen by hand even though features interact and the choice directly shapes how well the estimate closes.",
+    "value": "A principled, data-driven partition would make the background estimate more defensible and would reveal which features actually drive closure, rather than leaving that to intuition.",
+    "approach": "We cast feature assignment as a game: a cooperative stage measures each feature's contribution against permutation nulls, an adversarial stage lets the two networks compete for features with closure as the referee, and every result is re-measured on seeds disjoint from the selection.",
+    "goals": "The outcome is an end-to-end selection pipeline, partitions validated on held-out seeds, and an honest accounting of what improved closure costs in discrimination."
+  },
+  "questions": [
+    "Which features actually drive background closure?",
+    "Does letting the networks compete for features produce a better partition than a hand-built one?",
+    "What does improved closure cost in discrimination, and when is that trade worth making?"
+  ],
+  "timeline": [
+    {
+      "date": "2026-08-28",
+      "label": "Idea set: the two networks compete for input features, with background-estimate closure as the shared stake",
+      "state": "done"
+    },
+    {
+      "date": "2026-09-02",
+      "label": "Program fixed: plain baseline first, then one adversarial game and one cooperative game",
+      "state": "done"
+    },
+    {
+      "date": "2026-09-07",
+      "label": "Cooperative scoring rebuilt so selection and evaluation no longer share the same noise",
+      "state": "done"
+    },
+    {
+      "date": "2026-09-08",
+      "label": "First end-to-end run: cooperative feature selection fed into the adversarial game on one detector region",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-10",
+      "label": "Review deck covering all builds; project officially named GAMBIT",
+      "state": "done"
+    },
+    {
+      "label": "Collect closure-term statistics on the barrel region first",
+      "state": "next"
+    },
+    {
+      "label": "Re-run the games on new data with closure as the referee",
+      "state": "next"
+    },
+    {
+      "label": "Run the full pipeline end to end on the endcap region",
+      "state": "next"
+    }
+  ],
+  "literature": [
+    {
+      "category": "Cooperative games",
+      "authors": "Shapley",
+      "year": 1953,
+      "title": "A Value for n-Person Games",
+      "venue": "Contributions to the Theory of Games II (Annals of Mathematics Studies 28), 307-317",
+      "url": "https://doi.org/10.1515/9781400881970-018",
+      "verified": "abstract",
+      "why": "Defines the Shapley value used to credit each feature"
+    },
+    {
+      "category": "Cooperative games",
+      "authors": "Gul",
+      "year": 1989,
+      "title": "Bargaining Foundations of Shapley Value",
+      "venue": "Econometrica 57(1), 81-95",
+      "url": "https://ideas.repec.org/a/ecm/emetrp/v57y1989i1p81-95.html",
+      "verified": "abstract",
+      "why": "Shapley value as outcome of a non-cooperative bargaining game"
+    },
+    {
+      "category": "Cooperative games",
+      "authors": "Pérez-Castrillo & Wettstein",
+      "year": 2001,
+      "title": "Bidding for the Surplus: A Non-cooperative Approach to the Shapley Value",
+      "venue": "Journal of Economic Theory 100(2), 274-294",
+      "url": "https://doi.org/10.1006/jeth.2000.2704",
+      "verified": "abstract",
+      "why": "Bidding mechanism whose equilibrium yields the Shapley value"
+    },
+    {
+      "category": "Cooperative games",
+      "authors": "McQuillin & Sugden",
+      "year": 2016,
+      "title": "Backward Induction Foundations of the Shapley Value",
+      "venue": "Econometrica 84(6), 2265-2280",
+      "url": "https://doi.org/10.3982/ECTA13191",
+      "verified": "abstract",
+      "why": "Subgame-perfect implementation linking value and equilibrium"
+    },
+    {
+      "category": "Non-cooperative games",
+      "authors": "Monderer & Shapley",
+      "year": 1996,
+      "title": "Potential Games",
+      "venue": "Games and Economic Behavior 14(1), 124-143",
+      "url": "https://doi.org/10.1006/game.1996.0044",
+      "verified": "abstract",
+      "why": "When best-response play between networks must reach equilibrium"
+    },
+    {
+      "category": "Non-cooperative games",
+      "authors": "Rosenthal",
+      "year": 1973,
+      "title": "A Class of Games Possessing Pure-Strategy Nash Equilibria",
+      "venue": "International Journal of Game Theory 2, 65-67",
+      "url": "https://doi.org/10.1007/BF01737559",
+      "verified": "abstract",
+      "why": "Congestion-game framing: features as contested shared resources"
+    },
+    {
+      "category": "Non-cooperative games",
+      "authors": "Kuniavsky & Smorodinsky",
+      "year": 2011,
+      "title": "Equilibrium and Potential in Coalitional Congestion Games",
+      "venue": "arXiv:1111.3933",
+      "url": "https://arxiv.org/abs/1111.3933",
+      "verified": "abstract",
+      "why": "Forming coalitions can remove pure equilibria"
+    },
+    {
+      "category": "Non-cooperative games",
+      "authors": "Panageas et al.",
+      "year": 2023,
+      "title": "Exponential Lower Bounds for Fictitious Play in Potential Games",
+      "venue": "arXiv:2310.02387",
+      "url": "https://arxiv.org/abs/2310.02387",
+      "verified": "abstract",
+      "why": "Slow convergence can look the same as no equilibrium"
+    },
+    {
+      "category": "Non-cooperative games",
+      "authors": "Cesa-Bianchi & Lugosi",
+      "year": 2006,
+      "title": "Prediction, Learning, and Games",
+      "venue": "Cambridge University Press (book)",
+      "url": "https://www.cambridge.org/core/books/prediction-learning-and-games/",
+      "verified": "abstract",
+      "why": "No-regret dynamics converge to coarse correlated equilibria"
+    },
+    {
+      "category": "Feature attribution",
+      "authors": "Cohen, Ruppin & Dror",
+      "year": 2005,
+      "title": "Feature Selection Based on the Shapley Value",
+      "venue": "Proc. IJCAI 2005, 665-670",
+      "url": "https://www.ijcai.org/Proceedings/05/Papers/0763.pdf",
+      "verified": "abstract",
+      "why": "Direct precedent: Shapley-value contribution selection of features"
+    },
+    {
+      "category": "Feature attribution",
+      "authors": "Afghah, Razi & Najarian",
+      "year": 2015,
+      "title": "A Shapley Value Solution to Game Theoretic-based Feature Reduction in False Alarm Detection",
+      "venue": "arXiv:1512.01680",
+      "url": "https://arxiv.org/abs/1512.01680",
+      "verified": "abstract",
+      "why": "Feature selection posed as a transferable-utility coalition game"
+    },
+    {
+      "category": "Feature attribution",
+      "authors": "Wang et al.",
+      "year": 2022,
+      "title": "Accelerating Shapley Explanation via Contributive Cooperator Selection",
+      "venue": "arXiv:2206.08529",
+      "url": "https://arxiv.org/abs/2206.08529",
+      "verified": "abstract",
+      "why": "Makes sampled Shapley estimation tractable"
+    },
+    {
+      "category": "Feature attribution",
+      "authors": "Il Idrissi, Fernandes Machado & Charpentier",
+      "year": 2025,
+      "title": "Beyond Shapley Values: Cooperative Games for the Interpretation of Machine Learning Models",
+      "venue": "arXiv:2506.13900",
+      "url": "https://arxiv.org/abs/2506.13900",
+      "verified": "abstract",
+      "why": "Weber and Harsanyi sets generalise Shapley allocations"
+    },
+    {
+      "category": "Decorrelation / ABCD",
+      "authors": "Kasieczka, Nachman, Schwartz & Shih",
+      "year": 2021,
+      "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+      "venue": "Phys. Rev. D 103, 035021; arXiv:2007.14400",
+      "url": "https://doi.org/10.1103/PhysRevD.103.035021",
+      "verified": "abstract",
+      "why": "Two decorrelated networks define the ABCD plane"
+    },
+    {
+      "category": "Decorrelation / ABCD",
+      "authors": "Kasieczka & Shih",
+      "year": 2020,
+      "title": "Robust Jet Classifiers through Distance Correlation",
+      "venue": "Phys. Rev. Lett. 125, 122001; arXiv:2001.05310",
+      "url": "https://doi.org/10.1103/PhysRevLett.125.122001",
+      "verified": "abstract",
+      "why": "Distance-correlation penalty used to decorrelate the networks"
+    },
+    {
+      "category": "Decorrelation / ABCD",
+      "authors": "Shimmin et al.",
+      "year": 2017,
+      "title": "Decorrelated Jet Substructure Tagging using Adversarial Neural Networks",
+      "venue": "Phys. Rev. D 96, 074034; arXiv:1703.03507",
+      "url": "https://doi.org/10.1103/PhysRevD.96.074034",
+      "verified": "abstract",
+      "why": "Adversarial alternative to distance-correlation decorrelation"
+    },
+    {
+      "category": "Decorrelation / ABCD",
+      "authors": "Das, Kasieczka & Shih",
+      "year": 2024,
+      "title": "Feature Selection with Distance Correlation",
+      "venue": "Phys. Rev. D 109, 054009; arXiv:2212.00046",
+      "url": "https://doi.org/10.1103/PhysRevD.109.054009",
+      "verified": "abstract",
+      "why": "Closest prior art: feature selection driven by distance correlation"
+    },
+    {
+      "category": "Robust training",
+      "authors": "Sagawa et al.",
+      "year": 2019,
+      "title": "Distributionally Robust Neural Networks for Group Shifts: On the Importance of Regularization for Worst-Case Generalization",
+      "venue": "arXiv:1911.08731",
+      "url": "https://arxiv.org/abs/1911.08731",
+      "verified": "abstract",
+      "why": "Keep worst-mass criteria in the payoff, not the loss"
+    }
+  ]
+}

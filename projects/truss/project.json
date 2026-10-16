@@ -1,0 +1,183 @@
+{
+  "id": "truss",
+  "order": 2,
+  "name": "TRUSS",
+  "expansion": "Topology Refinement Under Statistical Scoring",
+  "status": "active",
+  "accent": "#ffd21f",
+  "accent2": "#c9c9c9",
+  "code": "internal",
+  "intro": {
+    "problem": "Neural-network architectures in physics analyses are usually chosen by convention, and there is little evidence that the default topology is the right one once the network must satisfy constraints such as background closure as well as discrimination.",
+    "value": "A systematic, statistically scored architecture search could find designs that keep discriminating power while modeling background better, and would replace architecture-by-habit with architecture-by-evidence.",
+    "approach": "We borrow ideas from topology optimization in generative structural design: first calibrate the scale at which adding or removing connections measurably changes performance, then generate candidate topologies from the latent features of trained models and score them on a multi-metric vector, with gates that remove any design that wins by default.",
+    "goals": "The deliverables are a calibrated sensitivity of performance to connection changes, a set of generated architectures evaluated on seeds disjoint from the search, and a Pareto front showing the real trade-offs among them."
+  },
+  "questions": [
+    "At what granularity of connection changes does performance measurably move?",
+    "Can the latent features of trained models seed architectures that outperform the conventional default?",
+    "How should architectures be scored so that no design wins by default?"
+  ],
+  "timeline": [
+    {
+      "date": "2026-10-03",
+      "label": "Idea raised: apply topology optimization and generative design to the analysis networks",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-03",
+      "label": "Concept document and first slide deck with bibliography written",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-04",
+      "label": "Stage 1 plan written: connection-calibration sweep on the current networks",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-04",
+      "label": "Stage 1 code delivered (CPU and GPU sweep pipeline)",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-05",
+      "label": "First Stage 1 sweep run and reviewed; loss mismatch found, rebuild planned",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-09",
+      "label": "Project named TRUSS: Topology Refinement Under Statistical Scoring",
+      "state": "done"
+    },
+    {
+      "label": "Stage 1 rebuild: rerun calibration sweep on the corrected baseline",
+      "state": "next"
+    },
+    {
+      "label": "Stage 2: architecture search (carve, grow, evolve) scored against gates",
+      "state": "next"
+    }
+  ],
+  "literature": [
+    {
+      "category": "Generative design",
+      "authors": "J. Hahn",
+      "year": 2023,
+      "title": "NASA uses AI to design hardware that is \"three times better in performance\"",
+      "venue": "Dezeen, 6 March 2023",
+      "url": "https://www.dezeen.com/2023/03/06/nasa-uses-ai-to-design-hardware-that-is-three-times-better-in-performance/",
+      "verified": "full",
+      "why": "NASA's design loop: optimize, then check every candidate"
+    },
+    {
+      "category": "Topology optimization",
+      "authors": "Z. Nie et al.",
+      "year": 2020,
+      "title": "TopologyGAN: Topology Optimization Using Generative Adversarial Networks Based on Physical Fields Over the Initial Domain",
+      "venue": "arXiv:2003.04685",
+      "url": "https://arxiv.org/abs/2003.04685",
+      "verified": "abstract",
+      "why": "Predicts optimized structures from fields on the starting domain"
+    },
+    {
+      "category": "Topology optimization",
+      "authors": "N. Aage et al.",
+      "year": 2017,
+      "title": "Giga-voxel computational morphogenesis for structural design",
+      "venue": "Nature 550, 84-86",
+      "url": "https://doi.org/10.1038/nature23911",
+      "verified": "abstract",
+      "why": "Density-based optimization of a wing at very large scale"
+    },
+    {
+      "category": "Architecture search",
+      "authors": "H. Liu et al.",
+      "year": 2018,
+      "title": "DARTS: Differentiable Architecture Search",
+      "venue": "arXiv:1806.09055",
+      "url": "https://arxiv.org/abs/1806.09055",
+      "verified": "abstract",
+      "why": "Relaxes architecture choice so it can be optimized by gradient"
+    },
+    {
+      "category": "Architecture search",
+      "authors": "A. Zela et al.",
+      "year": 2019,
+      "title": "Understanding and Robustifying Differentiable Architecture Search",
+      "venue": "arXiv:1909.09656",
+      "url": "https://arxiv.org/abs/1909.09656",
+      "verified": "abstract",
+      "why": "Shows how differentiable search fails; motivates strict gates"
+    },
+    {
+      "category": "Architecture search",
+      "authors": "U. Evci et al.",
+      "year": 2022,
+      "title": "GradMax: Growing Neural Networks using Gradient Information",
+      "venue": "arXiv:2201.05125",
+      "url": "https://arxiv.org/abs/2201.05125",
+      "verified": "abstract",
+      "why": "Grows networks by adding units where gradients point"
+    },
+    {
+      "category": "Architecture search",
+      "authors": "E. Real et al.",
+      "year": 2018,
+      "title": "Regularized Evolution for Image Classifier Architecture Search",
+      "venue": "arXiv:1802.01548",
+      "url": "https://arxiv.org/abs/1802.01548",
+      "verified": "abstract",
+      "why": "Evolutionary mutation-and-select search over architectures"
+    },
+    {
+      "category": "Latent diagnostics",
+      "authors": "M. Raghu et al.",
+      "year": 2017,
+      "title": "SVCCA: Singular Vector Canonical Correlation Analysis for Deep Learning Dynamics and Interpretability",
+      "venue": "arXiv:1706.05806",
+      "url": "https://arxiv.org/abs/1706.05806",
+      "verified": "abstract",
+      "why": "Compares learned representations across networks"
+    },
+    {
+      "category": "Decorrelation & ABCD",
+      "authors": "G. Kasieczka, D. Shih",
+      "year": 2020,
+      "title": "DisCo Fever: Robust Networks Through Distance Correlation",
+      "venue": "Phys. Rev. Lett. 125, 122001; arXiv:2001.05310",
+      "url": "https://doi.org/10.1103/PhysRevLett.125.122001",
+      "verified": "abstract",
+      "why": "Distance-correlation penalty for decorrelating classifier outputs"
+    },
+    {
+      "category": "Decorrelation & ABCD",
+      "authors": "G. Kasieczka et al.",
+      "year": 2020,
+      "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+      "venue": "Phys. Rev. D 103, 035021; arXiv:2007.14400",
+      "url": "https://doi.org/10.1103/PhysRevD.103.035021",
+      "verified": "abstract",
+      "why": "Two decorrelated networks define the ABCD background planes"
+    },
+    {
+      "category": "Decorrelation & ABCD",
+      "authors": "CMS Collaboration",
+      "year": 2025,
+      "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC",
+      "venue": "arXiv:2506.08826",
+      "url": "https://arxiv.org/abs/2506.08826",
+      "verified": "abstract",
+      "why": "Adds an explicit closure term to the training loss"
+    },
+    {
+      "category": "Decorrelation & ABCD",
+      "authors": "CMS Collaboration",
+      "year": 2025,
+      "title": "Search for top squarks in final states with many light-flavor jets and 0, 1, or 2 charged leptons in proton-proton collisions at √s = 13 TeV",
+      "venue": "JHEP 10 (2025) 236; arXiv:2506.08825",
+      "url": "https://arxiv.org/abs/2506.08825",
+      "verified": "abstract",
+      "why": "Physics search that uses the closure-constrained ABCD method"
+    }
+  ]
+}

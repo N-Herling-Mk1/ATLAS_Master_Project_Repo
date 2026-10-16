@@ -1,0 +1,35 @@
+{
+  "id": "info-theory",
+  "order": 6,
+  "name": "INFO THEORY",
+  "expansion": "Information Theory for Detector Data",
+  "status": "active",
+  "accent": "#ff2a2a",
+  "accent2": "#e8e8e8",
+  "code": "internal",
+  "intro": {
+    "problem": "Entropy and mutual information are used loosely in physics machine learning, and defining them meaningfully for mixed continuous and discrete detector features, or for a network's latent space, is not straightforward.",
+    "value": "Working definitions would give principled tools for feature selection and redundancy, a way to compare named and latent feature spaces, and a common footing for the tokenization and maximum-entropy lines of work.",
+    "approach": "We work chapter by chapter through Stone's Information Theory: A Tutorial Introduction as the guide, rate each concept's fit to detector data, test it with small numerical experiments, and record the open questions it raises.",
+    "goals": "The outcome is a set of practical estimators for entropy and mutual information in named and latent spaces, a notebook of experiments, and a list of open questions that feed the other projects."
+  },
+  "questions": [
+    "How should entropy and mutual information be defined for continuous detector features without arbitrary binning choices?",
+    "Can mutual information between latent and named features explain what a network has learned?",
+    "Where does information theory add something that variance or correlation measures do not?"
+  ],
+  "timeline": [
+    {"date": "2026-08", "label": "Plan set: chapter-by-chapter pass, each concept rated for fit to detector data", "state": "done"},
+    {"date": "2026-08", "label": "Goal restated: define entropy and mutual information in named and latent feature spaces", "state": "done"},
+    {"label": "Ch 1-4: information, discrete entropy, source coding, noisy-channel coding", "state": "next"},
+    {"label": "Ch 5-7: continuous entropy, continuous mutual information, channel capacity", "state": "next"},
+    {"label": "Ch 8-9: rate-distortion theory, transfer entropy", "state": "next"},
+    {"label": "Ch 10-11: thermodynamic entropy, information in nature", "state": "next"},
+    {"label": "Deliverable: deck rating each chapter's fit, plus the open-questions list", "state": "next"}
+  ],
+  "literature": [
+    {"category": "Guide text", "authors": "J. V. Stone", "year": 2022, "title": "Information Theory: A Tutorial Introduction (2nd ed.)", "venue": "ISBN 9781739672706", "url": "https://jamesstone.sites.sheffield.ac.uk/books/information-theory-2nd-edition", "verified": "full", "why": "The chapter sequence this project follows"},
+    {"category": "Foundations", "authors": "C. E. Shannon", "year": 1948, "title": "A Mathematical Theory of Communication", "venue": "Bell System Technical Journal 27(3)", "url": "https://doi.org/10.1002/j.1538-7305.1948.tb01338.x", "verified": "full", "why": "Origin of entropy and channel capacity as used throughout the text"},
+    {"category": "Foundations", "authors": "T. M. Cover, J. A. Thomas", "year": 2006, "title": "Elements of Information Theory (2nd ed.)", "venue": "Wiley", "url": "https://doi.org/10.1002/047174882X", "verified": "full", "why": "Standard reference for proofs the tutorial text states without derivation"}
+  ]
+}

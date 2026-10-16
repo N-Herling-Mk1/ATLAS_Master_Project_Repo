@@ -1,0 +1,383 @@
+{
+  "id": "lexicon",
+  "order": 5,
+  "name": "LEXICON",
+  "expansion": "Lexical Encoding of eXperiment Information as Checked Observable tokeNs",
+  "status": "active",
+  "accent": "#a6ff1f",
+  "accent2": "#c9c9c9",
+  "code": "internal",
+  "intro": {
+    "problem": "Detector events are treated as vectors of continuous features, and the language-model tools that learn structure from co-occurrence have not been tested on whether events carry a grammar of their own.",
+    "value": "If they do, a token model trained only on background could score how typical an event is, giving a new axis for data-driven background estimation and a new kind of input for classifiers.",
+    "approach": "We quantize each feature into a small number of levels so an event becomes a set of tokens, screen tokenizations against raw-value controls, and train background-only density models whose surprise score is tested against independence baselines.",
+    "goals": "The goal is a vetted tokenization, a background token model with a usable surprise score, and a clear verdict on whether tokens add information beyond the raw features, followed by supervised and embedding routes."
+  },
+  "questions": [
+    "Does co-occurrence among binned detector features carry signal-versus-background information beyond the raw values?",
+    "Can a background-only token model supply a usable axis for a data-driven background estimate?",
+    "Are per-event embeddings more useful than per-token ones?"
+  ],
+  "timeline": [
+    {
+      "date": "2026-06-01",
+      "label": "Tokenization line kicked off under HELIX: design work and first test scripts",
+      "state": "done"
+    },
+    {
+      "date": "2026-06-10",
+      "label": "Phase 1: first discretization checks run across all four detector lanes",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-02",
+      "label": "Tokenization plan deck drafted: token units, edge schemes and test paths",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-11",
+      "label": "Sub-project renamed LEXICON, under the HELIX umbrella",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-12",
+      "label": "First screening rules fixed: information gate, occupancy floor, path rules",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-14",
+      "label": "Route A (unsupervised background-only token model) first run reviewed",
+      "state": "done"
+    },
+    {
+      "label": "Multi-seed confirmation of first-run results",
+      "state": "next"
+    },
+    {
+      "label": "Route B (supervised on tokens) and Route C (tokens into the networks)",
+      "state": "next"
+    }
+  ],
+  "literature": [
+    {
+      "category": "Discretization",
+      "authors": "García et al.",
+      "year": 2013,
+      "title": "A Survey of Discretization Techniques: Taxonomy and Empirical Analysis in Supervised Learning",
+      "venue": "IEEE Trans. Knowl. Data Eng. 25(4):734-750",
+      "url": "https://doi.org/10.1109/TKDE.2012.35",
+      "verified": "abstract",
+      "why": "Taxonomy of discretization methods; frames our binning choices"
+    },
+    {
+      "category": "Discretization",
+      "authors": "Dougherty, Kohavi, Sahami",
+      "year": 1995,
+      "title": "Supervised and Unsupervised Discretization of Continuous Features",
+      "venue": "Machine Learning Proceedings 1995 (ICML), pp. 194-202",
+      "url": "https://doi.org/10.1016/B978-1-55860-377-6.50032-3",
+      "verified": "abstract",
+      "why": "Compares label-aware and label-free binning"
+    },
+    {
+      "category": "Discretization",
+      "authors": "Fayyad and Irani",
+      "year": 1993,
+      "title": "Multi-Interval Discretization of Continuous-Valued Attributes for Classification Learning",
+      "venue": "Proc. IJCAI-93",
+      "url": "https://www.ijcai.org/Proceedings/93-2/Papers/022.pdf",
+      "verified": "abstract",
+      "why": "Entropy/MDL supervised cut-point method (MDLP)"
+    },
+    {
+      "category": "Bin edges",
+      "authors": "Knuth",
+      "year": 2019,
+      "title": "Optimal data-based binning for histograms and histogram-based probability density models",
+      "venue": "Digital Signal Processing 95:102581 (arXiv:physics/0605197)",
+      "url": "https://doi.org/10.1016/j.dsp.2019.102581",
+      "verified": "abstract",
+      "why": "Bayesian choice of bin count from the data"
+    },
+    {
+      "category": "Bin edges",
+      "authors": "Scargle et al.",
+      "year": 2013,
+      "title": "Studies in Astronomical Time Series Analysis. VI. Bayesian Block Representations",
+      "venue": "ApJ 764:167; arXiv:1207.5578",
+      "url": "https://arxiv.org/abs/1207.5578",
+      "verified": "abstract",
+      "why": "Bayesian Blocks: variable-width edges set by evidence"
+    },
+    {
+      "category": "Bin edges",
+      "authors": "Kontkanen and Myllymäki",
+      "year": 2007,
+      "title": "MDL Histogram Density Estimation",
+      "venue": "Proc. AISTATS 2007, PMLR 2:219-226",
+      "url": "https://proceedings.mlr.press/v2/kontkanen07a.html",
+      "verified": "abstract",
+      "why": "Minimum-description-length edge placement for histograms"
+    },
+    {
+      "category": "Entropy and MI",
+      "authors": "Paninski",
+      "year": 2003,
+      "title": "Estimation of Entropy and Mutual Information",
+      "venue": "Neural Computation 15(6):1191-1253",
+      "url": "https://doi.org/10.1162/089976603321780272",
+      "verified": "abstract",
+      "why": "Bias limits of plug-in entropy and MI estimators"
+    },
+    {
+      "category": "Entropy and MI",
+      "authors": "Nemenman, Shafee, Bialek",
+      "year": 2002,
+      "title": "Entropy and inference, revisited",
+      "venue": "NIPS 14; arXiv:physics/0108025",
+      "url": "https://arxiv.org/abs/physics/0108025",
+      "verified": "abstract",
+      "why": "NSB Bayesian entropy estimator for undersampled data"
+    },
+    {
+      "category": "Entropy and MI",
+      "authors": "Cover and Thomas",
+      "year": 2006,
+      "title": "Elements of Information Theory (2nd ed.)",
+      "venue": "Wiley-Interscience",
+      "url": "https://doi.org/10.1002/047174882X",
+      "verified": "abstract",
+      "why": "Standard reference for entropy, MI and data processing"
+    },
+    {
+      "category": "Numbers as inputs",
+      "authors": "Gorishniy et al.",
+      "year": 2021,
+      "title": "Revisiting Deep Learning Models for Tabular Data",
+      "venue": "NeurIPS 2021; arXiv:2106.11959",
+      "url": "https://arxiv.org/abs/2106.11959",
+      "verified": "abstract",
+      "why": "FT-Transformer: one token per tabular feature"
+    },
+    {
+      "category": "Numbers as inputs",
+      "authors": "Gorishniy, Rubachev, Babenko",
+      "year": 2022,
+      "title": "On Embeddings for Numerical Features in Tabular Deep Learning",
+      "venue": "NeurIPS 2022; arXiv:2203.05556",
+      "url": "https://arxiv.org/abs/2203.05556",
+      "verified": "abstract",
+      "why": "Piecewise-linear and binned embeddings of numerical features"
+    },
+    {
+      "category": "Numbers as inputs",
+      "authors": "Lee et al.",
+      "year": 2024,
+      "title": "Binning as a Pretext Task: Improving Self-Supervised Learning in Tabular Domains",
+      "venue": "ICML 2024, PMLR 235; arXiv:2405.07414",
+      "url": "https://proceedings.mlr.press/v235/lee24v.html",
+      "verified": "abstract",
+      "why": "Predicting bin indices as a self-supervised objective"
+    },
+    {
+      "category": "Numbers as inputs",
+      "authors": "Ansari et al.",
+      "year": 2024,
+      "title": "Chronos: Learning the Language of Time Series",
+      "venue": "arXiv:2403.07815",
+      "url": "https://arxiv.org/abs/2403.07815",
+      "verified": "abstract",
+      "why": "Quantizes real values into tokens and trains with cross-entropy"
+    },
+    {
+      "category": "Numbers as inputs",
+      "authors": "Yan et al.",
+      "year": 2024,
+      "title": "Making Pre-trained Language Models Great on Tabular Prediction",
+      "venue": "arXiv:2403.01841",
+      "url": "https://arxiv.org/abs/2403.01841",
+      "verified": "abstract",
+      "why": "Relative-magnitude tokens for numerical features in language models"
+    },
+    {
+      "category": "Numbers as inputs",
+      "authors": "van den Oord, Vinyals, Kavukcuoglu",
+      "year": 2017,
+      "title": "Neural Discrete Representation Learning",
+      "venue": "NeurIPS 2017; arXiv:1711.00937",
+      "url": "https://arxiv.org/abs/1711.00937",
+      "verified": "abstract",
+      "why": "VQ-VAE: a learned codebook as the tokenizer"
+    },
+    {
+      "category": "Numbers as inputs",
+      "authors": "Golkar et al.",
+      "year": 2023,
+      "title": "xVal: A Continuous Numerical Tokenization for Scientific Language Models",
+      "venue": "arXiv:2310.02989",
+      "url": "https://arxiv.org/abs/2310.02989",
+      "verified": "abstract",
+      "why": "Continuous number encoding, an alternative to binning"
+    },
+    {
+      "category": "Numbers as inputs",
+      "authors": "Levy and Goldberg",
+      "year": 2014,
+      "title": "Neural Word Embedding as Implicit Matrix Factorization",
+      "venue": "NIPS 2014",
+      "url": "https://proceedings.neurips.cc/paper/2014/hash/b78666971ceae55a8e87efb7cbfd9ad4-Abstract.html",
+      "verified": "abstract",
+      "why": "Skip-gram factorizes shifted PMI, the basis of Evt2Vec"
+    },
+    {
+      "category": "Event-level tokens",
+      "authors": "Visive et al.",
+      "year": 2025,
+      "title": "Event Tokenization and Masked-Token Prediction for Anomaly Detection at the Large Hadron Collider",
+      "venue": "arXiv:2509.26218",
+      "url": "https://arxiv.org/abs/2509.26218",
+      "verified": "abstract",
+      "why": "Closest precedent: event tokens with background-only masked prediction"
+    },
+    {
+      "category": "Event-level tokens",
+      "authors": "Visive et al.",
+      "year": 2026,
+      "title": "Masked-Token Prediction for Anomaly Detection at the Large Hadron Collider",
+      "venue": "arXiv:2604.21035",
+      "url": "https://arxiv.org/abs/2604.21035",
+      "verified": "abstract",
+      "why": "Follow-up comparing a learned tokenizer with a lookup table"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Finke et al.",
+      "year": 2023,
+      "title": "Learning the language of QCD jets with transformers",
+      "venue": "JHEP 06 (2023) 184; arXiv:2303.07364",
+      "url": "https://arxiv.org/abs/2303.07364",
+      "verified": "abstract",
+      "why": "Binned jet constituents treated as a language"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Birk, Hallin, Kasieczka",
+      "year": 2024,
+      "title": "OmniJet-α: The first cross-task foundation model for particle physics",
+      "venue": "Mach. Learn.: Sci. Technol.; arXiv:2403.05618",
+      "url": "https://arxiv.org/abs/2403.05618",
+      "verified": "abstract",
+      "why": "Tokenized jets for a generative foundation model"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Birk et al.",
+      "year": 2025,
+      "title": "Enhancing next token prediction based pre-training for jet foundation models",
+      "venue": "Mach. Learn.: Sci. Technol.; arXiv:2512.04149",
+      "url": "https://arxiv.org/abs/2512.04149",
+      "verified": "abstract",
+      "why": "Improves token-based pre-training for jets"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Birk et al.",
+      "year": 2025,
+      "title": "OmniJet-αC: Learning point cloud calorimeter simulations using generative transformers",
+      "venue": "arXiv:2501.05534",
+      "url": "https://arxiv.org/abs/2501.05534",
+      "verified": "abstract",
+      "why": "Tokenized calorimeter hits for generative simulation"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Birk et al.",
+      "year": 2026,
+      "title": "SPADE: Split-and-Delay Embeddings for Autoregressive High-Granularity Calorimeter Simulation",
+      "venue": "arXiv:2606.11304",
+      "url": "https://arxiv.org/abs/2606.11304",
+      "verified": "abstract",
+      "why": "Argues for separate per-feature embeddings over composite tokens"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Golling et al.",
+      "year": 2024,
+      "title": "Masked Particle Modeling on Sets: Towards Self-Supervised High Energy Physics Foundation Models",
+      "venue": "Mach. Learn.: Sci. Technol.; arXiv:2401.13537",
+      "url": "https://arxiv.org/abs/2401.13537",
+      "verified": "abstract",
+      "why": "Masked-token pre-training on particle sets"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Huang et al.",
+      "year": 2024,
+      "title": "A Language Model for Particle Tracking",
+      "venue": "arXiv:2402.10239",
+      "url": "https://arxiv.org/abs/2402.10239",
+      "verified": "abstract",
+      "why": "Tracking-detector hits as tokens"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Kakati et al.",
+      "year": 2026,
+      "title": "Prompting Particle Physics: Tokenized Multi-modal Foundation Models for Combinatorially Many Tasks",
+      "venue": "arXiv:2609.31862",
+      "url": "https://arxiv.org/abs/2609.31862",
+      "verified": "abstract",
+      "why": "Tokenized multi-modal detector data for promptable models"
+    },
+    {
+      "category": "Jet and detector tokens",
+      "authors": "Hallin",
+      "year": 2025,
+      "title": "Foundation models for high-energy physics",
+      "venue": "arXiv:2509.21434",
+      "url": "https://arxiv.org/abs/2509.21434",
+      "verified": "abstract",
+      "why": "Review of HEP foundation models, including tokenization"
+    },
+    {
+      "category": "Histogram binning",
+      "authors": "Pollack, Bhattacharya, Schmitt",
+      "year": 2017,
+      "title": "Bayesian Block Histogramming for High Energy Physics",
+      "venue": "arXiv:1708.00810",
+      "url": "https://arxiv.org/abs/1708.00810",
+      "verified": "abstract",
+      "why": "Bayesian Blocks used in HEP, but only for histograms"
+    },
+    {
+      "category": "Histogram binning",
+      "authors": "Erdmann, Kasaraguppe, Mausolf",
+      "year": 2026,
+      "title": "Learning to bin: differentiable and Bayesian optimization for multi-dimensional discriminants in high-energy physics",
+      "venue": "Eur. Phys. J. C; arXiv:2601.07756",
+      "url": "https://arxiv.org/abs/2601.07756",
+      "verified": "abstract",
+      "why": "Optimizes bin boundaries for signal significance"
+    },
+    {
+      "category": "No-tokenizer counterpoints",
+      "authors": "Leigh et al.",
+      "year": 2024,
+      "title": "Is Tokenization Needed for Masked Particle Modelling?",
+      "venue": "arXiv:2409.12589",
+      "url": "https://arxiv.org/abs/2409.12589",
+      "verified": "abstract",
+      "why": "Finds objectives without tokenization beat the tokenized one"
+    },
+    {
+      "category": "No-tokenizer counterpoints",
+      "authors": "Wildridge et al.",
+      "year": 2024,
+      "title": "Bumblebee: Foundation Model for Particle Physics Discovery",
+      "venue": "arXiv:2412.07867",
+      "url": "https://arxiv.org/abs/2412.07867",
+      "verified": "abstract",
+      "why": "Continuous four-vector embeddings, no tokenizer"
+    }
+  ]
+}
