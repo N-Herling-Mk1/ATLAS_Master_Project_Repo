@@ -8,15 +8,15 @@
   "accent2": "#c9c9c9",
   "code": "internal",
   "intro": {
-    "problem": "Detector events are treated as vectors of continuous features, and the language-model tools that learn structure from co-occurrence have not been tested on whether events carry a grammar of their own.",
-    "value": "If they do, a token model trained only on background could score how typical an event is, giving a new axis for data-driven background estimation and a new kind of input for classifiers.",
-    "approach": "We quantize each feature into a small number of levels so an event becomes a set of tokens, screen tokenizations against raw-value controls, and train background-only density models whose surprise score is tested against independence baselines.",
-    "goals": "The goal is a vetted tokenization, a background token model with a usable surprise score, and a clear verdict on whether tokens add information beyond the raw features, followed by supervised and embedding routes."
+    "problem": "Detector events are treated as vectors of continuous features, and the co-occurrence tools that let language models learn structure [@levy2014] have barely been tried on whether events carry a grammar of their own; the closest precedent tokenizes whole events for anomaly detection [@visive2025].",
+    "value": "If they do, a token model trained only on background could score how typical an event is, giving a new axis for a data-driven background estimate, and token embeddings could become a new kind of classifier input, as tokenized jets already have [@finke2023][@birk2024].",
+    "approach": "Each feature is quantized into a few levels with evidence-based edges [@scargle2013], so an event becomes a set of tokens. Route A trains background-only density models, from independence and pair and triple counts to a masked-token transformer, and uses their surprise as an ABCD axis; its next variant swaps in exact likelihoods from a GRU or masked autoregressive model [@cho2014][@germain2015]. Route B trains on tokens with labels.",
+    "goals": "The goal is a clear verdict on whether tokens add information beyond the raw features: Route A has answered as an ABCD axis, and the exact-likelihood variant and Route B now test whether that structure can be turned into discrimination."
   },
   "questions": [
     "Does co-occurrence among binned detector features carry signal-versus-background information beyond the raw values?",
-    "Can a background-only token model supply a usable axis for a data-driven background estimate?",
-    "Are per-event embeddings more useful than per-token ones?"
+    "Does an exact likelihood make background surprise a better ABCD axis than a pseudo-likelihood?",
+    "Can a likelihood ratio between signal and background token models beat the networks, given how little signal there is?"
   ],
   "timeline": [
     {
@@ -46,15 +46,28 @@
     },
     {
       "date": "2026-10-14",
-      "label": "Route A (unsupervised background-only token model) first run reviewed",
+      "label": "Route A first run reviewed in both regions: pair and triple counts, transformer, skip-gram",
       "state": "done"
     },
     {
-      "label": "Multi-seed confirmation of first-run results",
+      "date": "2026-10-14",
+      "label": "Exact-likelihood variant adopted: MADE default, GRU and causal transformer as comparisons",
+      "state": "done"
+    },
+    {
+      "label": "Multi-seed confirmation; endcap regularized networks",
       "state": "next"
     },
     {
-      "label": "Route B (supervised on tokens) and Route C (tokens into the networks)",
+      "label": "Run the exact-likelihood variant against the pseudo-likelihood on the same folds",
+      "state": "next"
+    },
+    {
+      "label": "Audit signal-only tokens, then plan Route B",
+      "state": "next"
+    },
+    {
+      "label": "Route C: token embeddings as network inputs",
       "state": "next"
     }
   ],
@@ -67,7 +80,8 @@
       "venue": "IEEE Trans. Knowl. Data Eng. 25(4):734-750",
       "url": "https://doi.org/10.1109/TKDE.2012.35",
       "verified": "abstract",
-      "why": "Taxonomy of discretization methods; frames our binning choices"
+      "why": "Taxonomy of discretization methods; frames our binning choices",
+      "key": "garcia2013"
     },
     {
       "category": "Discretization",
@@ -77,7 +91,8 @@
       "venue": "Machine Learning Proceedings 1995 (ICML), pp. 194-202",
       "url": "https://doi.org/10.1016/B978-1-55860-377-6.50032-3",
       "verified": "abstract",
-      "why": "Compares label-aware and label-free binning"
+      "why": "Compares label-aware and label-free binning",
+      "key": "dougherty1995"
     },
     {
       "category": "Discretization",
@@ -87,7 +102,8 @@
       "venue": "Proc. IJCAI-93",
       "url": "https://www.ijcai.org/Proceedings/93-2/Papers/022.pdf",
       "verified": "abstract",
-      "why": "Entropy/MDL supervised cut-point method (MDLP)"
+      "why": "Entropy/MDL supervised cut-point method (MDLP)",
+      "key": "fayyad1993"
     },
     {
       "category": "Bin edges",
@@ -97,7 +113,8 @@
       "venue": "Digital Signal Processing 95:102581 (arXiv:physics/0605197)",
       "url": "https://doi.org/10.1016/j.dsp.2019.102581",
       "verified": "abstract",
-      "why": "Bayesian choice of bin count from the data"
+      "why": "Bayesian choice of bin count from the data",
+      "key": "knuth2019"
     },
     {
       "category": "Bin edges",
@@ -107,7 +124,8 @@
       "venue": "ApJ 764:167; arXiv:1207.5578",
       "url": "https://arxiv.org/abs/1207.5578",
       "verified": "abstract",
-      "why": "Bayesian Blocks: variable-width edges set by evidence"
+      "why": "Bayesian Blocks: variable-width edges set by evidence",
+      "key": "scargle2013"
     },
     {
       "category": "Bin edges",
@@ -117,7 +135,8 @@
       "venue": "Proc. AISTATS 2007, PMLR 2:219-226",
       "url": "https://proceedings.mlr.press/v2/kontkanen07a.html",
       "verified": "abstract",
-      "why": "Minimum-description-length edge placement for histograms"
+      "why": "Minimum-description-length edge placement for histograms",
+      "key": "kontkanen2007"
     },
     {
       "category": "Entropy and MI",
@@ -127,7 +146,8 @@
       "venue": "Neural Computation 15(6):1191-1253",
       "url": "https://doi.org/10.1162/089976603321780272",
       "verified": "abstract",
-      "why": "Bias limits of plug-in entropy and MI estimators"
+      "why": "Bias limits of plug-in entropy and MI estimators",
+      "key": "paninski2003"
     },
     {
       "category": "Entropy and MI",
@@ -137,7 +157,8 @@
       "venue": "NIPS 14; arXiv:physics/0108025",
       "url": "https://arxiv.org/abs/physics/0108025",
       "verified": "abstract",
-      "why": "NSB Bayesian entropy estimator for undersampled data"
+      "why": "NSB Bayesian entropy estimator for undersampled data",
+      "key": "nemenman2002"
     },
     {
       "category": "Entropy and MI",
@@ -147,7 +168,8 @@
       "venue": "Wiley-Interscience",
       "url": "https://doi.org/10.1002/047174882X",
       "verified": "abstract",
-      "why": "Standard reference for entropy, MI and data processing"
+      "why": "Standard reference for entropy, MI and data processing",
+      "key": "cover2006"
     },
     {
       "category": "Numbers as inputs",
@@ -157,7 +179,8 @@
       "venue": "NeurIPS 2021; arXiv:2106.11959",
       "url": "https://arxiv.org/abs/2106.11959",
       "verified": "abstract",
-      "why": "FT-Transformer: one token per tabular feature"
+      "why": "FT-Transformer: one token per tabular feature",
+      "key": "gorishniy2021"
     },
     {
       "category": "Numbers as inputs",
@@ -167,7 +190,8 @@
       "venue": "NeurIPS 2022; arXiv:2203.05556",
       "url": "https://arxiv.org/abs/2203.05556",
       "verified": "abstract",
-      "why": "Piecewise-linear and binned embeddings of numerical features"
+      "why": "Piecewise-linear and binned embeddings of numerical features",
+      "key": "gorishniy2022"
     },
     {
       "category": "Numbers as inputs",
@@ -177,7 +201,8 @@
       "venue": "ICML 2024, PMLR 235; arXiv:2405.07414",
       "url": "https://proceedings.mlr.press/v235/lee24v.html",
       "verified": "abstract",
-      "why": "Predicting bin indices as a self-supervised objective"
+      "why": "Predicting bin indices as a self-supervised objective",
+      "key": "lee2024"
     },
     {
       "category": "Numbers as inputs",
@@ -187,7 +212,8 @@
       "venue": "arXiv:2403.07815",
       "url": "https://arxiv.org/abs/2403.07815",
       "verified": "abstract",
-      "why": "Quantizes real values into tokens and trains with cross-entropy"
+      "why": "Quantizes real values into tokens and trains with cross-entropy",
+      "key": "ansari2024"
     },
     {
       "category": "Numbers as inputs",
@@ -197,7 +223,8 @@
       "venue": "arXiv:2403.01841",
       "url": "https://arxiv.org/abs/2403.01841",
       "verified": "abstract",
-      "why": "Relative-magnitude tokens for numerical features in language models"
+      "why": "Relative-magnitude tokens for numerical features in language models",
+      "key": "yan2024"
     },
     {
       "category": "Numbers as inputs",
@@ -207,7 +234,8 @@
       "venue": "NeurIPS 2017; arXiv:1711.00937",
       "url": "https://arxiv.org/abs/1711.00937",
       "verified": "abstract",
-      "why": "VQ-VAE: a learned codebook as the tokenizer"
+      "why": "VQ-VAE: a learned codebook as the tokenizer",
+      "key": "vandenoord2017"
     },
     {
       "category": "Numbers as inputs",
@@ -217,7 +245,8 @@
       "venue": "arXiv:2310.02989",
       "url": "https://arxiv.org/abs/2310.02989",
       "verified": "abstract",
-      "why": "Continuous number encoding, an alternative to binning"
+      "why": "Continuous number encoding, an alternative to binning",
+      "key": "golkar2023"
     },
     {
       "category": "Numbers as inputs",
@@ -227,7 +256,8 @@
       "venue": "NIPS 2014",
       "url": "https://proceedings.neurips.cc/paper/2014/hash/b78666971ceae55a8e87efb7cbfd9ad4-Abstract.html",
       "verified": "abstract",
-      "why": "Skip-gram factorizes shifted PMI, the basis of Evt2Vec"
+      "why": "Skip-gram factorizes shifted PMI, the basis of Evt2Vec",
+      "key": "levy2014"
     },
     {
       "category": "Event-level tokens",
@@ -237,7 +267,8 @@
       "venue": "arXiv:2509.26218",
       "url": "https://arxiv.org/abs/2509.26218",
       "verified": "abstract",
-      "why": "Closest precedent: event tokens with background-only masked prediction"
+      "why": "Closest precedent: event tokens with background-only masked prediction",
+      "key": "visive2025"
     },
     {
       "category": "Event-level tokens",
@@ -247,7 +278,8 @@
       "venue": "arXiv:2604.21035",
       "url": "https://arxiv.org/abs/2604.21035",
       "verified": "abstract",
-      "why": "Follow-up comparing a learned tokenizer with a lookup table"
+      "why": "Follow-up comparing a learned tokenizer with a lookup table",
+      "key": "visive2026"
     },
     {
       "category": "Jet and detector tokens",
@@ -257,7 +289,8 @@
       "venue": "JHEP 06 (2023) 184; arXiv:2303.07364",
       "url": "https://arxiv.org/abs/2303.07364",
       "verified": "abstract",
-      "why": "Binned jet constituents treated as a language"
+      "why": "Binned jet constituents treated as a language",
+      "key": "finke2023"
     },
     {
       "category": "Jet and detector tokens",
@@ -267,7 +300,8 @@
       "venue": "Mach. Learn.: Sci. Technol.; arXiv:2403.05618",
       "url": "https://arxiv.org/abs/2403.05618",
       "verified": "abstract",
-      "why": "Tokenized jets for a generative foundation model"
+      "why": "Tokenized jets for a generative foundation model",
+      "key": "birk2024"
     },
     {
       "category": "Jet and detector tokens",
@@ -277,7 +311,8 @@
       "venue": "Mach. Learn.: Sci. Technol.; arXiv:2512.04149",
       "url": "https://arxiv.org/abs/2512.04149",
       "verified": "abstract",
-      "why": "Improves token-based pre-training for jets"
+      "why": "Improves token-based pre-training for jets",
+      "key": "birk2025"
     },
     {
       "category": "Jet and detector tokens",
@@ -287,7 +322,8 @@
       "venue": "arXiv:2501.05534",
       "url": "https://arxiv.org/abs/2501.05534",
       "verified": "abstract",
-      "why": "Tokenized calorimeter hits for generative simulation"
+      "why": "Tokenized calorimeter hits for generative simulation",
+      "key": "birk2025b"
     },
     {
       "category": "Jet and detector tokens",
@@ -297,7 +333,8 @@
       "venue": "arXiv:2606.11304",
       "url": "https://arxiv.org/abs/2606.11304",
       "verified": "abstract",
-      "why": "Argues for separate per-feature embeddings over composite tokens"
+      "why": "Argues for separate per-feature embeddings over composite tokens",
+      "key": "birk2026"
     },
     {
       "category": "Jet and detector tokens",
@@ -307,7 +344,8 @@
       "venue": "Mach. Learn.: Sci. Technol.; arXiv:2401.13537",
       "url": "https://arxiv.org/abs/2401.13537",
       "verified": "abstract",
-      "why": "Masked-token pre-training on particle sets"
+      "why": "Masked-token pre-training on particle sets",
+      "key": "golling2024"
     },
     {
       "category": "Jet and detector tokens",
@@ -317,7 +355,8 @@
       "venue": "arXiv:2402.10239",
       "url": "https://arxiv.org/abs/2402.10239",
       "verified": "abstract",
-      "why": "Tracking-detector hits as tokens"
+      "why": "Tracking-detector hits as tokens",
+      "key": "huang2024"
     },
     {
       "category": "Jet and detector tokens",
@@ -327,7 +366,8 @@
       "venue": "arXiv:2609.31862",
       "url": "https://arxiv.org/abs/2609.31862",
       "verified": "abstract",
-      "why": "Tokenized multi-modal detector data for promptable models"
+      "why": "Tokenized multi-modal detector data for promptable models",
+      "key": "kakati2026"
     },
     {
       "category": "Jet and detector tokens",
@@ -337,7 +377,8 @@
       "venue": "arXiv:2509.21434",
       "url": "https://arxiv.org/abs/2509.21434",
       "verified": "abstract",
-      "why": "Review of HEP foundation models, including tokenization"
+      "why": "Review of HEP foundation models, including tokenization",
+      "key": "hallin2025"
     },
     {
       "category": "Histogram binning",
@@ -347,7 +388,8 @@
       "venue": "arXiv:1708.00810",
       "url": "https://arxiv.org/abs/1708.00810",
       "verified": "abstract",
-      "why": "Bayesian Blocks used in HEP, but only for histograms"
+      "why": "Bayesian Blocks used in HEP, but only for histograms",
+      "key": "pollack2017"
     },
     {
       "category": "Histogram binning",
@@ -357,7 +399,8 @@
       "venue": "Eur. Phys. J. C; arXiv:2601.07756",
       "url": "https://arxiv.org/abs/2601.07756",
       "verified": "abstract",
-      "why": "Optimizes bin boundaries for signal significance"
+      "why": "Optimizes bin boundaries for signal significance",
+      "key": "erdmann2026"
     },
     {
       "category": "No-tokenizer counterpoints",
@@ -367,7 +410,8 @@
       "venue": "arXiv:2409.12589",
       "url": "https://arxiv.org/abs/2409.12589",
       "verified": "abstract",
-      "why": "Finds objectives without tokenization beat the tokenized one"
+      "why": "Finds objectives without tokenization beat the tokenized one",
+      "key": "leigh2024"
     },
     {
       "category": "No-tokenizer counterpoints",
@@ -377,7 +421,144 @@
       "venue": "arXiv:2412.07867",
       "url": "https://arxiv.org/abs/2412.07867",
       "verified": "abstract",
-      "why": "Continuous four-vector embeddings, no tokenizer"
+      "why": "Continuous four-vector embeddings, no tokenizer",
+      "key": "wildridge2024"
+    },
+    {
+      "key": "cho2014",
+      "category": "Autoregressive density",
+      "authors": "K. Cho et al.",
+      "year": 2014,
+      "title": "Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation",
+      "venue": "EMNLP 2014; arXiv:1406.1078",
+      "url": "https://arxiv.org/abs/1406.1078",
+      "verified": "abstract",
+      "why": "The GRU, run here as an autoregressive token model"
+    },
+    {
+      "key": "germain2015",
+      "category": "Autoregressive density",
+      "authors": "M. Germain, K. Gregor, I. Murray, H. Larochelle",
+      "year": 2015,
+      "title": "MADE: Masked Autoencoder for Distribution Estimation",
+      "venue": "ICML 2015; arXiv:1502.03509",
+      "url": "https://arxiv.org/abs/1502.03509",
+      "verified": "abstract",
+      "why": "Masked MLP giving an exact likelihood without recurrence; proposed default"
+    },
+    {
+      "key": "uria2014",
+      "category": "Autoregressive density",
+      "authors": "B. Uria, I. Murray, H. Larochelle",
+      "year": 2013,
+      "title": "A Deep and Tractable Density Estimator",
+      "venue": "ICML 2014; arXiv:1310.1757",
+      "url": "https://arxiv.org/abs/1310.1757",
+      "verified": "abstract",
+      "why": "Order-agnostic training: ensemble over feature orderings"
+    }
+  ],
+  "tagline": "Detector events as tokens: does an event have a grammar?",
+  "components": [
+    {
+      "name": "Route A",
+      "subtitle": "Background-only surprise as an ABCD axis",
+      "state": "done",
+      "summary": "Token models trained on background alone score how surprising each event is, and that score replaces one network as an axis of the ABCD plane. Signal labels and network scores never enter the token models, so the axis can be independent.",
+      "items": [
+        {
+          "label": "Independence",
+          "detail": "Product of per-feature marginals: the floor every other model must beat"
+        },
+        {
+          "label": "Pairs and triples",
+          "detail": "Count models over feature pairs and triples; the best model in the data-starved barrel"
+        },
+        {
+          "label": "CutFormer",
+          "detail": "Masked-token transformer with feature-ID embeddings and no positions [@golling2024]; the best model in the endcap"
+        },
+        {
+          "label": "Evt2Vec",
+          "detail": "Skip-gram token embeddings [@levy2014] as a comparison"
+        }
+      ]
+    },
+    {
+      "name": "Route A variant",
+      "subtitle": "Exact likelihood",
+      "state": "next",
+      "summary": "The transformer's pseudo-likelihood is not a normalized density and undercounts redundant features that predict each other. An autoregressive model gives an exact negative log-likelihood by the chain rule, which holds for any feature order, so the ordering that rules recurrence out of a classifier is legitimate for a density.",
+      "items": [
+        {
+          "label": "MADE",
+          "detail": "Masked autoregressive MLP, proposed default [@germain2015]"
+        },
+        {
+          "label": "Causal CutFormer",
+          "detail": "Same transformer with a causal mask, isolating the pseudo-to-exact change"
+        },
+        {
+          "label": "GRU",
+          "detail": "Recurrent comparison over a fixed feature order [@cho2014]"
+        },
+        {
+          "label": "Order ensemble",
+          "detail": "Several random orderings averaged, with their spread as a per-event uncertainty [@uria2014]"
+        },
+        {
+          "label": "Gates",
+          "detail": "Per-feature sigmoid gates showing which features carry the surprise"
+        }
+      ]
+    },
+    {
+      "name": "Route B",
+      "subtitle": "Supervised on tokens",
+      "state": "next",
+      "summary": "Use the labels. The generative form fits exact signal and background token densities and classifies by their likelihood ratio, the optimal statistic when the densities are right; Route A is its special case with a flat signal model. The discriminative form is just another classifier and gains only the gating.",
+      "items": [
+        {
+          "label": "Signal statistics",
+          "detail": "Too few signal events for a density per mass point; pool masses with the mass as a conditioning token, or fine-tune from the background model"
+        },
+        {
+          "label": "Audit first",
+          "detail": "Check tokens that appear only in signal for simulation-versus-data artifacts before trusting them"
+        }
+      ]
+    },
+    {
+      "name": "Route C",
+      "subtitle": "Tokens into the networks",
+      "state": "next",
+      "summary": "Feed token or event embeddings to the existing networks as inputs; per-event pooled vectors are where the value is expected to be."
+    }
+  ],
+  "results": [
+    {
+      "title": "Route A is dominated",
+      "text": "Surprise often closes as an ABCD axis in the barrel, but only because it carries little signal: at matched closure the network pair keeps far more signal in the signal region, consistently across every barrel job. The verdict is solid."
+    },
+    {
+      "title": "Background tokens predict each other",
+      "text": "Co-occurrence structure is real and large in both regions, mostly through pairs. In the barrel, simple pair-and-triple counts beat the transformer on every seed; in the endcap, the larger sample lets the transformer go further."
+    },
+    {
+      "title": "Tokenizing is cheap",
+      "text": "Coarse binning in the barrel loses only a small share of the raw-value context information; finer bins starve for events."
+    },
+    {
+      "title": "Signal information cancels in the sum",
+      "text": "Individual tokens carry signal information in both directions, so summing surprise over features cancels it, which is why total surprise is a weak classifier."
+    },
+    {
+      "title": "Bin edges matter in the tail",
+      "text": "An open top quantile bin hides the signal tail; evidence-based edges split it and move signal onto rare tokens [@scargle2013]."
+    },
+    {
+      "title": "Not yet a measurement",
+      "text": "Significance comparisons are single-seed, the endcap has only the plain network so far, and the surprise sign was chosen after seeing data. Multi-seed confirmation comes first."
     }
   ]
 }
