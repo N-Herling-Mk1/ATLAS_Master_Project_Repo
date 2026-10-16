@@ -8,15 +8,15 @@
   "accent2": "#ff8a2a",
   "code": "internal",
   "intro": {
-    "problem": "The hidden layers of the classifiers used in long-lived-particle searches are rarely examined, so we do not know how signal and background are arranged in latent space or which structures the network actually relies on.",
-    "value": "A vetted map of latent space would let us diagnose failures, compare training objectives on more than a score, inform architecture design, and connect what a network learned back to physical quantities.",
-    "approach": "We extract hidden-layer activations from models trained under different objectives, project and measure their geometry and topology, and vet every structure against shuffle and seed controls before it is shown in an interactive explorer.",
-    "goals": "The goal is an interactive latent-space explorer whose displayed structures are stable across seeds, together with quantitative measures that link latent directions to named physics inputs."
+    "problem": "The hidden layers of the classifiers used in long-lived-particle searches are rarely examined, and we do not yet know whether visualizing them is merely striking or genuinely useful, for instance as an n-dimensional heat map showing where in latent space background closure succeeds and fails.",
+    "value": "If it is useful, latent maps could diagnose failures, separate training objectives that score alike, guide architecture choices in TRUSS, and tie what a network learned back to physical inputs, as related work has begun to do for jet taggers [@khot2023][@komiske2020].",
+    "approach": "We treat this as exploration with an exit: map trained models in prediction space [@mao2024], compare their hidden layers [@kornblith2019][@davari2023], and trace training trajectories [@horoi2022], then run a pre-registered kill test asking whether map coordinates predict held-out closure better than hyperparameters alone.",
+    "goals": "The outcome is an honest verdict. If the kill test passes, an interactive explorer whose structures are stable across seeds becomes an analysis tool; if it fails, we record that the latent picture adds nothing a metrics table does not, and stop."
   },
   "questions": [
-    "Does latent geometry differ systematically between training objectives that score alike?",
-    "Which latent structures are stable across seeds, and which are artifacts of the projection?",
-    "Can latent directions be mapped back to named physical inputs?"
+    "Is a latent map useful at all, or only striking: does it predict anything a metrics table does not?",
+    "Could an n-dimensional heat map of closure over latent space show where and why the background estimate fails?",
+    "Which latent structures survive across seeds, and which are artifacts of the projection?"
   ],
   "timeline": [
     {
@@ -50,11 +50,24 @@
       "state": "done"
     },
     {
-      "label": "Carve out a held-out probe set and add a training dump hook",
+      "date": "2026-10-16",
+      "label": "Framed explicitly as exploration with a pre-registered exit",
+      "state": "done"
+    },
+    {
+      "label": "Carve out the held-out probe set and add a training dump hook",
       "state": "next"
     },
     {
-      "label": "Dump a model population; run the positive control, then the pre-registered kill test",
+      "label": "First maps: model space and event space on existing models",
+      "state": "next"
+    },
+    {
+      "label": "Positive control along the decorrelation sweep",
+      "state": "next"
+    },
+    {
+      "label": "Kill test: do map coordinates predict held-out closure?",
       "state": "next"
     }
   ],
@@ -67,7 +80,8 @@
       "venue": "PNAS 121, e2310002121; arXiv:2305.01604",
       "url": "https://doi.org/10.1073/pnas.2310002121",
       "verified": "full",
-      "why": "Models as points in prediction space, embedded with inPCA"
+      "why": "Models as points in prediction space, embedded with inPCA",
+      "key": "mao2024"
     },
     {
       "category": "Prediction space",
@@ -77,7 +91,8 @@
       "venue": "arXiv:2505.08915",
       "url": "https://arxiv.org/abs/2505.08915",
       "verified": "abstract",
-      "why": "Analytic follow-up on the low-dimensional training manifold"
+      "why": "Analytic follow-up on the low-dimensional training manifold",
+      "key": "mao2025"
     },
     {
       "category": "Prediction space",
@@ -87,7 +102,8 @@
       "venue": "ACM Computing Surveys; arXiv:2305.06329",
       "url": "https://doi.org/10.1145/3728458",
       "verified": "full",
-      "why": "Survey separating functional from representational model similarity"
+      "why": "Survey separating functional from representational model similarity",
+      "key": "klabunde2025"
     },
     {
       "category": "Prediction space",
@@ -97,7 +113,8 @@
       "venue": "CCN 2025; arXiv:2411.14633",
       "url": "https://arxiv.org/abs/2411.14633",
       "verified": "abstract",
-      "why": "Behavioral similarity metrics agree more than representational ones"
+      "why": "Behavioral similarity metrics agree more than representational ones",
+      "key": "bo2025"
     },
     {
       "category": "Loss surfaces & topology",
@@ -107,7 +124,8 @@
       "venue": "NeurIPS 2018; arXiv:1712.09913",
       "url": "https://arxiv.org/abs/1712.09913",
       "verified": "abstract",
-      "why": "Filter-normalized slices for fair loss-surface comparison"
+      "why": "Filter-normalized slices for fair loss-surface comparison",
+      "key": "li2018"
     },
     {
       "category": "Loss surfaces & topology",
@@ -117,7 +135,8 @@
       "venue": "NeurIPS 2018; arXiv:1802.10026",
       "url": "https://arxiv.org/abs/1802.10026",
       "verified": "abstract",
-      "why": "Low-loss paths connect optima; tests whether solutions share a basin"
+      "why": "Low-loss paths connect optima; tests whether solutions share a basin",
+      "key": "garipov2018"
     },
     {
       "category": "Loss surfaces & topology",
@@ -127,7 +146,8 @@
       "venue": "IDA 2022; arXiv:2102.00485",
       "url": "https://arxiv.org/abs/2102.00485",
       "verified": "full",
-      "why": "PHATE trajectories and homology to measure landscape topology"
+      "why": "PHATE trajectories and homology to measure landscape topology",
+      "key": "horoi2022"
     },
     {
       "category": "Loss surfaces & topology",
@@ -137,7 +157,8 @@
       "venue": "arXiv:2411.12136",
       "url": "https://arxiv.org/abs/2411.12136",
       "verified": "abstract",
-      "why": "Landscape topology shifts near performance transitions"
+      "why": "Landscape topology shifts near performance transitions",
+      "key": "geniesse2024"
     },
     {
       "category": "Representation similarity",
@@ -147,7 +168,8 @@
       "venue": "ICML 2019, PMLR 97; arXiv:1905.00414",
       "url": "https://proceedings.mlr.press/v97/kornblith19a.html",
       "verified": "full",
-      "why": "CKA for comparing hidden representations across networks"
+      "why": "CKA for comparing hidden representations across networks",
+      "key": "kornblith2019"
     },
     {
       "category": "Representation similarity",
@@ -157,7 +179,8 @@
       "venue": "ICLR 2023; arXiv:2210.16156",
       "url": "https://arxiv.org/abs/2210.16156",
       "verified": "abstract",
-      "why": "CKA is outlier-sensitive and manipulable; needs guards"
+      "why": "CKA is outlier-sensitive and manipulable; needs guards",
+      "key": "davari2023"
     },
     {
       "category": "Representation similarity",
@@ -167,7 +190,8 @@
       "venue": "NeurIPS 2019; arXiv:1905.12784",
       "url": "https://arxiv.org/abs/1905.12784",
       "verified": "full",
-      "why": "Intrinsic dimension of representations, with untrained and shuffled-label nulls"
+      "why": "Intrinsic dimension of representations, with untrained and shuffled-label nulls",
+      "key": "ansuini2019"
     },
     {
       "category": "HEP latent spaces",
@@ -177,7 +201,8 @@
       "venue": "Phys. Rev. Lett. 123, 041801; arXiv:1902.02346",
       "url": "https://doi.org/10.1103/PhysRevLett.123.041801",
       "verified": "full",
-      "why": "Defines a distance between collider events"
+      "why": "Defines a distance between collider events",
+      "key": "komiske2019"
     },
     {
       "category": "HEP latent spaces",
@@ -187,7 +212,8 @@
       "venue": "JHEP 07 (2020) 006; arXiv:2004.04159",
       "url": "https://doi.org/10.1007/JHEP07(2020)006",
       "verified": "full",
-      "why": "Treats theories as weighted event collections in a metric space"
+      "why": "Treats theories as weighted event collections in a metric space",
+      "key": "komiske2020"
     },
     {
       "category": "HEP latent spaces",
@@ -197,7 +223,8 @@
       "venue": "Mach. Learn.: Sci. Technol.; arXiv:2210.04371",
       "url": "https://doi.org/10.1088/2632-2153/ace0a1",
       "verified": "full",
-      "why": "Finds dead latent units in taggers; motivates a unit census"
+      "why": "Finds dead latent units in taggers; motivates a unit census",
+      "key": "khot2023"
     },
     {
       "category": "HEP latent spaces",
@@ -207,7 +234,8 @@
       "venue": "arXiv:1911.01872",
       "url": "https://arxiv.org/abs/1911.01872",
       "verified": "abstract",
-      "why": "Early probe of what jet-physics networks learn internally"
+      "why": "Early probe of what jet-physics networks learn internally",
+      "key": "cheng2019"
     },
     {
       "category": "HEP latent spaces",
@@ -217,7 +245,8 @@
       "venue": "ML4Jets 2026 talk",
       "url": "https://indico.global/event/15240/contributions/165307/",
       "verified": "abstract",
-      "why": "Probes and steers latent directions in a jet tagger"
+      "why": "Probes and steers latent directions in a jet tagger",
+      "key": "thais2026"
     },
     {
       "category": "HEP decorrelation",
@@ -227,7 +256,8 @@
       "venue": "Phys. Rev. Lett. 125, 122001; arXiv:2001.05310",
       "url": "https://doi.org/10.1103/PhysRevLett.125.122001",
       "verified": "full",
-      "why": "Distance-correlation penalty for decorrelating classifiers"
+      "why": "Distance-correlation penalty for decorrelating classifiers",
+      "key": "kasieczka2020"
     },
     {
       "category": "HEP decorrelation",
@@ -237,7 +267,8 @@
       "venue": "Phys. Rev. D 103, 035021; arXiv:2007.14400",
       "url": "https://doi.org/10.1103/PhysRevD.103.035021",
       "verified": "full",
-      "why": "Double-DisCo: two decorrelated classifiers define the ABCD plane"
+      "why": "Double-DisCo: two decorrelated classifiers define the ABCD plane",
+      "key": "abcdisco2021"
     },
     {
       "category": "HEP decorrelation",
@@ -247,7 +278,8 @@
       "venue": "JHEP 04 (2021) 070; arXiv:2010.09745",
       "url": "https://doi.org/10.1007/JHEP04(2021)070",
       "verified": "full",
-      "why": "MoDE: controls classifier dependence on mass via moments"
+      "why": "MoDE: controls classifier dependence on mass via moments",
+      "key": "kitouni2021"
     },
     {
       "category": "HEP decorrelation",
@@ -257,7 +289,8 @@
       "venue": "Phys. Rev. D 107, 114012; arXiv:2210.14924",
       "url": "https://doi.org/10.1103/PhysRevD.107.114012",
       "verified": "full",
-      "why": "LaCATHODE: classifying in a flow latent space avoids sculpting"
+      "why": "LaCATHODE: classifying in a flow latent space avoids sculpting",
+      "key": "hallin2023"
     },
     {
       "category": "HEP decorrelation",
@@ -267,7 +300,8 @@
       "venue": "NeurIPS 2022 workshop; arXiv:2211.02486",
       "url": "https://arxiv.org/abs/2211.02486",
       "verified": "abstract",
-      "why": "Flow-based decorrelation of features from a protected variable"
+      "why": "Flow-based decorrelation of features from a protected variable",
+      "key": "klein2022"
     },
     {
       "category": "HEP decorrelation",
@@ -277,7 +311,68 @@
       "venue": "4th Inter-experiment ML Workshop, CERN, talk",
       "url": "https://indico.cern.ch/event/852553/contributions/4059755/",
       "verified": "abstract",
-      "why": "Isolates a protected variable in a latent subspace"
+      "why": "Isolates a protected variable in a latent subspace",
+      "key": "tan2020"
+    }
+  ],
+  "tagline": "Exploratory: is the latent space worth looking at?",
+  "components": [
+    {
+      "name": "First attempts",
+      "subtitle": "What gets built and run first",
+      "state": "next",
+      "summary": "Small, cheap probes chosen so that a negative answer arrives quickly. Each one reuses models that already exist or come out of the baseline re-run.",
+      "items": [
+        {
+          "label": "Probe set",
+          "detail": "Carve out held-out events before cross-validation so every model is compared on data none of them trained on"
+        },
+        {
+          "label": "Model space",
+          "detail": "One point per trained model, distances from per-event predicted probabilities, embedded the way the training-manifold work does [@mao2024][@klabunde2025]"
+        },
+        {
+          "label": "Event space",
+          "detail": "Hidden-layer activations of a single model, compared across seeds and objectives with CKA and its known failure modes guarded [@kornblith2019][@davari2023]"
+        },
+        {
+          "label": "Positive control",
+          "detail": "A known change in training regime along the decorrelation sweep should show up as a kink in the model-space trajectory; if it does not, the map is not seeing real structure"
+        },
+        {
+          "label": "Dead-unit census",
+          "detail": "Count hidden units that never activate, which also feeds the connection sizing in TRUSS [@khot2023]"
+        }
+      ]
+    },
+    {
+      "name": "The heat-map idea",
+      "subtitle": "Where this could become useful",
+      "state": "next",
+      "summary": "Color latent space by background closure, signal density, or per-event contribution to the closure error, so regions where the ABCD estimate breaks down become visible. This is the version of the idea that could earn its keep; it is not yet known whether such regions exist.",
+      "items": [
+        {
+          "label": "Intrinsic dimension",
+          "detail": "Measure how many directions the representation actually uses before mapping it, with shuffled and untrained controls [@ansuini2019]"
+        },
+        {
+          "label": "Stability",
+          "detail": "Display only structures that persist across seeds and projection choices; mode connectivity tests whether two solutions are really distinct [@garipov2018]"
+        }
+      ]
+    },
+    {
+      "name": "Kill test",
+      "subtitle": "Pre-registered exit",
+      "state": "next",
+      "summary": "Before anything is built into a tool, test whether map-derived quantities predict closure on held-out events better than the training hyperparameters alone. If they do not, the project stops with that result written down."
+    }
+  ],
+  "links": [
+    {
+      "project": "truss",
+      "title": "Architecture search",
+      "text": "If latent maps prove useful, their features become an input to TRUSS's architecture generation; the dead-unit census feeds its connection sizing either way."
     }
   ]
 }
