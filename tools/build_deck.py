@@ -148,7 +148,8 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
     if len(lit_keys) != len(set(lit_keys)):
         errs.append(f"{pid}: duplicate literature keys")
     cite_text = " ".join(list(intro.values()) + [c.get("summary", "") for c in p.get("components", [])]
-                         + [it.get("detail", "") for c in p.get("components", []) for it in c.get("items", [])])
+                         + [it.get("detail", "") for c in p.get("components", []) for it in c.get("items", [])]
+                         + [r.get("text", "") for r in p.get("results", [])])
     for k in sorted(set(re.findall(r"\[@([\w-]+)\]", cite_text)) - set(lit_keys)):
         errs.append(f"{pid}: citation [@{k}] has no literature entry with that key")
 
@@ -176,6 +177,7 @@ def leak_scan(p: dict) -> list[str]:
            + " ".join(f"{it.get('label', '')} {it.get('detail', '')}" for it in c.get("items", []))
            for c in p.get("components", [])]
         + [f"{l.get('title', '')} {l.get('text', '')}" for l in p.get("links", [])]
+        + [f"{r.get('title', '')} {r.get('text', '')}" for r in p.get("results", [])]
         + [p.get("intro", {}).get(k, "") for k in INTRO_KEYS]
         + p.get("questions", [])
         + [o.get("text", "") for o in p.get("open", [])]

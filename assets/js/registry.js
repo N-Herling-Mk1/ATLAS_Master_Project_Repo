@@ -1023,15 +1023,15 @@ window.DECK_PROJECTS = [
   "accent2": "#ff2a8a",
   "code": "internal",
   "intro": {
-   "problem": "A two-network background method needs its input features split between the two networks, and that split is usually chosen by hand even though features interact and the choice directly shapes how well the estimate closes.",
-   "value": "A principled, data-driven partition would make the background estimate more defensible and would reveal which features actually drive closure, rather than leaving that to intuition.",
-   "approach": "We cast feature assignment as a game: a cooperative stage measures each feature's contribution against permutation nulls, an adversarial stage lets the two networks compete for features with closure as the referee, and every result is re-measured on seeds disjoint from the selection.",
-   "goals": "The outcome is an end-to-end selection pipeline, partitions validated on held-out seeds, and an honest accounting of what improved closure costs in discrimination."
+   "problem": "A two-network background estimate [@abcdisco2021] needs its input features split between the networks, and that split is usually made by hand even though features interact and the choice directly decides how well the estimate closes.",
+   "value": "A principled, data-driven partition would make the background estimate more defensible and show which features actually drive closure, extending distance-correlation feature selection [@das2024] from one network to the assignment between two.",
+   "approach": "GAMBIT mixes two kinds of game. In the cooperative game the features are players and each is credited by its marginal contribution against permutation nulls [@shapley1953][@cohen2005]; in the adversarial game the two networks are players competing for features [@monderer1996][@rosenthal1973]. The cooperative stage prunes the pool, the adversarial stage places what remains, and every result is re-measured on seeds disjoint from the selection.",
+   "goals": "The next phase re-reads two weeks of games, all refereed by a dependence statistic, against the closure metric the analysis actually reports, then re-runs the games with closure as the referee and states plainly what improved closure costs in discrimination."
   },
   "questions": [
-   "Which features actually drive background closure?",
-   "Does letting the networks compete for features produce a better partition than a hand-built one?",
-   "What does improved closure cost in discrimination, and when is that trade worth making?"
+   "Which features actually drive background closure, rather than discrimination?",
+   "Does a partition found by mixing cooperative and adversarial play beat the hand-built one on held-out seeds?",
+   "Does the choice of referee change the answer: do games scored on closure pick different partitions from games scored on dependence?"
   ],
   "timeline": [
    {
@@ -1051,7 +1051,12 @@ window.DECK_PROJECTS = [
    },
    {
     "date": "2026-09-08",
-    "label": "First end-to-end run: cooperative feature selection fed into the adversarial game on one detector region",
+    "label": "First end-to-end run on the barrel: cooperative selection fed into the adversarial game",
+    "state": "done"
+   },
+   {
+    "date": "2026-09-11",
+    "label": "Knockout, pruning and registry games run in both regions",
     "state": "done"
    },
    {
@@ -1060,7 +1065,11 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
-    "label": "Collect closure-term statistics on the barrel region first",
+    "label": "Re-read every recorded game against the closure metric, offline, with no retraining",
+    "state": "next"
+   },
+   {
+    "label": "Measure how often the dependence referee and the closure metric agree on a move",
     "state": "next"
    },
    {
@@ -1068,7 +1077,7 @@ window.DECK_PROJECTS = [
     "state": "next"
    },
    {
-    "label": "Run the full pipeline end to end on the endcap region",
+    "label": "Wire the data gates and block reduction ahead of selection; run the endcap end to end",
     "state": "next"
    }
   ],
@@ -1081,7 +1090,8 @@ window.DECK_PROJECTS = [
     "venue": "Contributions to the Theory of Games II (Annals of Mathematics Studies 28), 307-317",
     "url": "https://doi.org/10.1515/9781400881970-018",
     "verified": "abstract",
-    "why": "Defines the Shapley value used to credit each feature"
+    "why": "Defines the Shapley value used to credit each feature",
+    "key": "shapley1953"
    },
    {
     "category": "Cooperative games",
@@ -1091,7 +1101,8 @@ window.DECK_PROJECTS = [
     "venue": "Econometrica 57(1), 81-95",
     "url": "https://ideas.repec.org/a/ecm/emetrp/v57y1989i1p81-95.html",
     "verified": "abstract",
-    "why": "Shapley value as outcome of a non-cooperative bargaining game"
+    "why": "Shapley value as outcome of a non-cooperative bargaining game",
+    "key": "gul1989"
    },
    {
     "category": "Cooperative games",
@@ -1101,7 +1112,8 @@ window.DECK_PROJECTS = [
     "venue": "Journal of Economic Theory 100(2), 274-294",
     "url": "https://doi.org/10.1006/jeth.2000.2704",
     "verified": "abstract",
-    "why": "Bidding mechanism whose equilibrium yields the Shapley value"
+    "why": "Bidding mechanism whose equilibrium yields the Shapley value",
+    "key": "perez2001"
    },
    {
     "category": "Cooperative games",
@@ -1111,7 +1123,8 @@ window.DECK_PROJECTS = [
     "venue": "Econometrica 84(6), 2265-2280",
     "url": "https://doi.org/10.3982/ECTA13191",
     "verified": "abstract",
-    "why": "Subgame-perfect implementation linking value and equilibrium"
+    "why": "Subgame-perfect implementation linking value and equilibrium",
+    "key": "mcquillin2016"
    },
    {
     "category": "Non-cooperative games",
@@ -1121,7 +1134,8 @@ window.DECK_PROJECTS = [
     "venue": "Games and Economic Behavior 14(1), 124-143",
     "url": "https://doi.org/10.1006/game.1996.0044",
     "verified": "abstract",
-    "why": "When best-response play between networks must reach equilibrium"
+    "why": "When best-response play between networks must reach equilibrium",
+    "key": "monderer1996"
    },
    {
     "category": "Non-cooperative games",
@@ -1131,7 +1145,8 @@ window.DECK_PROJECTS = [
     "venue": "International Journal of Game Theory 2, 65-67",
     "url": "https://doi.org/10.1007/BF01737559",
     "verified": "abstract",
-    "why": "Congestion-game framing: features as contested shared resources"
+    "why": "Congestion-game framing: features as contested shared resources",
+    "key": "rosenthal1973"
    },
    {
     "category": "Non-cooperative games",
@@ -1141,7 +1156,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:1111.3933",
     "url": "https://arxiv.org/abs/1111.3933",
     "verified": "abstract",
-    "why": "Forming coalitions can remove pure equilibria"
+    "why": "Forming coalitions can remove pure equilibria",
+    "key": "kuniavsky2011"
    },
    {
     "category": "Non-cooperative games",
@@ -1151,7 +1167,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2310.02387",
     "url": "https://arxiv.org/abs/2310.02387",
     "verified": "abstract",
-    "why": "Slow convergence can look the same as no equilibrium"
+    "why": "Slow convergence can look the same as no equilibrium",
+    "key": "panageas2023"
    },
    {
     "category": "Non-cooperative games",
@@ -1161,7 +1178,8 @@ window.DECK_PROJECTS = [
     "venue": "Cambridge University Press (book)",
     "url": "https://www.cambridge.org/core/books/prediction-learning-and-games/",
     "verified": "abstract",
-    "why": "No-regret dynamics converge to coarse correlated equilibria"
+    "why": "No-regret dynamics converge to coarse correlated equilibria",
+    "key": "cesabianchi2006"
    },
    {
     "category": "Feature attribution",
@@ -1171,7 +1189,8 @@ window.DECK_PROJECTS = [
     "venue": "Proc. IJCAI 2005, 665-670",
     "url": "https://www.ijcai.org/Proceedings/05/Papers/0763.pdf",
     "verified": "abstract",
-    "why": "Direct precedent: Shapley-value contribution selection of features"
+    "why": "Direct precedent: Shapley-value contribution selection of features",
+    "key": "cohen2005"
    },
    {
     "category": "Feature attribution",
@@ -1181,7 +1200,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:1512.01680",
     "url": "https://arxiv.org/abs/1512.01680",
     "verified": "abstract",
-    "why": "Feature selection posed as a transferable-utility coalition game"
+    "why": "Feature selection posed as a transferable-utility coalition game",
+    "key": "afghah2015"
    },
    {
     "category": "Feature attribution",
@@ -1191,7 +1211,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2206.08529",
     "url": "https://arxiv.org/abs/2206.08529",
     "verified": "abstract",
-    "why": "Makes sampled Shapley estimation tractable"
+    "why": "Makes sampled Shapley estimation tractable",
+    "key": "wang2022"
    },
    {
     "category": "Feature attribution",
@@ -1201,7 +1222,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2506.13900",
     "url": "https://arxiv.org/abs/2506.13900",
     "verified": "abstract",
-    "why": "Weber and Harsanyi sets generalise Shapley allocations"
+    "why": "Weber and Harsanyi sets generalise Shapley allocations",
+    "key": "ilidrissi2025"
    },
    {
     "category": "Decorrelation / ABCD",
@@ -1211,7 +1233,8 @@ window.DECK_PROJECTS = [
     "venue": "Phys. Rev. D 103, 035021; arXiv:2007.14400",
     "url": "https://doi.org/10.1103/PhysRevD.103.035021",
     "verified": "abstract",
-    "why": "Two decorrelated networks define the ABCD plane"
+    "why": "Two decorrelated networks define the ABCD plane",
+    "key": "abcdisco2021"
    },
    {
     "category": "Decorrelation / ABCD",
@@ -1221,7 +1244,8 @@ window.DECK_PROJECTS = [
     "venue": "Phys. Rev. Lett. 125, 122001; arXiv:2001.05310",
     "url": "https://doi.org/10.1103/PhysRevLett.125.122001",
     "verified": "abstract",
-    "why": "Distance-correlation penalty used to decorrelate the networks"
+    "why": "Distance-correlation penalty used to decorrelate the networks",
+    "key": "kasieczka2020"
    },
    {
     "category": "Decorrelation / ABCD",
@@ -1231,7 +1255,8 @@ window.DECK_PROJECTS = [
     "venue": "Phys. Rev. D 96, 074034; arXiv:1703.03507",
     "url": "https://doi.org/10.1103/PhysRevD.96.074034",
     "verified": "abstract",
-    "why": "Adversarial alternative to distance-correlation decorrelation"
+    "why": "Adversarial alternative to distance-correlation decorrelation",
+    "key": "shimmin2017"
    },
    {
     "category": "Decorrelation / ABCD",
@@ -1241,7 +1266,8 @@ window.DECK_PROJECTS = [
     "venue": "Phys. Rev. D 109, 054009; arXiv:2212.00046",
     "url": "https://doi.org/10.1103/PhysRevD.109.054009",
     "verified": "abstract",
-    "why": "Closest prior art: feature selection driven by distance correlation"
+    "why": "Closest prior art: feature selection driven by distance correlation",
+    "key": "das2024"
    },
    {
     "category": "Robust training",
@@ -1251,7 +1277,79 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:1911.08731",
     "url": "https://arxiv.org/abs/1911.08731",
     "verified": "abstract",
-    "why": "Keep worst-mass criteria in the payoff, not the loss"
+    "why": "Keep worst-mass criteria in the payoff, not the loss",
+    "key": "sagawa2019"
+   }
+  ],
+  "tagline": "Cooperative and adversarial feature games for the ABCD networks",
+  "components": [
+   {
+    "name": "Cooperative game",
+    "subtitle": "Features as players",
+    "state": "done",
+    "summary": "Each feature's worth is its average marginal contribution to the background estimate [@shapley1953], measured against permutation nulls that give every network its own zero point, so selection needs no hand-chosen threshold [@cohen2005]. Exact values on small subsets, sampled values on the full registry [@wang2022].",
+    "items": [
+     {
+      "label": "Leave-one-out",
+      "detail": "Every feature scored against shuffled copies of real columns, per network"
+     },
+     {
+      "label": "Knockout",
+      "detail": "Remove features jointly and check both discrimination and closure"
+     },
+     {
+      "label": "Pruning",
+      "detail": "Correlated feature families reduced to representatives before selection"
+     }
+    ]
+   },
+   {
+    "name": "Adversarial game",
+    "subtitle": "Networks as players",
+    "state": "done",
+    "summary": "The two networks take turns claiming, releasing or dropping features, and a move stands only if it beats a measured noise floor. Equilibrium is not guaranteed: coalitions can remove pure equilibria [@kuniavsky2011], and slow convergence can look like none [@panageas2023].",
+    "items": [
+     {
+      "label": "Moves",
+      "detail": "Claim from the other network, claim from the free pool, or drop"
+     },
+     {
+      "label": "Gate",
+      "detail": "Paired seeds, a measured floor and a null harness decide whether a move counts"
+     },
+     {
+      "label": "Worst case",
+      "detail": "Weakest signal mass point kept in the payoff, not the loss [@sagawa2019]"
+     }
+    ]
+   },
+   {
+    "name": "Pipeline",
+    "subtitle": "Cooperative into adversarial",
+    "state": "active",
+    "summary": "The cooperative stage hands a pruned pool to the adversarial stage, and the result is promoted and graded on seeds neither search ever used. Built and run end to end on the barrel; the endcap run and the upstream data gates are next."
+   }
+  ],
+  "results": [
+   {
+    "title": "First selection-free comparison",
+    "text": "On the barrel, the partition found by the pipeline closed substantially better than the hand-built one on held-out seeds, but the second network lost discrimination. It is a trade with a confound, not a win."
+   },
+   {
+    "title": "Discrimination is not closure",
+    "text": "Barrel features that add nothing to discrimination still do work for factorization; removing them degrades the background estimate. A feature is only safe to drop when both axes clear."
+   },
+   {
+    "title": "Most endcap features are jointly removable",
+    "text": "In the endcap, a large share of the first network's inputs can be removed together with no cost on either axis, until a deeper knockout trades discrimination away for closure."
+   },
+   {
+    "title": "Equilibrium in one region, cycling in the other",
+    "text": "The endcap game settles quickly; the barrel game cycles. Two features that both networks want and neither can keep explain the cycling, and a disjoint partition cannot express a fix."
+   },
+   {
+    "title": "The referee was the wrong statistic",
+    "text": "Every recorded game was scored on a dependence test that tracks reported closure poorly, so all of the above is first-generation until it is re-read against closure."
    }
   ],
   "logo": "projects/gambit/logo.webp",

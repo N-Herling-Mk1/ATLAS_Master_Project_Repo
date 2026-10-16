@@ -57,6 +57,7 @@
     ol.replaceChildren(...p.questions.map((q) => { const li = document.createElement("li"); li.textContent = q; return li; }));
 
     renderProgram(p.components || []);
+    renderResults(p.results || []);
     renderLinks(p.links || []);
     renderOpen(p.open || []);
     renderTimeline(p.timeline || []);
@@ -161,6 +162,7 @@
     citeNum = new Map();
     const texts = [p.intro.problem, p.intro.value, p.intro.approach, p.intro.goals];
     (p.components || []).forEach((c) => { texts.push(c.summary); (c.items || []).forEach((it) => texts.push(it.detail)); });
+    (p.results || []).forEach((r) => texts.push(r.text));
     const keys = new Set((p.literature || []).map((r) => r.key).filter(Boolean));
     texts.join(" ").replace(/\[@([\w-]+)\]/g, (_, k) => { if (keys.has(k) && !citeNum.has(k)) citeNum.set(k, citeNum.size + 1); return _; });
   }
@@ -217,6 +219,18 @@
         c.items.forEach((it) => { const dd = el("dd"); dd.append(...citeNodes(it.detail)); dl.append(el("dt", null, it.label), dd); });
         li.append(dl);
       }
+      return li;
+    }));
+  }
+
+  function renderResults(res) {
+    $("p-results-wrap").hidden = !res.length;
+    $("p-results").replaceChildren(...res.map((r) => {
+      const li = el("li", "res");
+      const t = el("p", "res-t", r.title);
+      const b = el("p", "res-b");
+      b.append(...citeNodes(r.text));
+      li.append(t, b);
       return li;
     }));
   }
@@ -315,6 +329,7 @@
       { id: "sec-overview", label: "OVERVIEW" },
       (p.components || []).length && { id: "sec-program", label: "PROGRAM", n: p.components.length,
         sub: p.components.map((c, j) => ({ id: `prog-${j}`, label: c.name.toUpperCase() })) },
+      (p.results || []).length && { id: "sec-results", label: "CURRENT RESULTS", n: p.results.length },
       (p.links || []).length && { id: "sec-links", label: "LINKED PROJECTS", n: p.links.length },
       { id: "sec-questions", label: "QUESTIONS", n: p.questions.length },
       (p.open || []).length && { id: "p-open-wrap", label: "OPEN ITEMS", n: p.open.length },

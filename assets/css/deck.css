@@ -222,6 +222,13 @@ img { display: block; max-width: 100%; height: auto; }
 .prog-items dt { font-family: var(--f-mono); color: var(--a2); white-space: nowrap; }
 .prog-items dd { margin: 0; color: var(--muted); line-height: 1.45; }
 
+/* ---------- current results ---------- */
+.results { list-style: none; margin: 0 0 24px; padding: 0; counter-reset: r; display: grid; gap: 8px; max-width: 72ch; }
+.res { counter-increment: r; position: relative; padding: 12px 14px 12px 52px; border: 1px solid var(--line); background: var(--panel); }
+.res::before { content: "R" counter(r); position: absolute; left: 14px; top: 12px; font-family: var(--f-display); font-weight: 700; font-size: 13px; color: #2fe08a; }
+.res-t { margin: 0 0 4px; font-family: var(--f-display); font-weight: 700; font-size: 14px; letter-spacing: .06em; }
+.res-b { margin: 0; font-size: 14px; line-height: 1.55; color: var(--muted); }
+
 /* ---------- cross-project links ---------- */
 .xlinks { display: grid; gap: 10px; margin: 0 0 24px; max-width: 72ch; }
 .xlink { display: grid; grid-template-columns: 160px 1fr; gap: 16px; align-items: center; padding: 12px; border: 1px solid color-mix(in srgb, var(--xc) 45%, var(--line)); background: var(--panel); }
