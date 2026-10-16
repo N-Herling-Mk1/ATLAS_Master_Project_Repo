@@ -9,33 +9,17 @@
   "code": "public",
   "link": "https://forge-observatory.com",
   "intro": {
-    "problem": "A trained model reports a confidence but not whether that confidence is earned, so a researcher cannot tell whether a model has learned all it can or has simply run out of data.",
-    "value": "Splitting predictive uncertainty into a reducible part and an irreducible part tells a researcher when more data or better features would help and when the model has reached its limit.",
-    "approach": "We decompose predictive variance with the law of total variance, compute it with a fast Laplace approximation checked against Hamiltonian Monte Carlo, and present it on a web dashboard across three reproductions: music-genre classification, phonon density-of-states regression, and long-lived-particle detection.",
-    "goals": "The capstone delivered the observatory and its metrics; what remains is to answer the open questions it raised and carry its lessons back into the live analysis work, toward a platform where researchers load their own models."
+    "problem": "FORGE, the posterior observatory built as a capstone, splits a model's predictive variance into a reducible epistemic part and an irreducible aleatoric part [@kendall2017][@hullermeier2021]; applied to the ATLAS long-lived-particle networks, it has so far raised more questions than it has answered.",
+    "value": "Knowing which events, regions and networks are data-limited rather than at their physical limit would show the analysis where more simulation, better features or a different architecture would pay off, and would put an honest uncertainty on the background estimate itself.",
+    "approach": "The fast path is a last-layer Laplace approximation [@mackay1992][@kristiadi2020][@daxberger2021], checked against Hamiltonian Monte Carlo [@neal2011][@hoffman2014][@izmailov2021]. On the ATLAS networks the two disagree in unexpected ways, the epistemic-to-aleatoric ratio readings have not been examined, and the method needs networks with specific properties that TRUSS may change.",
+    "goals": "The next phase explains the Laplace-versus-sampler discrepancies, reads the ratio metrics for the analysis networks, adapts FORGE to whatever architectures TRUSS produces, and works out how its metrics fit into the rest of the research program."
   },
   "questions": [
-    "Is a model's confidence earned, or has it run out of data?",
-    "When does a fast posterior approximation agree with the gold-standard sampler, and when does it not?",
-    "Can the same uncertainty measures be compared across classification and regression models?"
+    "Why does the fast Laplace path disagree with the sampler on the ATLAS networks, and where?",
+    "What do the epistemic-to-aleatoric ratios say about the analysis networks: data-limited, or at their limit?",
+    "How should FORGE's metrics feed the other projects, and does it have to change to analyze the networks TRUSS generates?"
   ],
   "open": [
-    {
-      "kind": "question",
-      "text": "Does a training penalty that is not a likelihood, such as a decorrelation or closure term, belong in the posterior's curvature?"
-    },
-    {
-      "kind": "question",
-      "text": "When two networks share one label, should the joint posterior use a sandwich correction or be declared a Gibbs measure over the training objective?"
-    },
-    {
-      "kind": "question",
-      "text": "What is the posterior on the background estimate itself, propagated through both networks and the region cuts?"
-    },
-    {
-      "kind": "question",
-      "text": "Should epistemic variance be reported in logit space or probability space when the two disagree?"
-    },
     {
       "kind": "lesson",
       "text": "The fast Laplace path over-states epistemic variance against the sampler on every board tested; no correction has been applied."
@@ -60,41 +44,39 @@
       "state": "done"
     },
     {
-      "date": "2026-06-03",
-      "label": "Vetted literature review: Laplace, HMC, calibration, visualization",
-      "state": "done"
-    },
-    {
-      "date": "2026-07-16",
-      "label": "Site public; first experiment served live",
-      "state": "done"
-    },
-    {
       "date": "2026-08-05",
       "label": "Base measure locked: variance decomposition, four metrics",
       "state": "done"
     },
     {
-      "date": "2026-08-07",
-      "label": "All three experiments exported to the board",
+      "date": "2026-08-06",
+      "label": "ATLAS networks ported to FORGE; mode and fold-pooling bugs found and fixed",
       "state": "done"
     },
     {
       "date": "2026-08-10",
-      "label": "Dashboard and sampler cross-check built; final report signed",
+      "label": "Sampler cross-check run on the ATLAS networks; final report signed",
       "state": "done"
     },
     {
-      "date": "2026-08-13",
-      "label": "Publication thread opened for the genre and phonon results",
+      "date": "2026-10-16",
+      "label": "Refocused on the ATLAS application",
       "state": "done"
     },
     {
-      "label": "Wire the dashboard in behind the public splash",
+      "label": "Explain the Laplace-versus-sampler discrepancies",
       "state": "next"
     },
     {
-      "label": "Resolve the open posterior questions; apply lessons to the analysis line",
+      "label": "Read the epistemic-to-aleatoric ratios across the loss configurations",
+      "state": "next"
+    },
+    {
+      "label": "Adapt the requirements to TRUSS architectures",
+      "state": "next"
+    },
+    {
+      "label": "Map FORGE's metrics onto the other projects",
       "state": "next"
     }
   ],
@@ -107,7 +89,8 @@
       "venue": "Neural Computation 4(3)",
       "url": "https://doi.org/10.1162/neco.1992.4.3.448",
       "verified": "full",
-      "why": "Laplace posterior and evidence-based prior tuning used for the fast path"
+      "why": "Laplace posterior and evidence-based prior tuning used for the fast path",
+      "key": "mackay1992"
     },
     {
       "category": "Laplace approximation",
@@ -117,7 +100,8 @@
       "venue": "ICML 2020, arXiv:2002.10118",
       "url": "https://arxiv.org/abs/2002.10118",
       "verified": "full",
-      "why": "Justifies a last-layer-only posterior"
+      "why": "Justifies a last-layer-only posterior",
+      "key": "kristiadi2020"
     },
     {
       "category": "Laplace approximation",
@@ -127,7 +111,8 @@
       "venue": "NeurIPS 2021, arXiv:2106.14806",
       "url": "https://arxiv.org/abs/2106.14806",
       "verified": "full",
-      "why": "Makes last-layer Laplace fast enough to drive a live dashboard"
+      "why": "Makes last-layer Laplace fast enough to drive a live dashboard",
+      "key": "daxberger2021"
     },
     {
       "category": "Sampling",
@@ -137,7 +122,8 @@
       "venue": "Handbook of MCMC, arXiv:1206.1901",
       "url": "https://arxiv.org/abs/1206.1901",
       "verified": "full",
-      "why": "The sampler used as the reference posterior"
+      "why": "The sampler used as the reference posterior",
+      "key": "neal2011"
     },
     {
       "category": "Sampling",
@@ -147,7 +133,8 @@
       "venue": "JMLR 15, arXiv:1111.4246",
       "url": "https://arxiv.org/abs/1111.4246",
       "verified": "full",
-      "why": "NUTS with dual averaging, the sampler actually run"
+      "why": "NUTS with dual averaging, the sampler actually run",
+      "key": "hoffman2014"
     },
     {
       "category": "Sampling",
@@ -157,7 +144,8 @@
       "venue": "ICML 2021, arXiv:2104.14421",
       "url": "https://arxiv.org/abs/2104.14421",
       "verified": "full",
-      "why": "Why HMC is the reference that approximations are judged against"
+      "why": "Why HMC is the reference that approximations are judged against",
+      "key": "izmailov2021"
     },
     {
       "category": "Uncertainty decomposition",
@@ -167,7 +155,8 @@
       "venue": "NeurIPS 2017, arXiv:1703.04977",
       "url": "https://arxiv.org/abs/1703.04977",
       "verified": "full",
-      "why": "Aleatoric versus epistemic split that the dashboard reports"
+      "why": "Aleatoric versus epistemic split that the dashboard reports",
+      "key": "kendall2017"
     },
     {
       "category": "Uncertainty decomposition",
@@ -177,7 +166,8 @@
       "venue": "Machine Learning 110, arXiv:1910.09457",
       "url": "https://arxiv.org/abs/1910.09457",
       "verified": "full",
-      "why": "Conceptual basis for reducible versus irreducible uncertainty"
+      "why": "Conceptual basis for reducible versus irreducible uncertainty",
+      "key": "hullermeier2021"
     },
     {
       "category": "Open questions",
@@ -187,8 +177,110 @@
       "venue": "Statistica Sinica 21(1)",
       "url": "https://www3.stat.sinica.edu.tw/statistica/j21n1/J21N11/J21N11.html",
       "verified": "full",
-      "why": "Sandwich correction for the shared-label two-network likelihood"
+      "why": "Sandwich correction for the shared-label two-network likelihood",
+      "key": "varin2011"
     }
   ],
-  "tagline": "Posterior observatory: is a model's confidence earned?"
+  "tagline": "Applied to the ATLAS long-lived-particle networks",
+  "components": [
+    {
+      "name": "Laplace versus sampler",
+      "subtitle": "The unexplained discrepancies",
+      "state": "next",
+      "summary": "The fast approximation and the reference sampler agree in some regions of the ABCD plane and not in others, and the gap is not yet understood. The first job is to explain it before trusting either reading.",
+      "items": [
+        {
+          "label": "Where",
+          "detail": "Agreement in the high-score regions, over-statement of epistemic variance in the low-score ones"
+        },
+        {
+          "label": "Space",
+          "detail": "Readings in logit space and in probability space disagree, so the two must be reconciled before a ratio is quoted"
+        },
+        {
+          "label": "Checks",
+          "detail": "Sampler convergence diagnostics and a dispersed second chain, as done for the other experiments [@izmailov2021]"
+        }
+      ]
+    },
+    {
+      "name": "Ratio metrics",
+      "subtitle": "Epistemic-to-aleatoric, not yet read",
+      "state": "next",
+      "summary": "FORGE reports the ratio of epistemic to aleatoric variance per event and per region. These readings exist for the ATLAS networks but have not been examined or compared across the loss configurations."
+    },
+    {
+      "name": "Network requirements",
+      "subtitle": "What FORGE needs from a model",
+      "state": "active",
+      "summary": "FORGE can only analyze networks that meet certain conditions. The current analysis networks were adapted to meet them; architectures from TRUSS may not, so FORGE may need to adapt in turn.",
+      "items": [
+        {
+          "label": "Declared likelihood",
+          "detail": "Each network a Bernoulli model over the label; the two-network objective is a composite likelihood [@varin2011]"
+        },
+        {
+          "label": "True mode",
+          "detail": "The last layer refit to the actual posterior mode before the approximation is taken [@mackay1992]"
+        },
+        {
+          "label": "One basis",
+          "detail": "One bundle per cross-validation fold, never pooled across folds"
+        },
+        {
+          "label": "Sampler reach",
+          "detail": "A last layer small enough for the reference sampler to mix"
+        },
+        {
+          "label": "Penalties",
+          "detail": "Whether decorrelation and closure terms belong in the posterior curvature is still open"
+        }
+      ]
+    },
+    {
+      "name": "Fit with the program",
+      "subtitle": "Not yet examined",
+      "state": "next",
+      "summary": "How FORGE's outputs plug into the other projects has not been worked out.",
+      "items": [
+        {
+          "label": "STAVE",
+          "detail": "An uncertainty band on barrel closure, where statistics are thinnest"
+        },
+        {
+          "label": "TRUSS",
+          "detail": "Epistemic signal as one more score for candidate architectures"
+        },
+        {
+          "label": "LATHE",
+          "detail": "Attribution over latent directions, which is the space FORGE already works in"
+        },
+        {
+          "label": "KERF and GAMBIT",
+          "detail": "A posterior on the background estimate, and on how stable a feature partition is"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "title": "The approximation over-states uncertainty",
+      "text": "Against the sampler, the fast Laplace path over-states epistemic variance on every board tested; on the ATLAS networks it agrees in the high-score regions and over-states in the low-score ones."
+    },
+    {
+      "title": "The reading depends on the space",
+      "text": "Epistemic variance computed in logit space and in probability space give different ratios for the same network, so no ratio is quoted until the two are reconciled."
+    },
+    {
+      "title": "Porting found real bugs",
+      "text": "A trained network is not at its posterior mode, and folds cannot be pooled into one posterior; both had to be fixed before any ATLAS reading meant anything [@mackay1992]."
+    }
+  ],
+  "links": [
+    {
+      "project": "truss",
+      "title": "Architectures FORGE must analyze",
+      "text": "TRUSS will generate networks that may not meet FORGE's current requirements, so the two projects have to be developed together."
+    }
+  ]
 }
