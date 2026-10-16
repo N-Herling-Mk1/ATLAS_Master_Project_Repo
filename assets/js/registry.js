@@ -2028,17 +2028,22 @@ window.DECK_PROJECTS = [
   "accent2": "#ffc21f",
   "code": "internal",
   "intro": {
-   "problem": "Research in this area spans dozens of papers, textbooks, and an evolving record of notes and code, and general-purpose language models have none of that local context, so dense, accurate prompts have to be assembled by hand.",
-   "value": "A local agent that indexes this library could give grounded answers that cite their passages, synthesize ideas across sources, and turn a short local request into a dense prompt for a larger model.",
-   "approach": "We build an offline index over the papers and texts, wrap it in an agent loop that chooses its own tools (search the papers, search the record, open code), and add an optional escalation path to a hosted model, vetting retrieval with questions whose correct passages are known.",
-   "goals": "The first goal is a light build whose retrieval passes that vetting, followed by agent actions and cross-source synthesis once retrieval can be trusted."
+   "problem": "Research in this group spans dozens of papers, textbooks and an evolving record of notes and code, and a general-purpose language model has none of that local context, so dense, accurate prompts have to be assembled by hand every time.",
+   "value": "A local agent over a tokenized library could turn a short request into a dense, cited prompt for a larger model [@lewis2020] and answer simple questions directly; folded into VELOCITY, a platform where only locked, versioned canon is trusted, every answer stays traceable to its source paper.",
+   "approach": "Papers and texts are converted with math-aware extraction [@blecher2023][@auer2024], chunked, and indexed by a pretrained embedding model [@xiao2023] beside keyword search [@robertson2009]. Nothing is trained on the documents, which keeps provenance intact. A local open-weights model retrieves, routes and composes the prompt, and a hosted model handles the hard reasoning.",
+   "goals": "Step 1 is deliberately small: a few papers and a few textbook chapters, tokenized and vetted with known-answer LLM tests and unit tests. Proving that tokenization returns the right passages is the major known bottleneck; the agent loop, cross-source synthesis and VELOCITY's canon layer follow only once it passes."
   },
   "questions": [
    "Can a local index retrieve the right passage reliably enough to be trusted?",
    "Does local context make the prompts sent to a larger model measurably better?",
-   "Can the agent surface connections across papers that a reader would not see at first glance?"
+   "Can a locked, versioned canon keep agent output traceable without slowing the research down?"
   ],
   "timeline": [
+   {
+    "date": "2026-09",
+    "label": "VELOCITY concept: read-only papers, researcher dev layer, canon lock, site with AI agent",
+    "state": "done"
+   },
    {
     "date": "2026-10-05",
     "label": "Idea: local, offline research agent over papers, texts and notes",
@@ -2046,12 +2051,7 @@ window.DECK_PROJECTS = [
    },
    {
     "date": "2026-10-06",
-    "label": "Plan deck drafted; agent named BEAM",
-    "state": "done"
-   },
-   {
-    "date": "2026-10-06",
-    "label": "BEAM PIPE locked: tool choice, multi-step loop, proposed actions",
+    "label": "Plan deck drafted; agent named BEAM; BEAM PIPE locked",
     "state": "done"
    },
    {
@@ -2061,7 +2061,12 @@ window.DECK_PROJECTS = [
    },
    {
     "date": "2026-10-08",
-    "label": "Decided on a light first build: index only, fully local",
+    "label": "Light first build chosen: index only, fully local",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-12",
+    "label": "Retrieval, not training, confirmed; BEAM defined as the agent inside VELOCITY",
     "state": "done"
    },
    {
@@ -2070,15 +2075,34 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
-    "label": "mk1 build: index a few papers and one textbook chapter",
+    "label": "Step 1: tokenize a few papers and textbook chapters",
+    "state": "active"
+   },
+   {
+    "label": "Vet with known-answer LLM tests and unit tests",
     "state": "next"
    },
    {
-    "label": "Vet retrieval against known-answer questions, then add the agent loop",
+    "label": "Canon bundle schema and lock mechanics",
+    "state": "next"
+   },
+   {
+    "label": "Agent loop, then read-only tool server over canon",
     "state": "next"
    }
   ],
   "literature": [
+   {
+    "key": "lewis2020",
+    "category": "Retrieval",
+    "authors": "P. Lewis et al.",
+    "year": 2020,
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "venue": "NeurIPS 2020; arXiv:2005.11401",
+    "url": "https://arxiv.org/abs/2005.11401",
+    "verified": "abstract",
+    "why": "Retrieve passages, then generate from them: the pattern the dense prompt follows"
+   },
    {
     "category": "Retrieval",
     "authors": "Robertson and Zaragoza",
@@ -2087,7 +2111,8 @@ window.DECK_PROJECTS = [
     "venue": "Foundations and Trends in Information Retrieval 3(4)",
     "url": "https://doi.org/10.1561/1500000019",
     "verified": "abstract",
-    "why": "BM25 keyword half of hybrid search, catches rare jargon and symbols"
+    "why": "BM25 keyword half of hybrid search, catches rare jargon and symbols",
+    "key": "robertson2009"
    },
    {
     "category": "Embedding models",
@@ -2097,7 +2122,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2309.07597",
     "url": "https://arxiv.org/abs/2309.07597",
     "verified": "abstract",
-    "why": "BGE embedder family, named as an off-the-shelf dense retriever"
+    "why": "BGE embedder family, named as an off-the-shelf dense retriever",
+    "key": "xiao2023"
    },
    {
     "category": "Embedding models",
@@ -2107,7 +2133,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2212.03533",
     "url": "https://arxiv.org/abs/2212.03533",
     "verified": "abstract",
-    "why": "E5 embedder, named as an off-the-shelf dense retriever"
+    "why": "E5 embedder, named as an off-the-shelf dense retriever",
+    "key": "wang2022"
    },
    {
     "category": "Embedding models",
@@ -2117,7 +2144,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2402.01613",
     "url": "https://arxiv.org/abs/2402.01613",
     "verified": "abstract",
-    "why": "nomic-embed, named as an off-the-shelf local embedder"
+    "why": "nomic-embed, named as an off-the-shelf local embedder",
+    "key": "nussbaum2024"
    },
    {
     "category": "Document ingestion",
@@ -2127,7 +2155,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2308.13418 (ICLR 2024)",
     "url": "https://arxiv.org/abs/2308.13418",
     "verified": "abstract",
-    "why": "Math-aware PDF-to-LaTeX converter for papers that have no source"
+    "why": "Math-aware PDF-to-LaTeX converter for papers that have no source",
+    "key": "blecher2023"
    },
    {
     "category": "Document ingestion",
@@ -2137,7 +2166,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2409.18839",
     "url": "https://arxiv.org/abs/2409.18839",
     "verified": "abstract",
-    "why": "Alternative local converter for equation-heavy PDFs"
+    "why": "Alternative local converter for equation-heavy PDFs",
+    "key": "wang2024"
    },
    {
     "category": "Document ingestion",
@@ -2147,7 +2177,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2408.09869",
     "url": "https://arxiv.org/abs/2408.09869",
     "verified": "abstract",
-    "why": "Structure-preserving PDF conversion option for chunking by section"
+    "why": "Structure-preserving PDF conversion option for chunking by section",
+    "key": "auer2024"
    },
    {
     "category": "Adaptation (deferred)",
@@ -2157,7 +2188,8 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2403.10131",
     "url": "https://arxiv.org/abs/2403.10131",
     "verified": "abstract",
-    "why": "Retrieval-aware fine-tuning, held back unless evaluation shows a generation gap"
+    "why": "Retrieval-aware fine-tuning, held back unless evaluation shows a generation gap",
+    "key": "zhang2024"
    },
    {
     "category": "Adaptation (deferred)",
@@ -2167,7 +2199,93 @@ window.DECK_PROJECTS = [
     "venue": "arXiv:2106.09685",
     "url": "https://arxiv.org/abs/2106.09685",
     "verified": "abstract",
-    "why": "Small swappable adapters, which keep later retraining cheap"
+    "why": "Small swappable adapters, which keep later retraining cheap",
+    "key": "hu2021"
+   }
+  ],
+  "tagline": "Local research agent over a tokenized library, inside the VELOCITY canon platform",
+  "caveat": {
+   "date": "Oct-16-2026",
+   "text": "Vetting comes first. Until known-answer tests show that tokenization returns the right passages, nothing downstream (agent loop, synthesis, canon platform) is built on it."
+  },
+  "components": [
+   {
+    "name": "Step 1: tokenize and vet",
+    "subtitle": "The known bottleneck",
+    "state": "active",
+    "summary": "A small corpus, tokenized and checked before anything is built on it. Initial ingest tests on sample papers are done; the vetting suite is the gate.",
+    "items": [
+     {
+      "label": "Corpus",
+      "detail": "A few papers and a few textbook chapters, chosen so their correct answers are known"
+     },
+     {
+      "label": "Ingest",
+      "detail": "Math-aware conversion of equations and tables [@blecher2023][@wang2024], chunks tagged with paper, section and version"
+     },
+     {
+      "label": "Index",
+      "detail": "Pretrained embeddings [@xiao2023][@wang2022][@nussbaum2024] plus keyword search for jargon and symbols [@robertson2009]"
+     },
+     {
+      "label": "LLM tests",
+      "detail": "Known-answer questions: does the correct passage come back near the top, and are out-of-corpus questions refused"
+     },
+     {
+      "label": "Unit tests",
+      "detail": "Equations, tables and section boundaries survive extraction intact"
+     }
+    ]
+   },
+   {
+    "name": "BEAM PIPE",
+    "subtitle": "The agent and the dense prompt",
+    "state": "next",
+    "summary": "The local model chooses its own tools (search the papers, search the record, open code, search again), loops until it can answer or says it cannot, and composes the dense prompt: restated question, definitions, equations and cited passages. It can propose actions but never commits them."
+   },
+   {
+    "name": "BEAM HALO",
+    "subtitle": "Cross-source synthesis",
+    "state": "next",
+    "summary": "A batch job that clusters passages across papers and sweeps open problems against the textbooks to surface connections. This is passage-level proximity; any deeper insight comes from reasoning over what was retrieved, so it is only as good as the retrieval."
+   },
+   {
+    "name": "VELOCITY",
+    "subtitle": "Four-layer canon platform",
+    "state": "next",
+    "summary": "Originally a separate idea, now the architecture BEAM runs inside. Agent output always lands in the dev layer; only a person promotes it to canon.",
+    "items": [
+     {
+      "label": "L0 Source",
+      "detail": "Original papers, stored or linked, read-only"
+     },
+     {
+      "label": "L1 Dev",
+      "detail": "Researcher notes, code and AI prompts; mutable; a per-project switch decides whether AI is allowed"
+     },
+     {
+      "label": "Lock gate",
+      "detail": "Promote, version, hash, sign off"
+     },
+     {
+      "label": "L2 Canon",
+      "detail": "Frozen bundle bound to its paper; never edited in place, changes make a new version"
+     },
+     {
+      "label": "L3 Site + AI",
+      "detail": "Agent and read-only tool server over canon: summarize, rerun on new data, cross-reference; new work forks back to L1"
+     },
+     {
+      "label": "Deployment",
+      "detail": "Full-stack site, or a static front end plus a local server the researcher starts for read and write"
+     }
+    ]
+   },
+   {
+    "name": "Training, deferred",
+    "subtitle": "Only if vetting shows misses",
+    "state": "next",
+    "summary": "Fine-tuning the embedding model or a reranker on question-passage pairs is cheap and keeps provenance, but waits until retrieval is measured to miss. Retrieval-aware fine-tuning and adapters stay on the shelf until then [@zhang2024][@hu2021]."
    }
   ],
   "logo": "projects/beam-agent/logo.webp",
