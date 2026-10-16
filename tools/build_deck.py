@@ -181,6 +181,24 @@ def normalize(src: Path, size: tuple[int, int]) -> Image.Image:
     return canvas
 
 
+def stamp_assets() -> None:
+    """Rewrite ?v= on CSS/JS links in index.html to a content hash.
+
+    Browsers cache stylesheets aggressively; a stale deck.css paired with a newer
+    index.html breaks the layout. A changed file gets a new URL, so it is always refetched.
+    """
+    import hashlib
+    page = ROOT / "index.html"
+    html = page.read_text(encoding="utf-8")
+    for rel in ("assets/css/deck.css", "assets/js/deck.js", "assets/js/registry.js"):
+        h = hashlib.sha1((ROOT / rel).read_bytes()).hexdigest()[:10]
+        html, n = re.subn(re.escape(rel) + r"(\?v=[\w-]*)?", f"{rel}?v={h}", html)
+        if not n:
+            print(f"  ! {rel} not referenced in index.html")
+    page.write_text(html, encoding="utf-8")
+    print("  stamped asset versions in index.html")
+
+
 def public_record(p: dict) -> dict:
     rec = {k: v for k, v in p.items() if not k.startswith("_")}
     rec["logo"] = f"projects/{p['id']}/logo.webp"
@@ -239,6 +257,7 @@ def main() -> int:
         f"window.DECK_PROJECTS = {payload};\n",
         encoding="utf-8",
     )
+    stamp_assets()
     kb = sum((p["_dir"] / f).stat().st_size for p in projs for f in ("logo.webp", "thumb.webp")) / 1024
     print(f"  wrote {REGISTRY.relative_to(ROOT)}  |  images {kb:.0f} KB total")
     print(f"done ({time.time() - t0:.1f}s)")
