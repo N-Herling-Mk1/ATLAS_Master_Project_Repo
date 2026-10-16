@@ -143,6 +143,15 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
             errs.append(f"{pid}: literature {i} duplicates an earlier title")
         seen.add(key)
 
+    for i, c in enumerate(p.get("components", []), 1):
+        if not c.get("name") or not c.get("summary"):
+            errs.append(f"{pid}: component {i} needs name and summary")
+        if c.get("state") and c["state"] not in TL_STATES:
+            errs.append(f"{pid}: component {i} state must be one of {sorted(TL_STATES)}")
+    for i, l in enumerate(p.get("links", []), 1):
+        if not (PROJ / str(l.get("project", "")) / "project.json").exists():
+            errs.append(f"{pid}: link {i} points at unknown project '{l.get('project')}'")
+
     for i, o in enumerate(p.get("open", []), 1):
         if o.get("kind") not in OPEN_KINDS:
             errs.append(f"{pid}: open {i} kind must be one of {sorted(OPEN_KINDS)}")
@@ -153,7 +162,11 @@ def leak_scan(p: dict) -> list[str]:
     # Everything a visitor can read. Literature titles/venues are scanned too
     # (an internal note masquerading as a reference is exactly the risk); URLs are not.
     text = " ".join(
-        [p.get("name", ""), p.get("expansion", "")]
+        [p.get("name", ""), p.get("expansion", ""), p.get("tagline", "")]
+        + [f"{c.get('name', '')} {c.get('subtitle', '')} {c.get('summary', '')} "
+           + " ".join(f"{it.get('label', '')} {it.get('detail', '')}" for it in c.get("items", []))
+           for c in p.get("components", [])]
+        + [f"{l.get('title', '')} {l.get('text', '')}" for l in p.get("links", [])]
         + [p.get("intro", {}).get(k, "") for k in INTRO_KEYS]
         + p.get("questions", [])
         + [o.get("text", "") for o in p.get("open", [])]

@@ -8,17 +8,22 @@
   "accent2": "#3b6bff",
   "code": "internal",
   "intro": {
-    "problem": "The ABCD method estimates background in a signal region from three control regions, but it only works if the two discriminants are independent for background, and in a small-sample detector region both that independence and the statistical test used to check it become fragile.",
-    "value": "A background method validated for low-statistics regions would extend data-driven estimation to regions that may hold real sensitivity, and would separate a closure test that passes on merit from one that passes only because its error bars are too wide to fail.",
-    "approach": "We re-establish clean baselines, then test variants one at a time: decorrelation-penalty sweeps, closure-aware loss terms, kernel models of the joint background, and pretraining on a higher-statistics region transferred to the small one.",
-    "goals": "The outcome is a reproducible baseline and a ranked set of estimator variants scored on closure with honest uncertainties, ending in a recommendation for which estimators hold up in small samples and which do not."
+    "problem": "The barrel region is data-starved: it holds too few background events to train on comfortably and too few to give the ABCD closure test real power, so a barrel closure test can pass simply because its error bars are too wide to fail.",
+    "value": "Techniques that recover usable statistics from a small region would let data-driven background estimation work where it cannot yet be trusted, and would separate estimators that close on merit from ones that only appear to.",
+    "approach": "STAVE is a set of barrel studies run against one shared baseline: a closure term built around the statistical noise floor, decorrelation and closure-weight sweeps across four loss configurations, and a network pretrained on the higher-statistics endcap and fine-tuned on the barrel. The joint-background model is developed in KERF and applied here.",
+    "goals": "The outcome is a reproducible barrel baseline, each technique scored on closure with honest uncertainties against that baseline, and a clear statement of which techniques actually recover statistical power in the barrel and which do not."
   },
   "questions": [
-    "Does a closure test in a small sample carry real evidence, or do wide error bars simply absorb a same-size error?",
-    "Can what a model learns in a high-statistics region transfer to a low-statistics one without importing that region's biases?",
-    "Which estimator choice (penalty, kernel, or pretraining) moves closure, and what does each cost in discrimination?"
+    "Does a barrel closure test carry real evidence, or do wide error bars simply absorb a same-size error?",
+    "Does a closure term built around the barrel's statistical noise floor improve closure, alone or combined with decorrelation?",
+    "Can a network pretrained on the higher-statistics endcap transfer to the barrel without importing the endcap's biases?"
   ],
   "timeline": [
+    {
+      "date": "2026-07",
+      "label": "First barrel test of the noise-floor closure term on a small sample",
+      "state": "done"
+    },
     {
       "date": "2026-10-05",
       "label": "Literature review of how barrel and endcap are handled in ABCD and LLP searches",
@@ -26,12 +31,7 @@
     },
     {
       "date": "2026-10-06",
-      "label": "Kernel-method ideas raised and first barrel plan outlined",
-      "state": "done"
-    },
-    {
-      "date": "2026-10",
-      "label": "Project named STAVE; ideas deck finished, with re-running the baseline as step one",
+      "label": "Barrel ideas deck: baseline re-run first, then closure term, pretraining and joint-background model",
       "state": "done"
     },
     {
@@ -40,19 +40,24 @@
       "state": "active"
     },
     {
-      "label": "Compare closure-term loss variants on a replicated grid",
+      "date": "2026-10-16",
+      "label": "Reframed as the barrel program; joint-background model moved to KERF",
+      "state": "done"
+    },
+    {
+      "label": "Run the four loss configurations across the λ and μ grid",
       "state": "next"
     },
     {
-      "label": "Test a kernel classifier against the neural-network baseline",
+      "label": "Replicate the noise-floor closure term across seeds",
       "state": "next"
     },
     {
-      "label": "Test pretraining on the larger region and transferring to the smaller one",
+      "label": "Test endcap pretraining against a barrel-only control",
       "state": "next"
     },
     {
-      "label": "Plan a kernel-based model of the joint background",
+      "label": "Apply the KERF joint-background model to the barrel",
       "state": "next"
     }
   ],
@@ -246,6 +251,66 @@
       "url": "https://doi.org/10.22323/1.485.0565",
       "verified": "full",
       "why": "How endcap triggering changed in Run 3"
+    }
+  ],
+  "tagline": "Barrel program: techniques for a data-starved region",
+  "components": [
+    {
+      "name": "DNC_FLR",
+      "subtitle": "Noise-floor closure term",
+      "state": "next",
+      "summary": "A closure-aware loss term that subtracts the expected statistical noise floor from the measured closure error, with no hinge, so training is penalized only for non-closure the data can actually resolve. Built for low-count regions; early barrel evidence is promising but thin and needs a replicated grid."
+    },
+    {
+      "name": "Loss sweeps",
+      "subtitle": "λ and μ across four configurations",
+      "state": "active",
+      "summary": "Every configuration is swept on the same shared grid and graded with the same pre-registered closure framework, so the arms are directly comparable. λ weights the decorrelation penalty; μ weights the closure term.",
+      "items": [
+        {
+          "label": "BCE",
+          "detail": "Plain classifier, no penalty: the control every other arm is measured against"
+        },
+        {
+          "label": "BCE + DisCo",
+          "detail": "Decorrelation penalty, swept in λ"
+        },
+        {
+          "label": "BCE + DNC_FLR",
+          "detail": "Noise-floor closure term, swept in μ"
+        },
+        {
+          "label": "BCE + DNC_FLR + DisCo",
+          "detail": "Both terms, swept on the λ × μ grid"
+        }
+      ]
+    },
+    {
+      "name": "Endcap pretraining",
+      "subtitle": "Borrow statistics from the larger region",
+      "state": "next",
+      "summary": "Train on the endcap, which has a far larger background sample, then adapt to the barrel. Only the features both regions share can transfer, and a barrel-only network trained from scratch is the control.",
+      "items": [
+        {
+          "label": "Fine-tune",
+          "detail": "Pretrain the whole network on the endcap, then fine-tune on the barrel"
+        },
+        {
+          "label": "Shared trunk",
+          "detail": "One trunk trained on both regions, with a separate head per region"
+        },
+        {
+          "label": "Frozen trunk",
+          "detail": "Freeze the endcap trunk and train only a barrel head"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "project": "kerf",
+      "title": "Joint probability model",
+      "text": "Instead of removing the dependence between the two discriminants in training, model the joint background directly and use it for the barrel's ABCD estimate. The model is built and vetted in KERF; STAVE is where it is applied to the barrel."
     }
   ]
 }

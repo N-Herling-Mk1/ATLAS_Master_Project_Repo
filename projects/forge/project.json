@@ -2,7 +2,7 @@
   "id": "forge",
   "order": 9,
   "name": "FORGE",
-  "expansion": "Posterior Observatory",
+  "expansion": "Functional-posterior Observatory for Refinement and Geometric Exploration",
   "status": "active",
   "accent": "#22c8ff",
   "accent2": "#ff9a2a",
@@ -20,35 +20,175 @@
     "Can the same uncertainty measures be compared across classification and regression models?"
   ],
   "open": [
-    {"kind": "question", "text": "Does a training penalty that is not a likelihood, such as a decorrelation or closure term, belong in the posterior's curvature?"},
-    {"kind": "question", "text": "When two networks share one label, should the joint posterior use a sandwich correction or be declared a Gibbs measure over the training objective?"},
-    {"kind": "question", "text": "What is the posterior on the background estimate itself, propagated through both networks and the region cuts?"},
-    {"kind": "question", "text": "Should epistemic variance be reported in logit space or probability space when the two disagree?"},
-    {"kind": "lesson", "text": "The fast Laplace path over-states epistemic variance against the sampler on every board tested; no correction has been applied."},
-    {"kind": "lesson", "text": "Rank-based input scaling rescued heavy-tailed features that min-max scaling silently flattened; not yet carried into the current analysis line."},
-    {"kind": "lesson", "text": "Selecting checkpoints on the fold being graded biases the reported metric; the current trainers have not been audited for it."},
-    {"kind": "gap", "text": "The public site serves only the splash; the dashboard is built but not wired in behind it."}
+    {
+      "kind": "question",
+      "text": "Does a training penalty that is not a likelihood, such as a decorrelation or closure term, belong in the posterior's curvature?"
+    },
+    {
+      "kind": "question",
+      "text": "When two networks share one label, should the joint posterior use a sandwich correction or be declared a Gibbs measure over the training objective?"
+    },
+    {
+      "kind": "question",
+      "text": "What is the posterior on the background estimate itself, propagated through both networks and the region cuts?"
+    },
+    {
+      "kind": "question",
+      "text": "Should epistemic variance be reported in logit space or probability space when the two disagree?"
+    },
+    {
+      "kind": "lesson",
+      "text": "The fast Laplace path over-states epistemic variance against the sampler on every board tested; no correction has been applied."
+    },
+    {
+      "kind": "lesson",
+      "text": "Rank-based input scaling rescued heavy-tailed features that min-max scaling silently flattened; not yet carried into the current analysis line."
+    },
+    {
+      "kind": "lesson",
+      "text": "Selecting checkpoints on the fold being graded biases the reported metric; the current trainers have not been audited for it."
+    },
+    {
+      "kind": "gap",
+      "text": "The public site serves only the splash; the dashboard is built but not wired in behind it."
+    }
   ],
   "timeline": [
-    {"date": "2026-05-18", "label": "Capstone opens: Bayesian posterior observatory proposed", "state": "done"},
-    {"date": "2026-06-03", "label": "Vetted literature review: Laplace, HMC, calibration, visualization", "state": "done"},
-    {"date": "2026-07-16", "label": "Site public; first experiment served live", "state": "done"},
-    {"date": "2026-08-05", "label": "Base measure locked: variance decomposition, four metrics", "state": "done"},
-    {"date": "2026-08-07", "label": "All three experiments exported to the board", "state": "done"},
-    {"date": "2026-08-10", "label": "Dashboard and sampler cross-check built; final report signed", "state": "done"},
-    {"date": "2026-08-13", "label": "Publication thread opened for the genre and phonon results", "state": "done"},
-    {"label": "Wire the dashboard in behind the public splash", "state": "next"},
-    {"label": "Resolve the open posterior questions; apply lessons to the analysis line", "state": "next"}
+    {
+      "date": "2026-05-18",
+      "label": "Capstone opens: Bayesian posterior observatory proposed",
+      "state": "done"
+    },
+    {
+      "date": "2026-06-03",
+      "label": "Vetted literature review: Laplace, HMC, calibration, visualization",
+      "state": "done"
+    },
+    {
+      "date": "2026-07-16",
+      "label": "Site public; first experiment served live",
+      "state": "done"
+    },
+    {
+      "date": "2026-08-05",
+      "label": "Base measure locked: variance decomposition, four metrics",
+      "state": "done"
+    },
+    {
+      "date": "2026-08-07",
+      "label": "All three experiments exported to the board",
+      "state": "done"
+    },
+    {
+      "date": "2026-08-10",
+      "label": "Dashboard and sampler cross-check built; final report signed",
+      "state": "done"
+    },
+    {
+      "date": "2026-08-13",
+      "label": "Publication thread opened for the genre and phonon results",
+      "state": "done"
+    },
+    {
+      "label": "Wire the dashboard in behind the public splash",
+      "state": "next"
+    },
+    {
+      "label": "Resolve the open posterior questions; apply lessons to the analysis line",
+      "state": "next"
+    }
   ],
   "literature": [
-    {"category": "Laplace approximation", "authors": "D. J. C. MacKay", "year": 1992, "title": "A Practical Bayesian Framework for Backpropagation Networks", "venue": "Neural Computation 4(3)", "url": "https://doi.org/10.1162/neco.1992.4.3.448", "verified": "full", "why": "Laplace posterior and evidence-based prior tuning used for the fast path"},
-    {"category": "Laplace approximation", "authors": "Kristiadi et al.", "year": 2020, "title": "Being Bayesian, Even Just a Bit, Fixes Overconfidence in ReLU Networks", "venue": "ICML 2020, arXiv:2002.10118", "url": "https://arxiv.org/abs/2002.10118", "verified": "full", "why": "Justifies a last-layer-only posterior"},
-    {"category": "Laplace approximation", "authors": "Daxberger et al.", "year": 2021, "title": "Laplace Redux: Effortless Bayesian Deep Learning", "venue": "NeurIPS 2021, arXiv:2106.14806", "url": "https://arxiv.org/abs/2106.14806", "verified": "full", "why": "Makes last-layer Laplace fast enough to drive a live dashboard"},
-    {"category": "Sampling", "authors": "R. M. Neal", "year": 2011, "title": "MCMC Using Hamiltonian Dynamics", "venue": "Handbook of MCMC, arXiv:1206.1901", "url": "https://arxiv.org/abs/1206.1901", "verified": "full", "why": "The sampler used as the reference posterior"},
-    {"category": "Sampling", "authors": "M. D. Hoffman, A. Gelman", "year": 2014, "title": "The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo", "venue": "JMLR 15, arXiv:1111.4246", "url": "https://arxiv.org/abs/1111.4246", "verified": "full", "why": "NUTS with dual averaging, the sampler actually run"},
-    {"category": "Sampling", "authors": "Izmailov et al.", "year": 2021, "title": "What Are Bayesian Neural Network Posteriors Really Like?", "venue": "ICML 2021, arXiv:2104.14421", "url": "https://arxiv.org/abs/2104.14421", "verified": "full", "why": "Why HMC is the reference that approximations are judged against"},
-    {"category": "Uncertainty decomposition", "authors": "A. Kendall, Y. Gal", "year": 2017, "title": "What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?", "venue": "NeurIPS 2017, arXiv:1703.04977", "url": "https://arxiv.org/abs/1703.04977", "verified": "full", "why": "Aleatoric versus epistemic split that the dashboard reports"},
-    {"category": "Uncertainty decomposition", "authors": "E. Hüllermeier, W. Waegeman", "year": 2021, "title": "Aleatoric and Epistemic Uncertainty in Machine Learning: An Introduction to Concepts and Methods", "venue": "Machine Learning 110, arXiv:1910.09457", "url": "https://arxiv.org/abs/1910.09457", "verified": "full", "why": "Conceptual basis for reducible versus irreducible uncertainty"},
-    {"category": "Open questions", "authors": "C. Varin, N. Reid, D. Firth", "year": 2011, "title": "An Overview of Composite Likelihood Methods", "venue": "Statistica Sinica 21(1)", "url": "https://www3.stat.sinica.edu.tw/statistica/j21n1/J21N11/J21N11.html", "verified": "full", "why": "Sandwich correction for the shared-label two-network likelihood"}
-  ]
+    {
+      "category": "Laplace approximation",
+      "authors": "D. J. C. MacKay",
+      "year": 1992,
+      "title": "A Practical Bayesian Framework for Backpropagation Networks",
+      "venue": "Neural Computation 4(3)",
+      "url": "https://doi.org/10.1162/neco.1992.4.3.448",
+      "verified": "full",
+      "why": "Laplace posterior and evidence-based prior tuning used for the fast path"
+    },
+    {
+      "category": "Laplace approximation",
+      "authors": "Kristiadi et al.",
+      "year": 2020,
+      "title": "Being Bayesian, Even Just a Bit, Fixes Overconfidence in ReLU Networks",
+      "venue": "ICML 2020, arXiv:2002.10118",
+      "url": "https://arxiv.org/abs/2002.10118",
+      "verified": "full",
+      "why": "Justifies a last-layer-only posterior"
+    },
+    {
+      "category": "Laplace approximation",
+      "authors": "Daxberger et al.",
+      "year": 2021,
+      "title": "Laplace Redux: Effortless Bayesian Deep Learning",
+      "venue": "NeurIPS 2021, arXiv:2106.14806",
+      "url": "https://arxiv.org/abs/2106.14806",
+      "verified": "full",
+      "why": "Makes last-layer Laplace fast enough to drive a live dashboard"
+    },
+    {
+      "category": "Sampling",
+      "authors": "R. M. Neal",
+      "year": 2011,
+      "title": "MCMC Using Hamiltonian Dynamics",
+      "venue": "Handbook of MCMC, arXiv:1206.1901",
+      "url": "https://arxiv.org/abs/1206.1901",
+      "verified": "full",
+      "why": "The sampler used as the reference posterior"
+    },
+    {
+      "category": "Sampling",
+      "authors": "M. D. Hoffman, A. Gelman",
+      "year": 2014,
+      "title": "The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo",
+      "venue": "JMLR 15, arXiv:1111.4246",
+      "url": "https://arxiv.org/abs/1111.4246",
+      "verified": "full",
+      "why": "NUTS with dual averaging, the sampler actually run"
+    },
+    {
+      "category": "Sampling",
+      "authors": "Izmailov et al.",
+      "year": 2021,
+      "title": "What Are Bayesian Neural Network Posteriors Really Like?",
+      "venue": "ICML 2021, arXiv:2104.14421",
+      "url": "https://arxiv.org/abs/2104.14421",
+      "verified": "full",
+      "why": "Why HMC is the reference that approximations are judged against"
+    },
+    {
+      "category": "Uncertainty decomposition",
+      "authors": "A. Kendall, Y. Gal",
+      "year": 2017,
+      "title": "What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?",
+      "venue": "NeurIPS 2017, arXiv:1703.04977",
+      "url": "https://arxiv.org/abs/1703.04977",
+      "verified": "full",
+      "why": "Aleatoric versus epistemic split that the dashboard reports"
+    },
+    {
+      "category": "Uncertainty decomposition",
+      "authors": "E. Hüllermeier, W. Waegeman",
+      "year": 2021,
+      "title": "Aleatoric and Epistemic Uncertainty in Machine Learning: An Introduction to Concepts and Methods",
+      "venue": "Machine Learning 110, arXiv:1910.09457",
+      "url": "https://arxiv.org/abs/1910.09457",
+      "verified": "full",
+      "why": "Conceptual basis for reducible versus irreducible uncertainty"
+    },
+    {
+      "category": "Open questions",
+      "authors": "C. Varin, N. Reid, D. Firth",
+      "year": 2011,
+      "title": "An Overview of Composite Likelihood Methods",
+      "venue": "Statistica Sinica 21(1)",
+      "url": "https://www3.stat.sinica.edu.tw/statistica/j21n1/J21N11/J21N11.html",
+      "verified": "full",
+      "why": "Sandwich correction for the shared-label two-network likelihood"
+    }
+  ],
+  "tagline": "Posterior observatory: is a model's confidence earned?"
 }

@@ -180,10 +180,47 @@ img { display: block; max-width: 100%; height: auto; }
   font-size: clamp(30px, 4.4vw, 58px); letter-spacing: .14em; line-height: 1.05;
   text-shadow: 0 0 24px var(--a-soft);
 }
+.dossier h2 .dot { color: var(--a); text-shadow: 0 0 14px var(--a-glow); letter-spacing: .06em; }
 .expansion {
-  margin: 8px 0 22px; font-family: var(--f-mono); font-size: clamp(13px, 1.25vw, 16px);
-  color: var(--a); letter-spacing: .06em; transition: color .4s;
+  margin: 12px 0 14px; font-family: var(--f-display); font-weight: 500;
+  font-size: clamp(16px, 1.55vw, 22px); line-height: 1.4; letter-spacing: .06em;
+  color: var(--a); transition: color .4s;
 }
+.expansion.acro { color: #c4cad4; }
+.expansion .init {
+  color: var(--a); font-weight: 900; font-size: 1.22em;
+  text-shadow: 0 0 12px var(--a-glow);
+}
+.tagline {
+  margin: 0 0 20px; font-family: var(--f-mono); font-size: 13px; letter-spacing: .14em;
+  color: var(--a2); text-transform: uppercase;
+}
+.expansion + .intro, .expansion + .tagline[hidden] + .intro { margin-top: 22px; }
+
+/* ---------- program components ---------- */
+.program { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 10px; max-width: 72ch; }
+.prog { border: 1px solid var(--line); border-left: 3px solid var(--a); background: var(--panel); padding: 14px 16px; scroll-margin-top: 16px; }
+.prog.st-next { border-left-color: var(--dim); }
+.prog-head { display: flex; align-items: baseline; gap: 12px; }
+.prog-n { font-family: var(--f-mono); font-size: 12px; color: var(--dim); }
+.prog-name { font-family: var(--f-display); font-weight: 900; font-size: 17px; letter-spacing: .1em; color: var(--text); }
+.prog-state { margin-left: auto; font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; padding: 2px 8px; border: 1px solid var(--line); color: var(--muted); }
+.prog.st-active .prog-state { color: var(--a2); border-color: var(--a2); }
+.prog.st-done .prog-state { color: #2fe08a; border-color: #2fe08a; }
+.prog-sub { margin: 4px 0 8px 32px; font-family: var(--f-mono); font-size: 13px; color: var(--a); letter-spacing: .04em; }
+.prog-sum { margin: 0 0 0 32px; font-size: 14px; line-height: 1.55; color: var(--text); }
+.prog-items { margin: 10px 0 0 32px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 13px; }
+.prog-items dt { font-family: var(--f-mono); color: var(--a2); white-space: nowrap; }
+.prog-items dd { margin: 0; color: var(--muted); line-height: 1.45; }
+
+/* ---------- cross-project links ---------- */
+.xlinks { display: grid; gap: 10px; margin: 0 0 24px; max-width: 72ch; }
+.xlink { display: grid; grid-template-columns: 160px 1fr; gap: 16px; align-items: center; padding: 12px; border: 1px solid color-mix(in srgb, var(--xc) 45%, var(--line)); background: var(--panel); }
+.xlink img { width: 160px; height: 100px; object-fit: cover; background: #000; border: 1px solid var(--line); }
+.xl-kicker { margin: 0 0 6px; font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; color: var(--xc); }
+.xl-text { margin: 0 0 10px; font-size: 14px; line-height: 1.5; }
+.xl-go { font-family: var(--f-display); font-weight: 700; font-size: 12px; letter-spacing: .16em; padding: 7px 12px; border: 1px solid var(--xc); color: var(--xc); transition: background .15s, color .15s; }
+.xl-go:hover, .xl-go:focus-visible { background: var(--xc); color: #000; outline: none; }
 .intro {
   margin: 0 0 26px; font-size: clamp(15px, 1.15vw, 17px); line-height: 1.68; color: var(--text);
   max-width: 68ch; padding-left: 16px; border-left: 2px solid var(--a);
@@ -299,6 +336,11 @@ img { display: block; max-width: 100%; height: auto; }
   .deck-nav { gap: 6px; }
   .nav-btn { width: 32px; height: 32px; }
   .open-items li { grid-template-columns: 1fr; gap: 4px; }
+  .xlink { grid-template-columns: 1fr; }
+  .xlink img { width: 100%; height: auto; aspect-ratio: 16 / 10; }
+  .prog-sub, .prog-sum, .prog-items { margin-left: 0; }
+  .prog-items { grid-template-columns: 1fr; gap: 2px; }
+  .prog-items dd { margin-bottom: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

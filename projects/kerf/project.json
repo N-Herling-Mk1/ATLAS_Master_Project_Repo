@@ -165,5 +165,12 @@
       "verified": "abstract",
       "why": "InfoNCE critic learns the log density ratio, i.e. the copula"
     }
+  ],
+  "links": [
+    {
+      "project": "stave",
+      "title": "Applied in the barrel program",
+      "text": "The barrel is the region where a factorized estimate is least trustworthy and statistics are thinnest. STAVE applies this joint-background model there and scores it against the shared barrel baseline."
+    }
   ]
 }

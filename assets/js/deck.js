@@ -44,8 +44,10 @@
     const st = $("k-status");
     st.textContent = p.status.toUpperCase();
     st.className = `status st-${p.status}`;
-    $("p-name").textContent = p.name;
-    $("p-exp").textContent = p.expansion;
+    renderTitle(p);
+    const tg = $("p-tagline");
+    tg.hidden = !p.tagline;
+    tg.textContent = p.tagline || "";
 
     const t = p.intro;
     $("p-intro").textContent = [t.problem, t.value, t.approach, t.goals].join(" ");
@@ -53,6 +55,8 @@
     const ol = $("p-questions");
     ol.replaceChildren(...p.questions.map((q) => { const li = document.createElement("li"); li.textContent = q; return li; }));
 
+    renderProgram(p.components || []);
+    renderLinks(p.links || []);
     renderOpen(p.open || []);
     renderTimeline(p.timeline || []);
     renderLiterature(p.literature || []);
@@ -84,6 +88,114 @@
 
   // ---- sections ------------------------------------------------------------
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  // ---- acronym title + expansion ---------------------------------------------
+  // Find, for each letter of the acronym, the character in the expansion that spells it:
+  //   1) next word-initial with that letter   (Topology Refinement Under ...)
+  //   2) next exact capital inside a word     (eXperiment, tokeNs)
+  //   3) any unused word-initial, out of order (Game-Theoretic -> the T in GAMBIT)
+  // Names with spaces, or any letter that can't be placed, are not treated as acronyms.
+  function acronymMarks(name, exp) {
+    if (/\s/.test(name.trim())) return null;
+    const letters = name.replace(/[^A-Za-z]/g, "").toUpperCase();
+    const starts = [];
+    exp.replace(/[A-Za-z][A-Za-z']*/g, (w, i) => { starts.push(i); return w; });
+    const used = new Set();
+    let pos = 0;
+    for (const L of letters) {
+      let hit = starts.find((i) => i >= pos && !used.has(i) && exp[i].toUpperCase() === L);
+      if (hit === undefined) {
+        const j = exp.indexOf(L, pos);
+        if (j >= 0 && !used.has(j)) hit = j;
+      }
+      if (hit === undefined) {
+        hit = starts.find((i) => !used.has(i) && exp[i].toUpperCase() === L);
+        if (hit === undefined) return null;
+        used.add(hit);
+        continue;                                   // out-of-order match: keep scanning from pos
+      }
+      used.add(hit);
+      pos = hit + 1;
+    }
+    return used;
+  }
+
+  function renderTitle(p) {
+    const h = $("p-name"), x = $("p-exp");
+    const marks = acronymMarks(p.name, p.expansion || "");
+    h.setAttribute("aria-label", p.name);
+    x.replaceChildren();
+    if (!marks) {
+      h.replaceChildren(document.createTextNode(p.name));
+      x.textContent = p.expansion || "";
+      x.classList.remove("acro");
+      return;
+    }
+    const chars = [...p.name.replace(/[^A-Za-z]/g, "")];
+    h.replaceChildren(...chars.flatMap((c, i) => {
+      const s = el("span", null, c);
+      s.setAttribute("aria-hidden", "true");
+      if (i === chars.length - 1) return [s];
+      const d = el("span", "dot", ".");
+      d.setAttribute("aria-hidden", "true");
+      return [s, d];
+    }));
+    x.classList.add("acro");
+    const e = p.expansion;
+    let buf = "";
+    for (let i = 0; i < e.length; i++) {
+      if (marks.has(i)) {
+        if (buf) { x.append(document.createTextNode(buf)); buf = ""; }
+        x.append(el("b", "init", e[i]));
+      } else buf += e[i];
+    }
+    if (buf) x.append(document.createTextNode(buf));
+  }
+
+  const STATE_TAG = { done: "DONE", active: "IN PROGRESS", next: "PLANNED" };
+
+  function renderProgram(comps) {
+    $("p-program-wrap").hidden = !comps.length;
+    $("p-program").replaceChildren(...comps.map((c, i) => {
+      const li = el("li", `prog st-${c.state || "next"}`);
+      li.id = `prog-${i}`;
+      const head = el("div", "prog-head");
+      head.append(el("span", "prog-n", pad(i + 1)), el("span", "prog-name", c.name));
+      if (c.state) head.append(el("span", "prog-state", STATE_TAG[c.state]));
+      li.append(head);
+      if (c.subtitle) li.append(el("p", "prog-sub", c.subtitle));
+      li.append(el("p", "prog-sum", c.summary));
+      if (c.items && c.items.length) {
+        const dl = el("dl", "prog-items");
+        c.items.forEach((it) => dl.append(el("dt", null, it.label), el("dd", null, it.detail)));
+        li.append(dl);
+      }
+      return li;
+    }));
+  }
+
+  function renderLinks(links) {
+    $("p-links-wrap").hidden = !links.length;
+    $("p-links").replaceChildren(...links.map((l) => {
+      const tgt = P.find((q) => q.id === l.project);
+      const card = el("div", "xlink");
+      if (!tgt) return card;
+      card.style.setProperty("--xc", tgt.accent);
+      const img = el("img");
+      img.src = tgt.thumb; img.alt = ""; img.width = 160; img.height = 100;
+      const body = el("div", "xl-body");
+      body.append(el("p", "xl-kicker", `${tgt.name} · ${l.title}`), el("p", "xl-text", l.text));
+      const btn = el("button", "xl-go", `OPEN ${tgt.name} ▶`);
+      btn.type = "button";
+      btn.addEventListener("click", () => {
+        go(P.indexOf(tgt));
+        scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+      });
+      body.append(btn);
+      card.append(img, body);
+      return card;
+    }));
+  }
   const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
   const fmtDate = (d) => {
     if (!d) return "NEXT";
@@ -152,6 +264,9 @@
     const cats = [...new Set(lit.map((r) => r.category))];
     const items = [
       { id: "sec-overview", label: "OVERVIEW" },
+      (p.components || []).length && { id: "sec-program", label: "PROGRAM", n: p.components.length,
+        sub: p.components.map((c, j) => ({ id: `prog-${j}`, label: c.name.toUpperCase() })) },
+      (p.links || []).length && { id: "sec-links", label: "LINKED PROJECTS", n: p.links.length },
       { id: "sec-questions", label: "QUESTIONS", n: p.questions.length },
       (p.open || []).length && { id: "p-open-wrap", label: "OPEN ITEMS", n: p.open.length },
       { id: "sec-progress", label: "PROGRESS", n: (p.timeline || []).length },
