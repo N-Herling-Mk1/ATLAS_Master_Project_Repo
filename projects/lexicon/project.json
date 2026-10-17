@@ -55,6 +55,19 @@
       "state": "done"
     },
     {
+      "date": "2026-10-15",
+      "label": "Route A variant plan drafted: variant list and pre-registered evaluation; GRU kept as a density model",
+      "state": "done"
+    },
+    {
+      "label": "Route A variant evaluation under review before any run",
+      "state": "active"
+    },
+    {
+      "label": "Barrel comparison against the refined network rounds",
+      "state": "next"
+    },
+    {
       "label": "Multi-seed confirmation; endcap regularized networks",
       "state": "next"
     },
@@ -487,20 +500,24 @@
     {
       "name": "Route A variant",
       "subtitle": "Exact likelihood",
-      "state": "next",
-      "summary": "The transformer's pseudo-likelihood is not a normalized density and undercounts redundant features that predict each other. An autoregressive model gives an exact negative log-likelihood by the chain rule, which holds for any feature order, so the ordering that rules recurrence out of a classifier is legitimate for a density.",
+      "state": "active",
+      "summary": "The transformer's pseudo-likelihood is not a normalized density and undercounts redundant features that predict each other. An autoregressive model gives an exact negative log-likelihood by the chain rule, which holds for any feature order, so the ordering that rules recurrence out of a classifier is legitimate for a density. Status: the variants and a pre-registered evaluation are written down and under review; nothing has run yet. Runs start in the barrel, and only variants that pass there go on to the endcap.",
       "items": [
         {
-          "label": "MADE",
-          "detail": "Masked autoregressive MLP, proposed default [@germain2015]"
+          "label": "Exact count models",
+          "detail": "Tree and small-graph models of pair counts: an exact likelihood with no training seed"
         },
         {
-          "label": "Causal CutFormer",
-          "detail": "Same transformer with a causal mask, isolating the pseudo-to-exact change"
+          "label": "MADE",
+          "detail": "Masked autoregressive MLP [@germain2015]; set aside for a model that shares weights across orders, kept as a control"
+        },
+        {
+          "label": "Any-order CutFormer",
+          "detail": "Same transformer trained over random orders, giving an exact likelihood averaged across them"
         },
         {
           "label": "GRU",
-          "detail": "Recurrent comparison over a fixed feature order [@cho2014]"
+          "detail": "Background-only recurrent density over a fixed feature order [@cho2014]; kept because barrel runs are cheap"
         },
         {
           "label": "Order ensemble",
@@ -508,7 +525,7 @@
         },
         {
           "label": "Gates",
-          "detail": "Per-feature sigmoid gates showing which features carry the surprise"
+          "detail": "Per-feature sigmoid gates showing which features carry the surprise; deferred"
         }
       ]
     },
