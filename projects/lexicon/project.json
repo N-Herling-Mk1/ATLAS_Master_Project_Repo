@@ -10,8 +10,8 @@
   "intro": {
     "problem": "Detector events are treated as vectors of continuous features, and the co-occurrence tools that let language models learn structure [@levy2014] have barely been tried on whether events carry a grammar of their own; the closest precedent tokenizes whole events for anomaly detection [@visive2025].",
     "value": "If they do, a token model trained only on background could score how typical an event is, giving a new axis for a data-driven background estimate, and token embeddings could become a new kind of classifier input, as tokenized jets already have [@finke2023][@birk2024].",
-    "approach": "Each feature is quantized into a few levels with evidence-based edges [@scargle2013], so an event becomes a set of tokens. Route A trains background-only density models, from independence and pair and triple counts to a masked-token transformer, and uses their surprise as an ABCD axis; its next variant swaps in exact likelihoods from a GRU or masked autoregressive model [@cho2014][@germain2015]. Route B trains on tokens with labels.",
-    "goals": "The goal is a clear verdict on whether tokens add information beyond the raw features: Route A has answered as an ABCD axis, and the exact-likelihood variant and Route B now test whether that structure can be turned into discrimination."
+    "approach": "Each feature is quantized into a few levels with evidence-based edges [@scargle2013], so an event becomes a set of tokens. Route A trains background-only density models on one network's features and uses their surprise as an ABCD axis opposite the other network; exact likelihoods from a GRU or autoregressive model come next [@cho2014][@germain2015]. Route B trains on tokens with labels.",
+    "goals": "The goal is a clear verdict on whether tokens add information beyond the raw features, tested fairly: each token axis sees only the features of the network it replaces. First results, built before that rule, are kept as a baseline; the separated models, exact likelihoods and Route B now decide whether token structure becomes usable discrimination."
   },
   "questions": [
     "Does co-occurrence among binned detector features carry signal-versus-background information beyond the raw values?",
@@ -60,8 +60,22 @@
       "state": "done"
     },
     {
+      "date": "2026-10-17",
+      "label": "Endcap compared against every regularized network job",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-17",
+      "label": "Feature-set separation adopted: each token axis built only from the features of the network it replaces",
+      "state": "done"
+    },
+    {
       "label": "Route A variant evaluation under review before any run",
       "state": "active"
+    },
+    {
+      "label": "Separated-feature surprise in both regions, count models first",
+      "state": "next"
     },
     {
       "label": "Barrel comparison against the refined network rounds",
@@ -477,7 +491,7 @@
       "name": "Route A",
       "subtitle": "Background-only surprise as an ABCD axis",
       "state": "done",
-      "summary": "Token models trained on background alone score how surprising each event is, and that score replaces one network as an axis of the ABCD plane. Signal labels and network scores never enter the token models, so the axis can be independent.",
+      "summary": "Token models trained on background alone score how surprising each event is, and that score replaces one network as an axis of the ABCD plane. Signal labels and network scores never enter the token models, and each model sees only the features of the network it replaces, so the axis can be independent of the other. Two such models, one per network, also give a plane with no labels on either axis.",
       "items": [
         {
           "label": "Independence",
@@ -554,8 +568,8 @@
   ],
   "results": [
     {
-      "title": "Route A is dominated",
-      "text": "Surprise often closes as an ABCD axis in the barrel, but only because it carries little signal: at matched closure the network pair keeps far more signal in the signal region, consistently across every barrel job. The verdict is solid."
+      "title": "First comparisons are a baseline",
+      "text": "Summed surprise was first built from every feature, so it shared inputs with the network it was paired with. In the barrel it closed often but carried little signal; in the endcap it came about as close to closure as the regularized network pairs while keeping less signal in the signal region. Because of the shared inputs, neither result is a fair test; both are being rerun with separated features."
     },
     {
       "title": "Background tokens predict each other",
@@ -575,7 +589,7 @@
     },
     {
       "title": "Not yet a measurement",
-      "text": "Significance comparisons are single-seed, the endcap has only the plain network so far, and the surprise sign was chosen after seeing data. Multi-seed confirmation comes first."
+      "text": "Comparisons are single-seed, use the wide first-round network sweep rather than the refined models, and pick the surprise sign after seeing data; the separated-feature runs come first, then multiple seeds."
     }
   ]
 }
