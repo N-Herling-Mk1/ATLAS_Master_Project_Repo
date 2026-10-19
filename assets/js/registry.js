@@ -1445,7 +1445,7 @@ window.DECK_PROJECTS = [
     "state": "next"
    },
    {
-    "label": "Multi-seed confirmation; endcap regularized networks",
+    "label": "Multi-seed confirmation on new folds, with a raw-variable control",
     "state": "next"
    },
    {
