@@ -90,6 +90,11 @@
       "state": "done"
     },
     {
+      "date": "2026-10-19",
+      "label": "Transformer tests added to every route, each read against a matched model whose attention cannot choose",
+      "state": "done"
+    },
+    {
       "label": "Code of record for the confirmation runs: tests for every tool, raw-variable control, rebuild on new folds",
       "state": "active"
     },
@@ -99,6 +104,10 @@
     },
     {
       "label": "Multi-seed confirmation on new folds, with a raw-variable control",
+      "state": "next"
+    },
+    {
+      "label": "Attention test: does the transformer's attention, not its size, carry the background structure?",
       "state": "next"
     },
     {
@@ -533,6 +542,61 @@
       "url": "https://doi.org/10.1098/rsta.1933.0009",
       "verified": "abstract",
       "why": "The likelihood ratio is the most powerful test; the basis of Route A3"
+    },
+    {
+      "key": "vaswani2017",
+      "category": "Attention",
+      "authors": "Vaswani et al.",
+      "year": 2017,
+      "title": "Attention Is All You Need",
+      "venue": "NeurIPS 2017; arXiv:1706.03762",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "verified": "abstract",
+      "why": "The transformer and self-attention, the basis of the token models"
+    },
+    {
+      "key": "zaheer2017",
+      "category": "Attention",
+      "authors": "Zaheer et al.",
+      "year": 2017,
+      "title": "Deep Sets",
+      "venue": "NeurIPS 2017; arXiv:1703.06114",
+      "url": "https://arxiv.org/abs/1703.06114",
+      "verified": "abstract",
+      "why": "Order-free set models without attention; the shape of the uniform-attention control"
+    },
+    {
+      "key": "lee2019",
+      "category": "Attention",
+      "authors": "Lee et al.",
+      "year": 2019,
+      "title": "Set Transformer: A Framework for Attention-based Permutation-Invariant Neural Networks",
+      "venue": "ICML 2019; arXiv:1810.00825",
+      "url": "https://arxiv.org/abs/1810.00825",
+      "verified": "abstract",
+      "why": "Attention pooling over a set with a learned query, proposed for event vectors"
+    },
+    {
+      "key": "jain2019",
+      "category": "Attention",
+      "authors": "Jain and Wallace",
+      "year": 2019,
+      "title": "Attention is not Explanation",
+      "venue": "NAACL 2019; arXiv:1902.10186",
+      "url": "https://arxiv.org/abs/1902.10186",
+      "verified": "abstract",
+      "why": "Attention weights often fail to identify the inputs that drive a prediction"
+    },
+    {
+      "key": "wiegreffe2019",
+      "category": "Attention",
+      "authors": "Wiegreffe and Pinter",
+      "year": 2019,
+      "title": "Attention is not not Explanation",
+      "venue": "EMNLP 2019; arXiv:1908.04626",
+      "url": "https://arxiv.org/abs/1908.04626",
+      "verified": "abstract",
+      "why": "The rebuttal: attention can explain only under tests; why maps are a cross-check here"
     }
   ],
   "tagline": "Detector events as tokens: does an event have a grammar?",
@@ -553,11 +617,15 @@
         },
         {
           "label": "CutFormer",
-          "detail": "Masked-token transformer with feature-ID embeddings and no positions [@golling2024]; the best model in the endcap"
+          "detail": "Masked-token transformer with feature-ID embeddings and no positions [@golling2024][@vaswani2017]; the best model in the endcap"
         },
         {
           "label": "Evt2Vec",
           "detail": "Skip-gram token embeddings [@levy2014] as a comparison"
+        },
+        {
+          "label": "Attention test",
+          "detail": "The same transformer with its attention fixed to uniform, so it can mix context but not choose it [@zaheer2017]; separates what attention selects from what extra capacity buys"
         }
       ]
     },
@@ -577,7 +645,7 @@
         },
         {
           "label": "Any-order CutFormer",
-          "detail": "Same transformer trained over random orders, giving an exact likelihood averaged across them"
+          "detail": "Same transformer trained over random orders, giving an exact likelihood averaged across them; compared on equal terms with the masked MLP and the recurrent model"
         },
         {
           "label": "GRU",
@@ -610,6 +678,10 @@
         {
           "label": "Occupancy",
           "detail": "Where signal lands in background's vocabulary; the tokens it fills that background rarely does become the audit list"
+        },
+        {
+          "label": "Signal transformer",
+          "detail": "Fine-tuned from the background transformer where signal allows; it must beat the tree model and the uniform-attention control on held-out signal"
         }
       ]
     },
@@ -630,6 +702,10 @@
         {
           "label": "Ratio as an axis",
           "detail": "Built per network feature set and tested for closure like any network score; it is supervised, not background-only"
+        },
+        {
+          "label": "Transformer ratios",
+          "detail": "Approximate and exact transformer likelihood ratios, read against the exact tree ratio rather than trusted on their own"
         }
       ]
     },
@@ -644,6 +720,14 @@
           "detail": "Check tokens that appear only in signal for simulation-versus-data artifacts before trusting them"
         },
         {
+          "label": "Attention pooling",
+          "detail": "A learned query attends over the token states to build one vector per event [@lee2019], tested against plain averaging"
+        },
+        {
+          "label": "Attention is not an explanation",
+          "detail": "Attention maps are a cross-check against the count and tree structure, not evidence of a grammar [@jain2019][@wiegreffe2019]"
+        },
+        {
           "label": "No recurrent classifier",
           "detail": "A recurrent network imposes an order on features that have none; as a density that is harmless, as a classifier it is not, so it is not used here"
         }
@@ -653,7 +737,7 @@
       "name": "Route C",
       "subtitle": "Tokens into the networks",
       "state": "next",
-      "summary": "Feed token or event embeddings to the existing networks as inputs; per-event pooled vectors are where the value is expected to be."
+      "summary": "Feed token or event embeddings to the existing networks as inputs; per-event pooled vectors are where the value is expected to be. Attention stays within one network's inputs and never runs across the two networks' feature sets."
     }
   ],
   "results": [
@@ -686,6 +770,10 @@
     {
       "kind": "lesson",
       "text": "A recurrent model (GRU) is used only as a density: the chain rule holds for any feature order, so an exact likelihood is legitimate, but as a classifier it would impose an order on features that have none. It appears in Routes A1, A2 and A3 as a density or a ratio of densities, with several random orders averaged, and not in Route B or as a network input encoder."
+    },
+    {
+      "kind": "lesson",
+      "text": "Transformers already sit at the center of the token models, but nothing yet shows that their attention, rather than their size, does the work. Every attention claim is now read against the same model with attention fixed to uniform, and against simple counts; that test comes before any new transformer variant."
     }
   ]
 }
