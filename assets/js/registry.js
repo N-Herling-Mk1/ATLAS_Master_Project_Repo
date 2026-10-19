@@ -1367,13 +1367,13 @@ window.DECK_PROJECTS = [
   "intro": {
    "problem": "Detector events are treated as vectors of continuous features, and the co-occurrence tools that let language models learn structure [@levy2014] have barely been tried on whether events carry a grammar of their own; the closest precedent tokenizes whole events for anomaly detection [@visive2025].",
    "value": "If they do, a token model trained only on background could score how typical an event is, giving a new axis for a data-driven background estimate, and token embeddings could become a new kind of classifier input, as tokenized jets already have [@finke2023][@birk2024].",
-   "approach": "Each feature is quantized into a few levels with evidence-based edges [@scargle2013], so an event becomes a set of tokens. Route A trains background-only density models on one network's features and uses their surprise as an ABCD axis opposite the other network; exact likelihoods from a GRU or autoregressive model come next [@cho2014][@germain2015]. Route B trains on tokens with labels.",
-   "goals": "The goal is a clear verdict on whether tokens add information beyond the raw features, tested fairly: each token axis sees only the features of the network it replaces. First results, built before that rule, are kept as a baseline; the separated models, exact likelihoods and Route B now decide whether token structure becomes usable discrimination."
+   "approach": "Each feature is quantized with evidence-based edges [@scargle2013], so an event becomes a set of tokens. Route A1 fits density models to background and uses their surprise as an ABCD axis; Route A2 fits them to signal; Route A3 splits the signal-to-background likelihood ratio [@neyman1933] into what tokens carry alone and through their relations [@chowliu1968]; Route B trains classifiers.",
+   "goals": "The goal is a fair verdict on whether tokens add information beyond the raw features, with each token axis built only from the features of the network it replaces. Confirmation runs under frozen rules decide the background-only axis; comparing signal and background models decides whether events have a grammar that separates them."
   },
   "questions": [
    "Does co-occurrence among binned detector features carry signal-versus-background information beyond the raw values?",
    "Does an exact likelihood make background surprise a better ABCD axis than a pseudo-likelihood?",
-   "Can a likelihood ratio between signal and background token models beat the networks, given how little signal there is?"
+   "When signal and background token models are compared, do the relations between tokens separate the two beyond what the tokens carry one at a time?"
   ],
   "timeline": [
    {
@@ -1437,7 +1437,17 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
-    "label": "Evaluation rules written; being frozen before the confirmation runs",
+    "date": "2026-10-19",
+    "label": "Evaluation rules frozen and confirmation predictions registered before any confirmation run",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-19",
+    "label": "Route A split in three: background-only models, signal models, and signal against background; where a recurrent model may be used fixed for every route",
+    "state": "done"
+   },
+   {
+    "label": "Code of record for the confirmation runs: tests for every tool, raw-variable control, rebuild on new folds",
     "state": "active"
    },
    {
@@ -1453,7 +1463,19 @@ window.DECK_PROJECTS = [
     "state": "next"
    },
    {
-    "label": "Audit signal-only tokens, then plan Route B",
+    "label": "Audit signal-only tokens for simulation-versus-data artifacts",
+    "state": "next"
+   },
+   {
+    "label": "Route A2: fit the token models to signal and measure its structure",
+    "state": "next"
+   },
+   {
+    "label": "Route A3: compare signal and background models; test whether token relations add separation",
+    "state": "next"
+   },
+   {
+    "label": "Route B: classifiers trained on tokens",
     "state": "next"
    },
    {
@@ -1846,15 +1868,37 @@ window.DECK_PROJECTS = [
     "url": "https://arxiv.org/abs/1310.1757",
     "verified": "abstract",
     "why": "Order-agnostic training: ensemble over feature orderings"
+   },
+   {
+    "key": "chowliu1968",
+    "category": "Autoregressive density",
+    "authors": "C. K. Chow and C. N. Liu",
+    "year": 1968,
+    "title": "Approximating Discrete Probability Distributions with Dependence Trees",
+    "venue": "IEEE Trans. Inf. Theory 14(3):462-467",
+    "url": "https://doi.org/10.1109/TIT.1968.1054142",
+    "verified": "abstract",
+    "why": "Best tree-structured approximation by pairwise mutual information; an exact likelihood that splits into marginal and pair terms"
+   },
+   {
+    "key": "neyman1933",
+    "category": "Likelihood ratio",
+    "authors": "J. Neyman and E. S. Pearson",
+    "year": 1933,
+    "title": "On the Problem of the Most Efficient Tests of Statistical Hypotheses",
+    "venue": "Phil. Trans. R. Soc. A 231:289-337",
+    "url": "https://doi.org/10.1098/rsta.1933.0009",
+    "verified": "abstract",
+    "why": "The likelihood ratio is the most powerful test; the basis of Route A3"
    }
   ],
   "tagline": "Detector events as tokens: does an event have a grammar?",
   "components": [
    {
-    "name": "Route A",
+    "name": "Route A1",
     "subtitle": "Background-only surprise as an ABCD axis",
     "state": "done",
-    "summary": "Token models trained on background alone score how surprising each event is, and that score replaces one network as an axis of the ABCD plane. Signal labels and network scores never enter the token models, and each model sees only the features of the network it replaces, so the axis can be independent of the other. Two such models, one per network, also give a plane with no labels on either axis.",
+    "summary": "Token models trained on background alone (this was Route A before the split) score how surprising each event is, and that score replaces one network as an axis of the ABCD plane. Signal labels and network scores never enter the token models, and each model sees only the features of the network it replaces, so the axis can be independent of the other. Two such models, one per network, also give a plane with no labels on either axis.",
     "items": [
      {
       "label": "Independence",
@@ -1875,7 +1919,7 @@ window.DECK_PROJECTS = [
     ]
    },
    {
-    "name": "Route A variant",
+    "name": "Route A1 variant",
     "subtitle": "Exact likelihood",
     "state": "active",
     "summary": "The transformer's pseudo-likelihood is not a normalized density and undercounts redundant features that predict each other. An autoregressive model gives an exact negative log-likelihood by the chain rule, which holds for any feature order, so the ordering that rules recurrence out of a classifier is legitimate for a density. Status: the variants and a pre-registered evaluation are written down and under review; nothing has run yet. Runs start in the barrel, and only variants that pass there go on to the endcap.",
@@ -1894,7 +1938,7 @@ window.DECK_PROJECTS = [
      },
      {
       "label": "GRU",
-      "detail": "Background-only recurrent density over a fixed feature order [@cho2014]; kept because barrel runs are cheap"
+      "detail": "Background-only recurrent density over a fixed feature order [@cho2014], within one network's features; kept because barrel runs are cheap, always read beside the other exact models"
      },
      {
       "label": "Order ensemble",
@@ -1907,18 +1951,58 @@ window.DECK_PROJECTS = [
     ]
    },
    {
+    "name": "Route A2",
+    "subtitle": "Signal token models",
+    "state": "next",
+    "summary": "Fit the same token models to signal, read through the edges fitted on background so both use one vocabulary and no label enters the tokenizer. Asks whether signal has a structure of its own, whether it holds across the signal hypotheses, and where signal sits among background's tokens. It uses labels, so it is not background-only, and its tokens are audited for simulation-versus-data artifacts before anything is claimed.",
+    "items": [
+     {
+      "label": "Same ladder",
+      "detail": "Independence, pair and triple counts, a tree model with an exact likelihood [@chowliu1968], and the transformer where signal statistics allow"
+     },
+     {
+      "label": "Signal statistics",
+      "detail": "Few signal events per hypothesis: pool them with the hypothesis as a conditioning token, or fine-tune from the background model"
+     },
+     {
+      "label": "Occupancy",
+      "detail": "Where signal lands in background's vocabulary; the tokens it fills that background rarely does become the audit list"
+     }
+    ]
+   },
+   {
+    "name": "Route A3",
+    "subtitle": "Signal against background",
+    "state": "next",
+    "summary": "Compare the signal and background models. Their log-likelihood ratio is the optimal discriminant when the densities are right [@neyman1933]; for tree models it splits exactly into a marginal term, what each token carries alone, and a relational term, what the relations between tokens carry. Whether the relational term adds separation is the most direct test of whether events have a grammar. The same comparison shows where the networks' information comes from and which relations cross the split between the two networks.",
+    "items": [
+     {
+      "label": "Grammar contrast",
+      "detail": "Pair by pair, how much more or less two tokens co-occur in signal than in background, with a false-discovery control and replication on new folds"
+     },
+     {
+      "label": "Exact decomposition",
+      "detail": "Marginal plus relational terms on a tree skeleton chosen from background alone [@chowliu1968]"
+     },
+     {
+      "label": "Ratio as an axis",
+      "detail": "Built per network feature set and tested for closure like any network score; it is supervised, not background-only"
+     }
+    ]
+   },
+   {
     "name": "Route B",
     "subtitle": "Supervised on tokens",
     "state": "next",
-    "summary": "Use the labels. The generative form fits exact signal and background token densities and classifies by their likelihood ratio, the optimal statistic when the densities are right; Route A is its special case with a flat signal model. The discriminative form is just another classifier and gains only the gating.",
+    "summary": "Use the labels with discriminative models on tokens: a linear read-out of the tokens, a probe on the background model's embeddings, a fine-tuned transformer, and embeddings into a small network. The generative form, a likelihood ratio between signal and background token densities, is now Route A3.",
     "items": [
-     {
-      "label": "Signal statistics",
-      "detail": "Too few signal events for a density per mass point; pool masses with the mass as a conditioning token, or fine-tune from the background model"
-     },
      {
       "label": "Audit first",
       "detail": "Check tokens that appear only in signal for simulation-versus-data artifacts before trusting them"
+     },
+     {
+      "label": "No recurrent classifier",
+      "detail": "A recurrent network imposes an order on features that have none; as a density that is harmless, as a classifier it is not, so it is not used here"
      }
     ]
    },
@@ -1953,6 +2037,12 @@ window.DECK_PROJECTS = [
    {
     "title": "Not yet a measurement",
     "text": "Comparisons are single-seed, use the wide first-round network sweep rather than the refined models, and pick the surprise sign after seeing data; the separated-feature runs come first, then multiple seeds."
+   }
+  ],
+  "open": [
+   {
+    "kind": "lesson",
+    "text": "A recurrent model (GRU) is used only as a density: the chain rule holds for any feature order, so an exact likelihood is legitimate, but as a classifier it would impose an order on features that have none. It appears in Routes A1, A2 and A3 as a density or a ratio of densities, with several random orders averaged, and not in Route B or as a network input encoder."
    }
   ],
   "logo": "projects/lexicon/logo.webp",
