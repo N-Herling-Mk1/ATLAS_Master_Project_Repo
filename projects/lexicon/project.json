@@ -51,12 +51,12 @@
     },
     {
       "date": "2026-10-14",
-      "label": "Exact-likelihood variant adopted: MADE default, GRU and causal transformer as comparisons",
+      "label": "Exact-likelihood variant proposed, not yet run: MADE default, GRU and causal transformer as comparisons",
       "state": "done"
     },
     {
       "date": "2026-10-15",
-      "label": "Route A variant plan drafted: variant list and pre-registered evaluation; GRU kept as a density model",
+      "label": "Route A vetting brief written: variant list and evaluation rules to pre-register; GRU kept as a density model",
       "state": "done"
     },
     {
@@ -70,12 +70,18 @@
       "state": "done"
     },
     {
-      "label": "Route A variant evaluation under review before any run",
-      "state": "active"
+      "date": "2026-10-18",
+      "label": "Separated-feature surprise run in both regions, count models included (exploratory: before the evaluation rules are frozen)",
+      "state": "done"
     },
     {
-      "label": "Separated-feature surprise in both regions, count models first",
-      "state": "next"
+      "date": "2026-10-19",
+      "label": "Records consolidated: every code version, run and data file pinned by hash",
+      "state": "done"
+    },
+    {
+      "label": "Evaluation rules written; being frozen before the confirmation runs",
+      "state": "active"
     },
     {
       "label": "Barrel comparison against the refined network rounds",
