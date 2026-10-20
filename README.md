@@ -37,7 +37,7 @@ Open `index.html` directly, or serve it:
 python -m http.server 8000
 ```
 
-Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump. Swipe on mobile.
+Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump, 0 for the tenth. Swipe on mobile.
 
 ## Edit a project
 

@@ -308,6 +308,11 @@
   ],
   "links": [
     {
+      "project": "baseline",
+      "title": "Shared baseline",
+      "text": "Every STAVE technique is scored against the barrel baseline locked in BASELINE, with the same data-health gate and the same closure measurement, so an improvement is a measured difference rather than a change of yardstick."
+    },
+    {
       "project": "kerf",
       "title": "Joint probability model",
       "text": "Instead of removing the dependence between the two discriminants in training, model the joint background directly and use it for the barrel's ABCD estimate. The model is built and vetted in KERF; STAVE is where it is applied to the barrel."

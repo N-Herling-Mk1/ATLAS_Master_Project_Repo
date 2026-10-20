@@ -1,0 +1,95 @@
+{
+  "id": "baseline",
+  "order": 0,
+  "name": "BASELINE",
+  "expansion": "Benchmark Atlas of Sanity-gated Event-classifier Losses: In-house vs. Nominal Evidence",
+  "status": "active",
+  "accent": "#18d6f0",
+  "accent2": "#ffc83a",
+  "code": "internal",
+  "tagline": "The reference every other project is scored against",
+  "intro": {
+    "problem": "Every new method in this program claims to improve background estimation, but a claim is only as good as the baseline beneath it, and baselines drift: data files change, metrics are redefined between rounds, and a published closure test is easy to quote under a different convention than the one it used.",
+    "value": "A single sanity-gated, reproducible baseline turns each later result into a measured difference instead of an argument, and puts in-house numbers side by side with the published evidence they are meant to match.",
+    "approach": "Data-health tests run first; the four classifier losses (plain cross-entropy, decorrelation [@disco2020][@kasieczka2021], and two in-house closure terms) are scored through one code path on one fixed grid, and the closure, validation and error techniques of the literature [@cms2025tec][@choi2019] are rebuilt and checked against their printed numbers.",
+    "goals": "The outcome is a locked baseline per detector region, a ledger that records how it evolved, a canon for closure plots and closure errors that reviewers expect, and a clear statement of where in-house results agree or disagree with the nominal ones."
+  },
+  "questions": [
+    "Do the in-house baselines reproduce the published ABCD closure behaviour when both are measured the same way?",
+    "Which closure tests and error conventions actually carry evidence for a data-starved region, and which only appear to pass?",
+    "How much of a reported gain survives once every run passes the same data-health gate and the same metric definitions?"
+  ],
+  "components": [
+    {
+      "name": "Sanity gate",
+      "subtitle": "Data health before any score",
+      "state": "active",
+      "summary": "An analysis-only test suite run on the training data before a baseline is recorded: feature resolution against the registry, leakage columns, missing values, dead and compressed features, unit mismatches, duplicate rows, class balance and reproduction counts. It changes nothing except dropping invalid rows on request, and it ends with a list of levers worth pulling."
+    },
+    {
+      "name": "Loss rungs",
+      "subtitle": "Four classifier losses, one lineage",
+      "state": "active",
+      "summary": "The losses are taken byte-for-byte from the hash-sealed code genealogy, so every baseline names exactly which code produced it.",
+      "items": [
+        {"label": "BCE", "detail": "Two plain classifiers, no penalty: the control"},
+        {"label": "+ DisCo", "detail": "Distance-correlation decorrelation of the two scores on background [@disco2020]"},
+        {"label": "+ DNCn_QN", "detail": "In-house closure term that acts only above the statistical noise floor (endcap)"},
+        {"label": "+ DNC_FLR", "detail": "In-house noise-floor closure term without a hinge (barrel, experimental)"}
+      ]
+    },
+    {
+      "name": "Closure toolkit",
+      "subtitle": "Closure, non-closure and their errors",
+      "state": "active",
+      "summary": "One catalogue of validation techniques, each traced to its source: closure maps over the cut plane [@cms2025tec], sub-plane and corner scans that walk toward the signal region, transfer-factor scans, extended estimators that cancel residual correlation [@choi2019], and signal-contamination checks [@kasieczka2021]. Errors are reported as a pull against the statistical floor, with resampling where counts are small."
+    },
+    {
+      "name": "Evidence ledger",
+      "subtitle": "In-house vs. nominal",
+      "state": "next",
+      "summary": "Every run is scored once by the same code and appended to a ledger; published numbers sit in a parallel table, each reproduced by an automated test. Sweep curves, a closure-versus-discrimination Pareto front and sweep movies are drawn from the ledger, never from a live model."
+    }
+  ],
+  "links": [
+    {
+      "project": "stave",
+      "title": "Barrel program",
+      "text": "STAVE's barrel techniques are each scored against the barrel baseline locked here, with the same gate and the same closure measurement."
+    },
+    {
+      "project": "truss",
+      "title": "Architecture search",
+      "text": "TRUSS rebuilds the plain, decorrelated and closure-term models; their reference points come from this baseline."
+    },
+    {
+      "project": "kerf",
+      "title": "Joint background model",
+      "text": "KERF's kernel and maximum-entropy background estimates are compared to the arithmetic ABCD prediction measured here."
+    }
+  ],
+  "open": [
+    {"kind": "lesson", "text": "A published closure test can only be reproduced with a convention that leaves out the signal-region count's own fluctuation; the canon now names the convention every comparison uses."},
+    {"kind": "gap", "text": "Two in-house metric definitions from earlier sweep rounds must be confirmed before the ledger and those rounds are compared number for number."}
+  ],
+  "timeline": [
+    {"date": "2026-10-10", "label": "New data and background files; baselines re-run behind a minimal analysis-only gate", "state": "done"},
+    {"date": "2026-10-11", "label": "Refined sweeps of the decorrelation and closure terms in both regions", "state": "done"},
+    {"date": "2026-10-13", "label": "Pre-registered evaluation framework adopted for closure", "state": "done"},
+    {"date": "2026-10-17", "label": "Private repository created to hold the baseline record", "state": "done"},
+    {"date": "2026-10-20", "label": "Closure, error and plot canon written; published numbers reproduced by tests", "state": "active"},
+    {"label": "Register existing runs and score them through one code path", "state": "next"},
+    {"label": "Sweep curves, Pareto front and sweep movies from the ledger", "state": "next"},
+    {"label": "Confirm in-house metric definitions and lock the gate", "state": "next"},
+    {"label": "Hand the locked baseline to STAVE, TRUSS and KERF", "state": "next"}
+  ],
+  "literature": [
+    {"key": "kasieczka2021", "category": "ABCD with ML", "authors": "G. Kasieczka, B. Nachman, M. D. Schwartz, D. Shih", "year": 2020, "title": "ABCDisCo: Automating the ABCD Method with Machine Learning", "venue": "Phys. Rev. D 103, 035021 (2021); arXiv:2007.14400", "url": "https://arxiv.org/abs/2007.14400", "verified": "full", "why": "Region convention, double decorrelation, and the normalized signal-contamination requirement"},
+    {"key": "cms2025tec", "category": "ABCD with ML", "authors": "CMS Collaboration", "year": 2025, "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC", "venue": "arXiv:2506.08826", "url": "https://arxiv.org/abs/2506.08826", "verified": "full", "why": "Non-closure definition, closure maps over the cut plane, sliding validation sub-planes"},
+    {"key": "disco2020", "category": "Decorrelation", "authors": "G. Kasieczka, D. Shih", "year": 2020, "title": "DisCo Fever: Robust Networks Through Distance Correlation", "venue": "Phys. Rev. Lett. 125, 122001 (2020); arXiv:2001.05310", "url": "https://arxiv.org/abs/2001.05310", "verified": "full", "why": "The distance-correlation penalty in the decorrelated rung"},
+    {"key": "choi2019", "category": "ABCD extensions", "authors": "S. Choi, H. Oh", "year": 2019, "title": "Improved Extrapolation Methods of Data-driven Background Estimation in High-Energy Physics", "venue": "arXiv:1906.10831", "url": "https://arxiv.org/abs/1906.10831", "verified": "full", "why": "Extended estimators that cancel residual correlation using extra control regions"},
+    {"key": "alvarez2024", "category": "ABCD extensions", "authors": "E. Alvarez et al.", "year": 2024, "title": "Improvement and generalization of ABCD method with Bayesian inference", "venue": "SciPost Phys. Core 7, 043 (2024); arXiv:2402.08001", "url": "https://arxiv.org/abs/2402.08001", "verified": "full", "why": "Likelihood view of ABCD, relevant to small-count error treatment"},
+    {"key": "atlas2025ms", "category": "ATLAS muon-spectrometer LLP searches", "authors": "ATLAS Collaboration", "year": 2025, "title": "Search for events with one displaced vertex from long-lived neutral particles decaying into hadronic jets in the ATLAS muon spectrometer in pp collisions at √s=13 TeV", "venue": "arXiv:2503.20445", "url": "https://arxiv.org/abs/2503.20445", "verified": "full", "why": "The published two-network ABCD baseline this work is measured against"},
+    {"key": "atlas2022ms", "category": "ATLAS muon-spectrometer LLP searches", "authors": "ATLAS Collaboration", "year": 2022, "title": "Search for events with a pair of displaced vertices from long-lived neutral particles decaying into hadronic jets in the ATLAS muon spectrometer in pp collisions at √s=13 TeV", "venue": "Phys. Rev. D 106, 032005 (2022); arXiv:2203.00587", "url": "https://arxiv.org/abs/2203.00587", "verified": "full", "why": "Earlier muon-spectrometer search and its background validation"}
+  ]
+}
