@@ -11,10 +11,10 @@ window.DECK_PROJECTS = [
   "code": "internal",
   "tagline": "The reference every other project is scored against",
   "intro": {
-   "problem": "Every method in this program claims to improve the background estimate, but a claim is only as good as the baseline beneath it, and baselines drift: data files change, metrics are redefined between rounds, and a closure number is easy to quote under a different convention than the one it was measured with.",
-   "value": "A sanity-gated, hash-pinned baseline turns each later result into a measured difference rather than an argument, and measures in-house closure with the published definitions it claims to follow [@kasieczka2021][@cms2025tec].",
-   "approach": "A written run specification fixes everything before the first run: a data-health gate, eight loss families built from cross-entropy plus three penalty terms, five-fold training with early stopping, one grader whose metrics come from the literature, a dependence spectrum used only as a diagnostic [@kallenberg1999], and a pre-registered rule that locks one baseline per region.",
-   "goals": "The outcome is a locked baseline per detector region whose verdict comes from the six-item evaluation matrix, an append-only ledger of every run, and a record of which loss terms remove the dependence between the two scores and which only move it."
+   "problem": "BASELINE builds one baseline run, a fixed algorithm and a fixed sweep sequence, for every signal and background file set the program examines. It cannot yet promise a baseline result; it fixes the procedure, so that when results come they are comparable across files, regions and later methods.",
+   "value": "Baselines drift: files change, metrics are redefined between rounds, and closure is quoted under conventions it was never measured with. One hash-pinned procedure turns each later claim into a measured difference, with closure defined as in the published work it cites [@kasieczka2021][@cms2025tec].",
+   "approach": "Two networks train on L = BCE(NN1) + BCE(NN2) + α·DisCo + β·DNCn_QN + γ·DNC_FLR: α weights published double DisCo [@kasieczka2021]; β and γ weight two in-house closure terms. All eight on/off combinations run in both regions, unit tests flag pass or fail, and a Legendre-polynomial dependence spectrum [@kallenberg1999] shows what dependence between the scores remains.",
+   "goals": "The outcome is a reproducible sweep with an append-only ledger, a pre-registered rule that locks one baseline per region and is judged by the six-item evaluation matrix, and a record of which loss terms remove the dependence between the scores and which only move it."
   },
   "questions": [
    "Which combination of decorrelation and in-house closure terms gives the best held-out closure at an acceptable classifier cost, when every run passes the same gate and the same grader?",
@@ -47,36 +47,158 @@ window.DECK_PROJECTS = [
     ]
    },
    {
-    "name": "Sanity gate",
-    "subtitle": "Data health before any score",
+    "name": "Unit tests and data checks",
+    "subtitle": "Alerts, not stops: flexible with the data",
     "state": "done",
-    "summary": "An analysis-only gate runs on each region's training data before any training. It reports missing values, empty or constant columns, leakage columns, dead or compressed features, class balance and reproduction counts, and changes nothing except dropping invalid rows on request. A region passes only if none of the features the networks train on carries a leak flag, is missing, or is removed as empty; every other flag is recorded as information. Training refuses to start without a passing gate report made on the same data."
+    "summary": "The old sanity gate is now a set of checks that report PASS or FAIL and let the run continue, so new or changing files can be run and judged rather than refused. Data-health checks are analysis-only and change nothing. Four conditions still stop a run, because without them the record itself is wrong: code that does not match its pinned hash (unless the run is tagged modified), input files that do not match theirs, data not split by region, and a trained feature that leaks, is missing or is emptied. Every test runs on the real analysis files, never on synthetic data.",
+    "items": [
+     {
+      "label": "Data checks",
+      "detail": "Missing values, empty or constant columns, leakage columns, dead or compressed features, class balance and reproduction counts per region; each flag is reported, none blocks"
+     },
+     {
+      "label": "T1 · code hashes (stops)",
+      "detail": "Every canonical file and every package file matches its pinned SHA-256"
+     },
+     {
+      "label": "T2 · closure-term equivalence",
+      "detail": "The reference implementation of DNCn_QN and the sealed unit give the same loss and gradient on real background scores"
+     },
+     {
+      "label": "T3 · label polarity",
+      "detail": "Signal is 1 and background is 0 after loading"
+     },
+     {
+      "label": "T4 · no leakage",
+      "detail": "The scaler is fitted on each fold's training rows only, and training, selection and test rows are disjoint"
+     },
+     {
+      "label": "T5 · closure by hand",
+      "detail": "The grader's closure equals a hand computation from the four region counts"
+     },
+     {
+      "label": "T6 · bit-exact reproduction",
+      "detail": "The new trainer reproduces the earlier sweep trainer bit for bit on the CPU for the families both can run"
+     },
+     {
+      "label": "T7 · GPU smoke test",
+      "detail": "The full α+β+γ family trains on the GPU with healthy losses"
+     },
+     {
+      "label": "T8 · data hashes (stops)",
+      "detail": "Both input files match their pinned SHA-256"
+     },
+     {
+      "label": "T9 · region split (stops)",
+      "detail": "Each region is cut from the shared files by its own flag column; unsplit data is refused"
+     }
+    ]
    },
    {
     "name": "Loss families",
-    "subtitle": "Three penalty terms, eight families, both regions",
+    "subtitle": "BCE plus α, β, γ in every combination",
     "state": "active",
-    "summary": "Two networks score each event from separate feature sets, and binary cross-entropy on both is always on. Three penalty terms are added alone and in every combination, identically in the barrel and the endcap, giving eight families. The penalty code is taken byte for byte from the hash-sealed code genealogy.",
+    "summary": "L = BCE(NN1) + BCE(NN2) + α·DisCo + β·DNCn_QN + γ·DNC_FLR. Each weight is either off or swept, giving eight families that run identically in the barrel and the endcap. Earlier rounds called the same weights λ, μ and ν. The DisCo and DNCn_QN code is taken byte for byte from the hash-sealed code genealogy; DNC_FLR mk2.1 comes from the hash-pinned sweep code.",
     "items": [
      {
       "label": "F1 · BCE",
       "detail": "Two plain classifiers, no penalty: the control"
      },
      {
-      "label": "F2 · + α DisCo",
-      "detail": "Double DisCo: squared distance correlation of the two scores on background events only [@kasieczka2021][@disco2020]. It is the decorrelation reference every closure term is compared with"
+      "label": "F2 · +α",
+      "detail": "Double DisCo: squared distance correlation of the two networks' probabilities on background events only [@kasieczka2021][@disco2020]. Published; the decorrelation reference every closure term is compared with"
      },
      {
-      "label": "F3 · + β DNCn_QN",
-      "detail": "In-house closure term: at cut pairs drawn inside the trained band, it penalizes the ABCD residual only where it exceeds its own statistical noise (hinged)"
+      "label": "F3 · +β",
+      "detail": "DNCn_QN, in-house (panel below)"
      },
      {
-      "label": "F4 · + γ DNC_FLR mk2.1",
-      "detail": "In-house closure term, experimental: the same residual-over-noise statistic without a hinge, computed on the logits at deeper cut pairs"
+      "label": "F4 · +γ",
+      "detail": "DNC_FLR mk2.1, in-house and experimental (panel below)"
      },
      {
-      "label": "F5–F8 · combinations",
+      "label": "F5–F8",
       "detail": "α+β, α+γ, β+γ and α+β+γ. Running two closure terms in one step is the only structural extension of the earlier trainer"
+     }
+    ]
+   },
+   {
+    "name": "DNCn_QN (β)",
+    "subtitle": "In-house: hinged closure term, the queen",
+    "state": "active",
+    "summary": "Intended function: enforce ABCD closure directly, but only where the data can resolve non-closure, so the network is never pushed to fit statistical noise. It acts on cuts inside the trained band.",
+    "items": [
+     {
+      "label": "Cuts",
+      "detail": "Each step draws 3 cut pairs uniformly in background quantiles 0.3–0.8 on both axes; the boundaries are background quantiles of the current scores, held fixed for the gradient"
+     },
+     {
+      "label": "Soft counts",
+      "detail": "Each background event joins regions A–D through a sigmoid of steepness 100 on its probabilities, giving weighted counts N_A…N_D and their variances V_A…V_D (sums of squared weights)"
+     },
+     {
+      "label": "Residual",
+      "detail": "g = N_A − N_B·N_C/N_D: how far region A misses its ABCD prediction"
+     },
+     {
+      "label": "Noise floor",
+      "detail": "F = V_A + (N_C/N_D)²·V_B + (N_B/N_D)²·V_C + (N_B·N_C/N_D²)²·V_D, the propagated variance of g, held fixed for the gradient"
+     },
+     {
+      "label": "Statistic",
+      "detail": "z² = g²/F, the residual in units of its own noise; uniform class weights cancel in it"
+     },
+     {
+      "label": "Loss",
+      "detail": "The mean over cuts of max(0, z² − 1): zero while the residual is within noise, rising only above it (the hinge)"
+     },
+     {
+      "label": "Where",
+      "detail": "Endcap: the ordinary training batch. Barrel: all training background, with β rescaled to the number of events seen"
+     },
+     {
+      "label": "Checks",
+      "detail": "Matches the reference implementation in loss and gradient (T2). When DisCo already holds every drawn cut within noise, the hinge gives exactly zero gradient and α+β reproduces α alone"
+     }
+    ]
+   },
+   {
+    "name": "DNC_FLR mk2.1 (γ)",
+    "subtitle": "In-house, experimental: unhinged closure term aimed at the tail",
+    "state": "active",
+    "summary": "Intended function: keep closure pressure on at all times and carry it toward region A, at cuts deeper than DNCn_QN reaches. It is the direct test of whether a term aimed at the tail removes the high-order dependence the Legendre spectrum locates there.",
+    "items": [
+     {
+      "label": "Statistic",
+      "detail": "The same z² = g²/F as DNCn_QN, from the sealed unit's soft counts and noise floor"
+     },
+     {
+      "label": "Soft counts",
+      "detail": "On the logits rather than the probabilities, steepness 5"
+     },
+     {
+      "label": "Cuts",
+      "detail": "Each step draws 3 cut pairs in background quantiles 0.6–0.9; a pair is skipped if hard region A holds fewer than 20 background events, with up to 12 tries"
+     },
+     {
+      "label": "Sampling",
+      "detail": "A random half of the background draw each step"
+     },
+     {
+      "label": "Loss",
+      "detail": "The mean over kept cuts of (z² − 1), unhinged: residuals below the noise floor still count, so the gradient never switches off"
+     },
+     {
+      "label": "Where",
+      "detail": "A background-only draw in both regions (all training background in the barrel), with γ rescaled to the number of events actually seen"
+     },
+     {
+      "label": "Risks",
+      "detail": "Unhinged closure can cancel low- and high-order dependence at one cut and fail at the next; the spectrum's cancellation rule marks that FAIL. Its cut range reaches the first endcap tail cut, so the tail is only partly held out for it"
+     },
+     {
+      "label": "Status",
+      "detail": "Experimental: mk2.1 is not yet a sealed truth unit; its code is pinned by hash in the sweep code"
      }
     ]
    },
@@ -85,50 +207,6 @@ window.DECK_PROJECTS = [
     "subtitle": "Five folds, early stopping, GPU",
     "state": "active",
     "summary": "Five folds stratified on label and mass point, with the input scaler fitted inside each fold on training rows only. Early stopping uses a slice of the training rows, never the test fold, and selects the epoch on cross-entropy plus the DisCo term only, so a closure term can never choose its own epoch. Out-of-fold scores are saved as logits with probabilities alongside, with one checkpoint per fold; everything downstream reads only these files."
-   },
-   {
-    "name": "Unit tests",
-    "subtitle": "Nine checks on the real data before any sweep",
-    "state": "done",
-    "summary": "The tests run on the analysis files themselves, never on synthetic data. Three of them gate, because the run code enforces the same conditions itself; the rest are information.",
-    "items": [
-     {
-      "label": "Code hashes (gates)",
-      "detail": "Every canonical file and every package file matches its pinned SHA-256"
-     },
-     {
-      "label": "Closure-term equivalence",
-      "detail": "The reference implementation of the hinged closure term and the sealed unit give the same loss and gradient on real background scores"
-     },
-     {
-      "label": "Label polarity",
-      "detail": "Signal is 1 and background is 0 after loading"
-     },
-     {
-      "label": "No leakage",
-      "detail": "The scaler is fitted on each fold's training rows only, and training, selection and test rows are disjoint"
-     },
-     {
-      "label": "Closure by hand",
-      "detail": "The grader's closure equals a hand computation from the four region counts"
-     },
-     {
-      "label": "Bit-exact reproduction",
-      "detail": "The new trainer reproduces the earlier sweep trainer bit for bit on the CPU for the families both can run"
-     },
-     {
-      "label": "GPU smoke test",
-      "detail": "The full three-term family trains on the GPU with healthy losses"
-     },
-     {
-      "label": "Data hashes (gates)",
-      "detail": "Both input files match their pinned SHA-256"
-     },
-     {
-      "label": "Region split (gates)",
-      "detail": "Each region is cut from the shared files by its own flag column; unsplit data is refused"
-     }
-    ]
    },
    {
     "name": "Grader",
@@ -159,10 +237,10 @@ window.DECK_PROJECTS = [
     ]
    },
    {
-    "name": "Dependence spectrum",
-    "subtitle": "Legendre diagnostic: what kind of dependence remains",
+    "name": "Legendre dependence spectrum",
+    "subtitle": "What kind of dependence remains, and where",
     "state": "active",
-    "summary": "Closure says where on the cut plane the ABCD prediction fails, not what kind of dependence causes it. The spectrum adds that second axis for every run. Background scores are rank-transformed onto the unit square and their copula density is expanded in orthonormal shifted Legendre polynomials, the basis of data-driven rank tests for independence [@kallenberg1999]; each coefficient, scaled by its noise, is standard normal if the two scores are independent. Legendre rather than Fourier because ranks live on a bounded square with no periodicity: a periodic basis would put artificial dependence at the edges, which is where region A sits.",
+    "summary": "Closure says where on the cut plane the ABCD prediction fails, not what kind of dependence causes it. The spectrum adds that second axis for every run. Background scores of the two networks are rank-transformed onto the unit square (u, v), and their copula density is expanded in orthonormal shifted Legendre polynomials: c(u, v) = 1 + Σ θ_jk·P_j(u)·P_k(v), the basis of data-driven rank tests for independence [@kallenberg1999]. Each coefficient scaled by √n is standard normal if the scores are independent, and θ_11 is Spearman's rank correlation. Legendre rather than Fourier because ranks live on a bounded square with no periodicity: a periodic basis would put artificial dependence at the edges, which is where region A sits.",
     "items": [
      {
       "label": "Bulk vs. tail",
@@ -185,8 +263,12 @@ window.DECK_PROJECTS = [
       "detail": "The low- and high-order totals do not depend on any cut choice, so runs, families and regions compare on one scale"
      },
      {
+      "label": "Benefit",
+      "detail": "It turns a closure failure into a diagnosis: whether a loss term should act on the bulk or on the tail, and whether a closure gain is real removal or relocation. That is the information needed to design the next loss term"
+     },
+     {
       "label": "Limits",
-      "detail": "Diagnostic only: the lock rule never reads it. The expansion is truncated at order 8 per axis in the endcap and 4 in the barrel, and low order means j + k ≤ 4. The truncation order and the low/high boundary are choices whose sensitivity is unchecked, and the smaller barrel sample may resolve nothing, which is an expected outcome rather than a failure"
+      "detail": "Diagnostic only: the lock rule never reads it. Truncated at order 8 per axis in the endcap and 4 in the barrel; low order means j + k ≤ 4. The truncation and the low/high boundary are choices whose sensitivity is unchecked, and the smaller barrel sample may resolve nothing, which is an expected outcome rather than a failure"
      }
     ]
    },
@@ -295,7 +377,7 @@ window.DECK_PROJECTS = [
    },
    {
     "date": "2026-10-22",
-    "label": "BASELINE code built to the specification; the sanity gate passes in both regions and every unit test passes on the real data",
+    "label": "BASELINE code built to the specification; unit tests and data checks pass in both regions on the real data",
     "state": "done"
    },
    {
