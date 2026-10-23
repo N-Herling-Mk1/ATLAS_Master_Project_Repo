@@ -9,46 +9,110 @@
   "code": "internal",
   "tagline": "The reference every other project is scored against",
   "intro": {
-    "problem": "Every new method in this program claims to improve background estimation, but a claim is only as good as the baseline beneath it, and baselines drift: data files change, metrics are redefined between rounds, and a published closure test is easy to quote under a different convention than the one it used.",
-    "value": "A single sanity-gated, reproducible baseline turns each later result into a measured difference instead of an argument, and puts in-house numbers side by side with the published evidence they are meant to match.",
-    "approach": "Data-health tests run first; the four classifier losses (plain cross-entropy, decorrelation [@disco2020][@kasieczka2021], and two in-house closure terms) are scored through one code path on one fixed grid, and the closure, validation and error techniques of the literature [@cms2025tec][@choi2019] are rebuilt and checked against their printed numbers.",
-    "goals": "The outcome is a locked baseline per detector region, a ledger that records how it evolved, a canon for closure plots and closure errors that reviewers expect, and a clear statement of where in-house results agree or disagree with the nominal ones."
+    "problem": "Every method in this program claims to improve the background estimate, but a claim is only as good as the baseline beneath it, and baselines drift: data files change, metrics are redefined between rounds, and a closure number is easy to quote under a different convention than the one it was measured with.",
+    "value": "A sanity-gated, hash-pinned baseline turns each later result into a measured difference rather than an argument, and measures in-house closure with the published definitions it claims to follow [@kasieczka2021][@cms2025tec].",
+    "approach": "A written run specification fixes everything before the first run: a data-health gate, eight loss families built from cross-entropy plus three penalty terms, five-fold training with early stopping, one grader whose metrics come from the literature, a dependence spectrum used only as a diagnostic [@kallenberg1999], and a pre-registered rule that locks one baseline per region.",
+    "goals": "The outcome is a locked baseline per detector region whose verdict comes from the six-item evaluation matrix, an append-only ledger of every run, and a record of which loss terms remove the dependence between the two scores and which only move it."
   },
   "questions": [
-    "Do the in-house baselines reproduce the published ABCD closure behaviour when both are measured the same way?",
-    "Which closure tests and error conventions actually carry evidence for a data-starved region, and which only appear to pass?",
-    "How much of a reported gain survives once every run passes the same data-health gate and the same metric definitions?"
+    "Which combination of decorrelation and in-house closure terms gives the best held-out closure at an acceptable classifier cost, when every run passes the same gate and the same grader?",
+    "Do the closure terms remove residual dependence between the two scores, or relocate it into the corner of the plane where the signal region sits?",
+    "Where the data are too thin to test closure beyond the trained cuts, what can a baseline honestly claim?"
   ],
   "components": [
     {
-      "name": "Sanity gate",
-      "subtitle": "Data health before any score",
-      "state": "active",
-      "summary": "An analysis-only test suite run on the training data before a baseline is recorded: feature resolution against the registry, leakage columns, missing values, dead and compressed features, unit mismatches, duplicate rows, class balance and reproduction counts. It changes nothing except dropping invalid rows on request, and it ends with a list of levers worth pulling."
-    },
-    {
-      "name": "Loss rungs",
-      "subtitle": "Four classifier losses, one lineage",
-      "state": "active",
-      "summary": "The losses are taken byte-for-byte from the hash-sealed code genealogy, so every baseline names exactly which code produced it.",
+      "name": "Run specification",
+      "subtitle": "Code truth, written before the runs",
+      "state": "done",
+      "summary": "One document defines a run from data to verdict; anything not written there is not part of BASELINE. Every definition is either cited to a published source or marked in-house, and every code path is named by its SHA-256. The run code checks those hashes at start and refuses to train on modified code unless the run is tagged as modified.",
       "items": [
-        {"label": "BCE", "detail": "Two plain classifiers, no penalty: the control"},
-        {"label": "+ DisCo", "detail": "Distance-correlation decorrelation of the two scores on background [@disco2020]"},
-        {"label": "+ DNCn_QN", "detail": "In-house closure term that acts only above the statistical noise floor (endcap)"},
-        {"label": "+ DNC_FLR", "detail": "In-house noise-floor closure term without a hinge (barrel, experimental)"}
+        {"label": "Run", "detail": "Identified by region, loss family, the three penalty weights and the seed; a cell is the set of runs that differ only by seed"},
+        {"label": "Provenance", "detail": "Data hashes, code hashes, the resolved configuration, device and timing recorded with every run"},
+        {"label": "Labels", "detail": "Signal is 1 and background is 0 in every file and every metric"},
+        {"label": "Ledger", "detail": "One row per run, appended and never edited; a regrade keeps the replaced row in a separate file"}
       ]
     },
     {
-      "name": "Closure toolkit",
-      "subtitle": "Closure, non-closure and their errors",
-      "state": "active",
-      "summary": "One catalogue of validation techniques, each traced to its source: closure maps over the cut plane [@cms2025tec], sub-plane and corner scans that walk toward the signal region, transfer-factor scans, extended estimators that cancel residual correlation [@choi2019], and signal-contamination checks [@kasieczka2021]. Errors are reported as a pull against the statistical floor, with resampling where counts are small."
+      "name": "Sanity gate",
+      "subtitle": "Data health before any score",
+      "state": "done",
+      "summary": "An analysis-only gate runs on each region's training data before any training. It reports missing values, empty or constant columns, leakage columns, dead or compressed features, class balance and reproduction counts, and changes nothing except dropping invalid rows on request. A region passes only if none of the features the networks train on carries a leak flag, is missing, or is removed as empty; every other flag is recorded as information. Training refuses to start without a passing gate report made on the same data."
     },
     {
-      "name": "Evidence ledger",
-      "subtitle": "In-house vs. nominal",
+      "name": "Loss families",
+      "subtitle": "Three penalty terms, eight families, both regions",
+      "state": "active",
+      "summary": "Two networks score each event from separate feature sets, and binary cross-entropy on both is always on. Three penalty terms are added alone and in every combination, identically in the barrel and the endcap, giving eight families. The penalty code is taken byte for byte from the hash-sealed code genealogy.",
+      "items": [
+        {"label": "F1 · BCE", "detail": "Two plain classifiers, no penalty: the control"},
+        {"label": "F2 · + α DisCo", "detail": "Double DisCo: squared distance correlation of the two scores on background events only [@kasieczka2021][@disco2020]. It is the decorrelation reference every closure term is compared with"},
+        {"label": "F3 · + β DNCn_QN", "detail": "In-house closure term: at cut pairs drawn inside the trained band, it penalizes the ABCD residual only where it exceeds its own statistical noise (hinged)"},
+        {"label": "F4 · + γ DNC_FLR mk2.1", "detail": "In-house closure term, experimental: the same residual-over-noise statistic without a hinge, computed on the logits at deeper cut pairs"},
+        {"label": "F5–F8 · combinations", "detail": "α+β, α+γ, β+γ and α+β+γ. Running two closure terms in one step is the only structural extension of the earlier trainer"}
+      ]
+    },
+    {
+      "name": "Training",
+      "subtitle": "Five folds, early stopping, GPU",
+      "state": "active",
+      "summary": "Five folds stratified on label and mass point, with the input scaler fitted inside each fold on training rows only. Early stopping uses a slice of the training rows, never the test fold, and selects the epoch on cross-entropy plus the DisCo term only, so a closure term can never choose its own epoch. Out-of-fold scores are saved as logits with probabilities alongside, with one checkpoint per fold; everything downstream reads only these files."
+    },
+    {
+      "name": "Unit tests",
+      "subtitle": "Nine checks on the real data before any sweep",
+      "state": "done",
+      "summary": "The tests run on the analysis files themselves, never on synthetic data. Three of them gate, because the run code enforces the same conditions itself; the rest are information.",
+      "items": [
+        {"label": "Code hashes (gates)", "detail": "Every canonical file and every package file matches its pinned SHA-256"},
+        {"label": "Closure-term equivalence", "detail": "The reference implementation of the hinged closure term and the sealed unit give the same loss and gradient on real background scores"},
+        {"label": "Label polarity", "detail": "Signal is 1 and background is 0 after loading"},
+        {"label": "No leakage", "detail": "The scaler is fitted on each fold's training rows only, and training, selection and test rows are disjoint"},
+        {"label": "Closure by hand", "detail": "The grader's closure equals a hand computation from the four region counts"},
+        {"label": "Bit-exact reproduction", "detail": "The new trainer reproduces the earlier sweep trainer bit for bit on the CPU for the families both can run"},
+        {"label": "GPU smoke test", "detail": "The full three-term family trains on the GPU with healthy losses"},
+        {"label": "Data hashes (gates)", "detail": "Both input files match their pinned SHA-256"},
+        {"label": "Region split (gates)", "detail": "Each region is cut from the shared files by its own flag column; unsplit data is refused"}
+      ]
+    },
+    {
+      "name": "Grader",
+      "subtitle": "Closure, contamination, separation, health",
+      "state": "active",
+      "summary": "One grader reads only the saved scores and computes every metric the same way for every run.",
+      "items": [
+        {"label": "Closure", "detail": "%|nc|, the percentage by which N_B·N_C/N_D misses N_A in background [@kasieczka2021][@cms2025tec], on a grid of background-quantile cuts in steps of 0.05 (0.30–0.95 endcap, 0.30–0.80 barrel). Bands: trained up to 0.80 on both axes, tail from 0.90 (endcap) or 0.75 (barrel) on both axes, edge the rest. A cell is gradable only with at least 20 background events in region A and 10 in each control region. Reported per band, pooled and per fold, against a shuffle null, with the full signed map"},
+        {"label": "Signal contamination", "detail": "δ in each control region and the normalized contamination r per mass point [@kasieczka2021]; information only, compared across cells, never used to gate"},
+        {"label": "Separation", "detail": "Both networks' AUCs, the worst mass point, and background rejection at fixed signal efficiency of 30% and 10% among cuts that close within 10% [@kasieczka2021]"},
+        {"label": "Significance", "detail": "Signal significance with the non-closure systematic in the form printed in [@cms2025tec]; relative only, reported and never used to select"},
+        {"label": "Closure health (in-house)", "detail": "Pull of the region-A count against its propagated Poisson error with coverage, map coherence, roughness of closure along the grid, saturation of the scores, and fold-to-fold stability"}
+      ]
+    },
+    {
+      "name": "Dependence spectrum",
+      "subtitle": "Legendre diagnostic: what kind of dependence remains",
+      "state": "active",
+      "summary": "Closure says where on the cut plane the ABCD prediction fails, not what kind of dependence causes it. The spectrum adds that second axis for every run. Background scores are rank-transformed onto the unit square and their copula density is expanded in orthonormal shifted Legendre polynomials, the basis of data-driven rank tests for independence [@kallenberg1999]; each coefficient, scaled by its noise, is standard normal if the two scores are independent. Legendre rather than Fourier because ranks live on a bounded square with no periodicity: a periodic basis would put artificial dependence at the edges, which is where region A sits.",
+      "items": [
+        {"label": "Bulk vs. tail", "detail": "Low-order modes are smooth, global dependence; high-order modes are localized and pile up in the corner where region A sits. A tail residual carried by high orders is one no penalty on the trained band can reach"},
+        {"label": "Removal vs. relocation", "detail": "A term can improve closure in its own band by moving dependence into modes it does not see. The spectrum shows this as low orders down and high orders up with the total unchanged"},
+        {"label": "Closure by cancellation", "detail": "Good closure at one cut can hide large low- and high-order parts of opposite sign; such closure fails at the next cut, and the verdict rules mark it FAIL"},
+        {"label": "Over-forcing", "detail": "A closure term that drives the spectrum far above its reference cell has made the scores more dependent, not less; also a FAIL"},
+        {"label": "Cut-free comparison", "detail": "The low- and high-order totals do not depend on any cut choice, so runs, families and regions compare on one scale"},
+        {"label": "Limits", "detail": "Diagnostic only: the lock rule never reads it. The expansion is truncated at order 8 per axis in the endcap and 4 in the barrel, and low order means j + k ≤ 4. The truncation order and the low/high boundary are choices whose sensitivity is unchecked, and the smaller barrel sample may resolve nothing, which is an expected outcome rather than a failure"}
+      ]
+    },
+    {
+      "name": "Sweep and lock",
+      "subtitle": "Pre-registered selection",
       "state": "next",
-      "summary": "Every run is scored once by the same code and appended to a ledger; published numbers sit in a parallel table, each reproduced by an automated test. Sweep curves, a closure-versus-discrimination Pareto front and sweep movies are drawn from the ledger, never from a live model."
+      "summary": "Every run gets a verdict from health flags and spectrum rules, and a cell is OK only if every one of its seeds is OK. Selection uses OK cells only, by a rule written before the runs.",
+      "items": [
+        {"label": "Stage A", "detail": "Each term alone, ten seeds per cell, plus the cross-entropy control. α ∈ {1, 2, 4, 6, 8, 12, 16} barrel and {2, 4, 8, 16, 24, 32} endcap; β ∈ {0.1, 0.5, 1, 2, 3} both; γ ∈ {0.5, 1, 2, 4} barrel and {0.05, 0.1, 0.2, 0.5, 1, 2} endcap"},
+        {"label": "Stage B", "detail": "Combinations around each term's best OK Stage A value, ten fresh seeds per cell: three by three windows for the pairs and two by two by two for all three terms, shifted inward at a grid edge"},
+        {"label": "Lock rule", "detail": "Among OK Stage B cells, the lowest held-out-tail closure with both networks' AUCs no more than 0.01 below the control"},
+        {"label": "Confirmation", "detail": "The locked cell and its references on fresh seeds, twenty in the barrel and sixteen in the endcap, plus a transfer run with the top third of background in missing transverse momentum held out"},
+        {"label": "Verdict", "detail": "The locked baseline is the six-item evaluation matrix's verdict on the confirmation run: robustness, confirmation, deep tail, transfer, cut scan and signal cost, each with a paired, seed-by-seed pass rule and an event bootstrap"}
+      ]
     }
   ],
   "links": [
@@ -69,25 +133,32 @@
     }
   ],
   "open": [
-    {"kind": "lesson", "text": "A published closure test can only be reproduced with a convention that leaves out the signal-region count's own fluctuation; the canon now names the convention every comparison uses."},
-    {"kind": "gap", "text": "Two in-house metric definitions from earlier sweep rounds must be confirmed before the ledger and those rounds are compared number for number."}
+    {"kind": "gap", "text": "In the barrel the cut grid ends inside the trained band, so the barrel's tail band is not held out from the closure terms. How to rank barrel combinations must be decided before the barrel lock."},
+    {"kind": "gap", "text": "The unhinged closure term trains on cut pairs that reach the first endcap tail cut, so for the families that use it the endcap tail is only partly held out."},
+    {"kind": "question", "text": "Does the hinged closure term remove dependence, or move it from low- to high-order modes so that its band closes and the tail does not?"},
+    {"kind": "question", "text": "Does the unhinged term, trained at deeper cuts, reduce the high-order part of the tail residual where the hinged term does not?"},
+    {"kind": "gap", "text": "Earlier sweep rounds used other closure definitions and grids, so their numbers are kept as history and cannot be compared with BASELINE number for number."},
+    {"kind": "gap", "text": "Reproducing published numbers with the BASELINE code path is deferred; the ledger keeps a place for it."}
   ],
   "timeline": [
     {"date": "2026-10-10", "label": "New data and background files; baselines re-run behind a minimal analysis-only gate", "state": "done"},
     {"date": "2026-10-11", "label": "Refined sweeps of the decorrelation and closure terms in both regions", "state": "done"},
     {"date": "2026-10-13", "label": "Pre-registered evaluation framework adopted for closure", "state": "done"},
     {"date": "2026-10-17", "label": "Private repository created to hold the baseline record", "state": "done"},
-    {"date": "2026-10-20", "label": "Closure, error and plot canon written; published numbers reproduced by tests", "state": "active"},
-    {"label": "Register existing runs and score them through one code path", "state": "next"},
-    {"label": "Sweep curves, Pareto front and sweep movies from the ledger", "state": "next"},
-    {"label": "Confirm in-house metric definitions and lock the gate", "state": "next"},
+    {"date": "2026-10-20", "label": "Closure, error and plot canon written", "state": "done"},
+    {"date": "2026-10-22", "label": "Run specification written: eight loss families, one grader, a diagnostic dependence spectrum and a pre-registered lock rule", "state": "done"},
+    {"date": "2026-10-22", "label": "BASELINE code built to the specification; the sanity gate passes in both regions and every unit test passes on the real data", "state": "done"},
+    {"label": "Stage A: each loss term alone, both regions", "state": "active"},
+    {"label": "Stage B: combinations around the best single terms", "state": "next"},
+    {"label": "Lock rule, then confirmation and transfer runs graded by the evaluation matrix", "state": "next"},
     {"label": "Hand the locked baseline to STAVE, TRUSS and KERF", "state": "next"}
   ],
   "literature": [
-    {"key": "kasieczka2021", "category": "ABCD with ML", "authors": "G. Kasieczka, B. Nachman, M. D. Schwartz, D. Shih", "year": 2020, "title": "ABCDisCo: Automating the ABCD Method with Machine Learning", "venue": "Phys. Rev. D 103, 035021 (2021); arXiv:2007.14400", "url": "https://arxiv.org/abs/2007.14400", "verified": "full", "why": "Region convention, double decorrelation, and the normalized signal-contamination requirement"},
-    {"key": "cms2025tec", "category": "ABCD with ML", "authors": "CMS Collaboration", "year": 2025, "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC", "venue": "arXiv:2506.08826", "url": "https://arxiv.org/abs/2506.08826", "verified": "full", "why": "Non-closure definition, closure maps over the cut plane, sliding validation sub-planes"},
-    {"key": "disco2020", "category": "Decorrelation", "authors": "G. Kasieczka, D. Shih", "year": 2020, "title": "DisCo Fever: Robust Networks Through Distance Correlation", "venue": "Phys. Rev. Lett. 125, 122001 (2020); arXiv:2001.05310", "url": "https://arxiv.org/abs/2001.05310", "verified": "full", "why": "The distance-correlation penalty in the decorrelated rung"},
-    {"key": "choi2019", "category": "ABCD extensions", "authors": "S. Choi, H. Oh", "year": 2019, "title": "Improved Extrapolation Methods of Data-driven Background Estimation in High-Energy Physics", "venue": "arXiv:1906.10831", "url": "https://arxiv.org/abs/1906.10831", "verified": "full", "why": "Extended estimators that cancel residual correlation using extra control regions"},
+    {"key": "kasieczka2021", "category": "ABCD with ML", "authors": "G. Kasieczka, B. Nachman, M. D. Schwartz, D. Shih", "year": 2021, "title": "ABCDisCo: Automating the ABCD Method with Machine Learning", "venue": "Phys. Rev. D 103, 035021 (2021); arXiv:2007.14400", "url": "https://arxiv.org/abs/2007.14400", "verified": "full", "why": "Closure ratio, signal contamination r and δ, double DisCo, rejection at fixed signal efficiency, and the percentile cut scan"},
+    {"key": "cms2025tec", "category": "ABCD with ML", "authors": "CMS Collaboration", "year": 2025, "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC", "venue": "arXiv:2506.08826v2 (2026-09-04); DOI 10.1088/2632-2153/ae8c11", "url": "https://arxiv.org/abs/2506.08826", "verified": "full", "why": "Non-closure definition, significance with a non-closure systematic, and the non-closure map over the cut plane"},
+    {"key": "disco2020", "category": "Decorrelation", "authors": "G. Kasieczka, D. Shih", "year": 2020, "title": "DisCo Fever: Robust Networks Through Distance Correlation", "venue": "Phys. Rev. Lett. 125, 122001 (2020); arXiv:2001.05310", "url": "https://arxiv.org/abs/2001.05310", "verified": "full", "why": "The distance-correlation penalty behind the α term"},
+    {"key": "kallenberg1999", "category": "Dependence", "authors": "W. C. M. Kallenberg, T. Ledwina", "year": 1999, "title": "Data driven rank tests for independence", "venue": "JASA 94(445), 285–301 (1999)", "url": "https://research.utwente.nl/en/publications/data-driven-rank-tests-for-independence/", "verified": "abstract", "why": "Legendre expansion of the rank copula; the basis of the in-house dependence spectrum"},
+    {"key": "choi2019", "category": "ABCD extensions", "authors": "S. Choi, H. Oh", "year": 2019, "title": "Improved Extrapolation Methods of Data-driven Background Estimation in High-Energy Physics", "venue": "arXiv:1906.10831", "url": "https://arxiv.org/abs/1906.10831", "verified": "full", "why": "Extended estimators that cancel residual correlation; out of scope for BASELINE, recorded for later"},
     {"key": "alvarez2024", "category": "ABCD extensions", "authors": "E. Alvarez et al.", "year": 2024, "title": "Improvement and generalization of ABCD method with Bayesian inference", "venue": "SciPost Phys. Core 7, 043 (2024); arXiv:2402.08001", "url": "https://arxiv.org/abs/2402.08001", "verified": "full", "why": "Likelihood view of ABCD, relevant to small-count error treatment"},
     {"key": "atlas2025ms", "category": "ATLAS muon-spectrometer LLP searches", "authors": "ATLAS Collaboration", "year": 2025, "title": "Search for events with one displaced vertex from long-lived neutral particles decaying into hadronic jets in the ATLAS muon spectrometer in pp collisions at √s=13 TeV", "venue": "arXiv:2503.20445", "url": "https://arxiv.org/abs/2503.20445", "verified": "full", "why": "The published two-network ABCD baseline this work is measured against"},
     {"key": "atlas2022ms", "category": "ATLAS muon-spectrometer LLP searches", "authors": "ATLAS Collaboration", "year": 2022, "title": "Search for events with a pair of displaced vertices from long-lived neutral particles decaying into hadronic jets in the ATLAS muon spectrometer in pp collisions at √s=13 TeV", "venue": "Phys. Rev. D 106, 032005 (2022); arXiv:2203.00587", "url": "https://arxiv.org/abs/2203.00587", "verified": "full", "why": "Earlier muon-spectrometer search and its background validation"}
