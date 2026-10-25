@@ -3013,7 +3013,7 @@ window.DECK_PROJECTS = [
   "intro": {
    "problem": "KERF combines a maximum-entropy synthetic background [@jaynes1957] with kernel-based models of its marginals and of the dependence between them, because ABCD estimates that assume the two discriminants factorize fail when the discriminants are correlated, most of all in sparse tails [@choi2021].",
    "value": "A background model that keeps the fitted marginals but learns their dependence, rather than removing it during training [@abcdisco2021][@cms2025tec], turns non-closure from a failure into a measured and correctable quantity.",
-   "approach": "The first model built a maximum-entropy background from fitted per-feature marginals with hand-picked copula dependence. KERF keeps those marginals and replaces the copula with an exponential tilt whose functions are chosen from the data by kernel maximal correlation [@renyi1959][@huang2020], extending to a full kernel exponential family [@sriperumbudur2017], with every variant scored on closure through a gated test plan.",
+   "approach": "KERF keeps the first model's fitted marginals and replaces its hand-picked copula with an exponential tilt whose functions are chosen by kernel maximal correlation [@renyi1959][@huang2020], extending to a full kernel exponential family [@sriperumbudur2017] and scored on closure through a gated test plan. Conditioned on the signal hypothesis, the same construction gives a signal model and an explicit likelihood ratio [@baldi2016][@muandet2017].",
    "goals": "The end goal is an improved, and potentially novel, data-driven background estimate: a kernel maximum-entropy model whose dependence term comes with honest uncertainties and is benchmarked against extended and Bayesian ABCD methods [@choi2021][@alvarez2024]."
   },
   "questions": [
@@ -3053,7 +3053,16 @@ window.DECK_PROJECTS = [
     "state": "active"
    },
    {
+    "date": "2026-10-24",
+    "label": "Signal variant specified: conditional maximum-entropy signal model built from all simulated mass points",
+    "state": "done"
+   },
+   {
     "label": "Gated tests: toy harness, structure check, blinded toy closure, held-out corners, signal injection",
+    "state": "next"
+   },
+   {
+    "label": "Signal variant: fit on the reduced feature set from the signal/background separation pass, then validate",
     "state": "next"
    }
   ],
@@ -3169,6 +3178,17 @@ window.DECK_PROJECTS = [
     "key": "sriperumbudur2017"
    },
    {
+    "category": "Kernel MaxEnt",
+    "authors": "Muandet, Fukumizu, Sriperumbudur & Schölkopf",
+    "year": 2017,
+    "title": "Kernel Mean Embedding of Distributions: A Review and Beyond",
+    "venue": "Found. Trends Mach. Learn. 10(1-2), 1-141 (arXiv:1605.09522)",
+    "url": "https://doi.org/10.1561/2200000060",
+    "verified": "abstract",
+    "why": "Kernel mean embeddings; the constraint the signal model is fitted to match",
+    "key": "muandet2017"
+   },
+   {
     "category": "Density-ratio critics",
     "authors": "van den Oord et al.",
     "year": 2018,
@@ -3178,6 +3198,28 @@ window.DECK_PROJECTS = [
     "verified": "abstract",
     "why": "InfoNCE critic learns the log density ratio, i.e. the copula",
     "key": "vandenoord2018"
+   },
+   {
+    "category": "Signal modeling",
+    "authors": "Baldi, Cranmer, Faucett, Sadowski & Whiteson",
+    "year": 2016,
+    "title": "Parameterized neural networks for high-energy physics",
+    "venue": "Eur. Phys. J. C 76, 235 (arXiv:1601.07913)",
+    "url": "https://doi.org/10.1140/epjc/s10052-016-4099-4",
+    "verified": "abstract",
+    "why": "Conditioning on physics parameters to interpolate between mass points; the precedent for the conditional signal model",
+    "key": "baldi2016"
+   },
+   {
+    "category": "Model validation",
+    "authors": "Lopez-Paz & Oquab",
+    "year": 2017,
+    "title": "Revisiting Classifier Two-Sample Tests",
+    "venue": "ICLR 2017 (arXiv:1610.06545)",
+    "url": "https://arxiv.org/abs/1610.06545",
+    "verified": "abstract",
+    "why": "Classifier two-sample test used to check generated signal against real simulated signal",
+    "key": "lopezpaz2017"
    }
   ],
   "links": [
@@ -3187,7 +3229,7 @@ window.DECK_PROJECTS = [
     "text": "The barrel is the region where a factorized estimate is least trustworthy and statistics are thinnest. STAVE applies this joint-background model there and scores it against the shared barrel baseline."
    }
   ],
-  "tagline": "Maximum-entropy synthetic background with kernel-modeled marginals and dependence",
+  "tagline": "Maximum-entropy background and signal models with kernel-modeled marginals and dependence",
   "components": [
    {
     "name": "MaxEnt synthetic background",
@@ -3212,6 +3254,26 @@ window.DECK_PROJECTS = [
      {
       "label": "Tail bases",
       "detail": "Kernels that revert to factorization in the corner are avoided where the signal region sits"
+     }
+    ]
+   },
+   {
+    "name": "MaxEnt signal model",
+    "subtitle": "The same construction, for signal",
+    "state": "next",
+    "summary": "A maximum-entropy signal density built from all simulated mass points and conditioned on the signal hypothesis [@baldi2016], constrained to match the kernel mean embedding of each point [@muandet2017] on top of the same fitted-marginal base. Paired with the background model, it gives an explicit likelihood ratio, a test of interpolation to unseen mass points, and the injected signal the closure tests need.",
+    "items": [
+     {
+      "label": "Conditioning",
+      "detail": "One model across all mass points rather than one per point; with only a handful of points, interpolation is weakly constrained and is tested, not assumed"
+     },
+     {
+      "label": "Validation",
+      "detail": "Classifier two-sample test of generated against real simulated signal, judged against a real-versus-real null [@lopezpaz2017]; leave-one-mass-out must beat simply reusing the nearest mass point"
+     },
+     {
+      "label": "Guardrail",
+      "detail": "Generated events are tagged, kept out of every evaluation set, and never counted as extra statistics"
      }
     ]
    },
