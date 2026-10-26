@@ -50,6 +50,11 @@
       "state": "active"
     },
     {
+      "date": "2026-10-21",
+      "label": "Dependence probe added: learned two-sample test of real background against the factorized product and against each joint-model rung",
+      "state": "done"
+    },
+    {
       "date": "2026-10-24",
       "label": "Signal variant specified: conditional maximum-entropy signal model built from all simulated mass points",
       "state": "done"
@@ -60,6 +65,14 @@
     },
     {
       "label": "Signal variant: fit on the reduced feature set from the signal/background separation pass, then validate",
+      "state": "next"
+    },
+    {
+      "label": "Dependence probe: real background against the shuffled product, full plane and corner",
+      "state": "next"
+    },
+    {
+      "label": "Dependence probe against each joint-model rung",
       "state": "next"
     }
   ],
@@ -217,6 +230,28 @@
       "verified": "abstract",
       "why": "Classifier two-sample test used to check generated signal against real simulated signal",
       "key": "lopezpaz2017"
+    },
+    {
+      "key": "vaswani2017",
+      "category": "Attention",
+      "authors": "Vaswani et al.",
+      "year": 2017,
+      "title": "Attention Is All You Need",
+      "venue": "NeurIPS 2017; arXiv:1706.03762",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "verified": "abstract",
+      "why": "The transformer; cross-attention lets one block read another"
+    },
+    {
+      "key": "belghazi2018",
+      "category": "Kernel dependence",
+      "authors": "M. I. Belghazi et al.",
+      "year": 2018,
+      "title": "MINE: Mutual Information Neural Estimation",
+      "venue": "ICML 2018; arXiv:1801.04062",
+      "url": "https://arxiv.org/abs/1801.04062",
+      "verified": "abstract",
+      "why": "Neural estimate of the dependence the probe tests for"
     }
   ],
   "links": [
@@ -224,6 +259,11 @@
       "project": "stave",
       "title": "Applied in the barrel program",
       "text": "The barrel is the region where a factorized estimate is least trustworthy and statistics are thinnest. STAVE applies this joint-background model there and scores it against the shared barrel baseline."
+    },
+    {
+      "project": "lathe",
+      "title": "Latent version of the probe",
+      "text": "The same two-sample idea applied to the networks' hidden layers, to see where dependence lives before it reaches the scores."
     }
   ],
   "tagline": "Maximum-entropy background and signal models with kernel-modeled marginals and dependence",
@@ -251,6 +291,38 @@
         {
           "label": "Tail bases",
           "detail": "Kernels that revert to factorization in the corner are avoided where the signal region sits"
+        }
+      ]
+    },
+    {
+      "name": "Dependence probe",
+      "subtitle": "A learned test of what the joint model missed",
+      "state": "next",
+      "summary": "A classifier two-sample test [@lopezpaz2017] on background only. Real background pairs of the two feature blocks are set against the same pairs with one block shuffled, which is exactly the factorized product. A network that lets one block attend to the other [@vaswani2017] is the critic; if it cannot beat chance, there is no dependence for any model to recover. The same critic then sets real background against draws from each joint-model rung.",
+      "items": [
+        {
+          "label": "Ladder",
+          "detail": "Real against product, then real against each rung (copulas, kernel tilt, full family); a rung that captures the dependence drives the critic toward chance"
+        },
+        {
+          "label": "Corner",
+          "detail": "A version restricted to the high-score corner, where a global dependence measure is dominated by the bulk and the signal region sits"
+        },
+        {
+          "label": "Level",
+          "detail": "Run on the features the joint model fits; if the model is fitted on scores, the probe moves to scores"
+        },
+        {
+          "label": "Scope",
+          "detail": "Attention crosses the two feature blocks only inside this background-only diagnostic and never feeds a classifier, consistent with the token line's rule"
+        },
+        {
+          "label": "Related",
+          "detail": "A neural estimate of mutual information is the continuous counterpart of the same question [@belghazi2018]"
+        },
+        {
+          "label": "Labeling",
+          "detail": "Model draws and real background stay in separate, labeled runs; no reported real-data quantity uses model draws"
         }
       ]
     },

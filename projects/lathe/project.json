@@ -55,6 +55,11 @@
       "state": "done"
     },
     {
+      "date": "2026-10-21",
+      "label": "Latent cross-attention between the two networks proposed as a gated probe",
+      "state": "done"
+    },
+    {
       "label": "Carve out the held-out probe set and add a training dump hook",
       "state": "next"
     },
@@ -68,6 +73,10 @@
     },
     {
       "label": "Kill test: do map coordinates predict held-out closure?",
+      "state": "next"
+    },
+    {
+      "label": "Latent cross-attention, only after the first maps and under the kill test",
       "state": "next"
     }
   ],
@@ -313,6 +322,50 @@
       "verified": "abstract",
       "why": "Isolates a protected variable in a latent subspace",
       "key": "tan2020"
+    },
+    {
+      "key": "lopezpaz2017",
+      "category": "Density-ratio critics",
+      "authors": "D. Lopez-Paz, M. Oquab",
+      "year": 2017,
+      "title": "Revisiting Classifier Two-Sample Tests",
+      "venue": "ICLR 2017; arXiv:1610.06545",
+      "url": "https://arxiv.org/abs/1610.06545",
+      "verified": "abstract",
+      "why": "A classifier that cannot beat chance is a test that two samples match"
+    },
+    {
+      "key": "vaswani2017",
+      "category": "Attention",
+      "authors": "Vaswani et al.",
+      "year": 2017,
+      "title": "Attention Is All You Need",
+      "venue": "NeurIPS 2017; arXiv:1706.03762",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "verified": "abstract",
+      "why": "The transformer; cross-attention lets one block read another"
+    },
+    {
+      "key": "lee2019",
+      "category": "Attention",
+      "authors": "Lee et al.",
+      "year": 2019,
+      "title": "Set Transformer: A Framework for Attention-based Permutation-Invariant Neural Networks",
+      "venue": "ICML 2019; arXiv:1810.00825",
+      "url": "https://arxiv.org/abs/1810.00825",
+      "verified": "abstract",
+      "why": "Attention over unordered sets, the right shape for hidden units"
+    },
+    {
+      "key": "jain2019",
+      "category": "Attention",
+      "authors": "Jain and Wallace",
+      "year": 2019,
+      "title": "Attention is not Explanation",
+      "venue": "NAACL 2019; arXiv:1902.10186",
+      "url": "https://arxiv.org/abs/1902.10186",
+      "verified": "abstract",
+      "why": "Attention weights often fail to identify the inputs that drive a prediction"
     }
   ],
   "tagline": "Exploratory: is the latent space worth looking at?",
@@ -362,6 +415,30 @@
       ]
     },
     {
+      "name": "Latent cross-attention",
+      "subtitle": "Where dependence lives before the scores",
+      "state": "next",
+      "summary": "A background-only critic that lets one network's hidden layer attend to the other's, set against the same pairs with one side shuffled [@lopezpaz2017][@vaswani2017]. Per-event attention between the two latent spaces could show where dependence enters, which a global similarity score cannot.",
+      "items": [
+        {
+          "label": "Order-free",
+          "detail": "Hidden units have no order, so attention runs without positions [@lee2019]; units of a plain network are single numbers and are grouped before use"
+        },
+        {
+          "label": "Against CKA",
+          "detail": "Kept only if it separates closing from non-closing models where representation similarity does not [@kornblith2019]"
+        },
+        {
+          "label": "Kill test",
+          "detail": "Subject to the same pre-registered kill test as every other map coordinate"
+        },
+        {
+          "label": "Attribution",
+          "detail": "Attention maps are a cross-check, not an explanation [@jain2019]"
+        }
+      ]
+    },
+    {
       "name": "Kill test",
       "subtitle": "Pre-registered exit",
       "state": "next",
@@ -373,6 +450,11 @@
       "project": "truss",
       "title": "Architecture search",
       "text": "If latent maps prove useful, their features become an input to TRUSS's architecture generation; the dead-unit census feeds its connection sizing either way."
+    },
+    {
+      "project": "kerf",
+      "title": "Feature-level dependence probe",
+      "text": "KERF runs the same two-sample test on the input features to check its joint background model; this is the latent-space version."
     }
   ]
 }

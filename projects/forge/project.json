@@ -64,6 +64,11 @@
       "state": "done"
     },
     {
+      "date": "2026-10-21",
+      "label": "Attention trunk with a token-structured Laplace head proposed",
+      "state": "done"
+    },
+    {
       "label": "Explain the Laplace-versus-sampler discrepancies",
       "state": "next"
     },
@@ -77,6 +82,10 @@
     },
     {
       "label": "Map FORGE's metrics onto the other projects",
+      "state": "next"
+    },
+    {
+      "label": "Token-structured head on the attention network from the TRUSS ceiling test",
       "state": "next"
     }
   ],
@@ -179,6 +188,39 @@
       "verified": "full",
       "why": "Sandwich correction for the shared-label two-network likelihood",
       "key": "varin2011"
+    },
+    {
+      "key": "gorishniy2021",
+      "category": "Attention",
+      "authors": "Gorishniy et al.",
+      "year": 2021,
+      "title": "Revisiting Deep Learning Models for Tabular Data",
+      "venue": "NeurIPS 2021; arXiv:2106.11959",
+      "url": "https://arxiv.org/abs/2106.11959",
+      "verified": "abstract",
+      "why": "FT-Transformer: one token per tabular feature"
+    },
+    {
+      "key": "jain2019",
+      "category": "Attention",
+      "authors": "Jain and Wallace",
+      "year": 2019,
+      "title": "Attention is not Explanation",
+      "venue": "NAACL 2019; arXiv:1902.10186",
+      "url": "https://arxiv.org/abs/1902.10186",
+      "verified": "abstract",
+      "why": "Attention weights often fail to identify the inputs that drive a prediction"
+    },
+    {
+      "key": "heo2018",
+      "category": "Attention",
+      "authors": "J. Heo et al.",
+      "year": 2018,
+      "title": "Uncertainty-Aware Attention for Reliable Interpretation and Prediction",
+      "venue": "NeurIPS 2018; arXiv:1805.09653",
+      "url": "https://arxiv.org/abs/1805.09653",
+      "verified": "abstract",
+      "why": "Attention whose weights carry their own uncertainty"
     }
   ],
   "tagline": "Applied to the ATLAS long-lived-particle networks",
@@ -234,6 +276,34 @@
         {
           "label": "Penalties",
           "detail": "Whether decorrelation and closure terms belong in the posterior curvature is still open"
+        }
+      ]
+    },
+    {
+      "name": "Token-structured head",
+      "subtitle": "Attention upstream, Laplace on top",
+      "state": "next",
+      "summary": "The Laplace approximation constrains only the last map, so anything upstream can be nonlinear, an attention trunk included. Reading the concatenated per-feature token states instead of one pooled vector gives a larger last layer with structure the observatory can use, while staying within the sampler's reach [@gorishniy2021].",
+      "items": [
+        {
+          "label": "Token allocation",
+          "detail": "The existing per-dimension allocation of epistemic variance, summed within each token: an exact share per input feature that still adds to the total"
+        },
+        {
+          "label": "Two attributions",
+          "detail": "Token allocation read against the attention maps; agreement counts as evidence, disagreement points at attention [@jain2019]"
+        },
+        {
+          "label": "Focus versus doubt",
+          "detail": "Whether events with diffuse attention carry more epistemic variance, with uncertainty-aware attention as the reference design [@heo2018]"
+        },
+        {
+          "label": "Matched comparison",
+          "detail": "Plain and attention networks compared on the ratio metrics at matched discrimination, with the curvature check for saturation first"
+        },
+        {
+          "label": "Scope",
+          "detail": "Attention weights stay point estimates; the decomposition covers the head only, so the known over-confidence of last-layer methods carries over"
         }
       ]
     },

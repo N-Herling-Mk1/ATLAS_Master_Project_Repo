@@ -870,6 +870,16 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
+    "date": "2026-10-21",
+    "label": "Architecture-family ceiling test proposed: feature-token attention and boosted trees against the current network, with a uniform-attention control",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-21",
+    "label": "Weight-space reader proposed as a candidate surrogate",
+    "state": "done"
+   },
+   {
     "label": "Testing existing: rerun the calibration sweep on the corrected baseline",
     "state": "next"
    },
@@ -883,6 +893,18 @@ window.DECK_PROJECTS = [
    },
    {
     "label": "Fit the supervised surrogate once enough candidates are trained",
+    "state": "next"
+   },
+   {
+    "label": "Family ceiling: attention, uniform attention and boosted trees against the current network on matched folds and seeds",
+    "state": "next"
+   },
+   {
+    "label": "Mass-conditioned network against per-hypothesis networks",
+    "state": "next"
+   },
+   {
+    "label": "Weight-space surrogate, only once enough checkpoints are saved",
     "state": "next"
    }
   ],
@@ -1073,6 +1095,149 @@ window.DECK_PROJECTS = [
     "url": "https://arxiv.org/abs/1912.09363",
     "verified": "abstract",
     "why": "Per-feature variable-selection gates that expose learned importances"
+   },
+   {
+    "key": "gorishniy2021",
+    "category": "Attention",
+    "authors": "Gorishniy et al.",
+    "year": 2021,
+    "title": "Revisiting Deep Learning Models for Tabular Data",
+    "venue": "NeurIPS 2021; arXiv:2106.11959",
+    "url": "https://arxiv.org/abs/2106.11959",
+    "verified": "abstract",
+    "why": "FT-Transformer: one token per tabular feature"
+   },
+   {
+    "key": "gorishniy2022",
+    "category": "Attention",
+    "authors": "Gorishniy, Rubachev, Babenko",
+    "year": 2022,
+    "title": "On Embeddings for Numerical Features in Tabular Deep Learning",
+    "venue": "NeurIPS 2022; arXiv:2203.05556",
+    "url": "https://arxiv.org/abs/2203.05556",
+    "verified": "abstract",
+    "why": "Piecewise-linear and binned embeddings of numerical features"
+   },
+   {
+    "key": "zaheer2017",
+    "category": "Attention",
+    "authors": "Zaheer et al.",
+    "year": 2017,
+    "title": "Deep Sets",
+    "venue": "NeurIPS 2017; arXiv:1703.06114",
+    "url": "https://arxiv.org/abs/1703.06114",
+    "verified": "abstract",
+    "why": "Order-free set models without attention; the shape of the uniform-attention control"
+   },
+   {
+    "key": "jain2019",
+    "category": "Attention",
+    "authors": "Jain and Wallace",
+    "year": 2019,
+    "title": "Attention is not Explanation",
+    "venue": "NAACL 2019; arXiv:1902.10186",
+    "url": "https://arxiv.org/abs/1902.10186",
+    "verified": "abstract",
+    "why": "Attention weights often fail to identify the inputs that drive a prediction"
+   },
+   {
+    "key": "grinsztajn2022",
+    "category": "Tabular architectures",
+    "authors": "L. Grinsztajn, E. Oyallon, G. Varoquaux",
+    "year": 2022,
+    "title": "Why do tree-based models still outperform deep learning on tabular data?",
+    "venue": "NeurIPS 2022 Datasets and Benchmarks; arXiv:2207.08815",
+    "url": "https://arxiv.org/abs/2207.08815",
+    "verified": "abstract",
+    "why": "Benchmark showing boosted trees are the reference to beat on small tabular data"
+   },
+   {
+    "key": "ke2017",
+    "category": "Tabular architectures",
+    "authors": "G. Ke et al.",
+    "year": 2017,
+    "title": "LightGBM: A Highly Efficient Gradient Boosting Decision Tree",
+    "venue": "NeurIPS 2017",
+    "url": "https://proceedings.neurips.cc/paper/2017/hash/6449f44a102fde848669bdd9eb6b76fa-Abstract.html",
+    "verified": "abstract",
+    "why": "Boosted-tree reference model for the ceiling test"
+   },
+   {
+    "key": "baldi2016",
+    "category": "Conditioning",
+    "authors": "P. Baldi, K. Cranmer, T. Faucett, P. Sadowski, D. Whiteson",
+    "year": 2016,
+    "title": "Parameterized Machine Learning for High-Energy Physics",
+    "venue": "Eur. Phys. J. C 76; arXiv:1601.07913",
+    "url": "https://arxiv.org/abs/1601.07913",
+    "verified": "abstract",
+    "why": "One network conditioned on the signal hypothesis"
+   },
+   {
+    "key": "perez2018",
+    "category": "Conditioning",
+    "authors": "E. Perez, F. Strub, H. de Vries, V. Dumoulin, A. Courville",
+    "year": 2018,
+    "title": "FiLM: Visual Reasoning with a General Conditioning Layer",
+    "venue": "AAAI 2018; arXiv:1709.07871",
+    "url": "https://arxiv.org/abs/1709.07871",
+    "verified": "abstract",
+    "why": "Feature-wise conditioning layer for injecting the hypothesis"
+   },
+   {
+    "key": "qu2022",
+    "category": "Tabular architectures",
+    "authors": "H. Qu, C. Li, S. Qian",
+    "year": 2022,
+    "title": "Particle Transformer for Jet Tagging",
+    "venue": "ICML 2022; arXiv:2202.03772",
+    "url": "https://arxiv.org/abs/2202.03772",
+    "verified": "abstract",
+    "why": "Attention over sets of detector objects; the per-object route"
+   },
+   {
+    "key": "navon2023",
+    "category": "Weight space",
+    "authors": "A. Navon et al.",
+    "year": 2023,
+    "title": "Equivariant Architectures for Learning in Deep Weight Spaces",
+    "venue": "ICML 2023; arXiv:2301.12780",
+    "url": "https://arxiv.org/abs/2301.12780",
+    "verified": "abstract",
+    "why": "Networks that read other networks' weights, respecting hidden-unit symmetry"
+   },
+   {
+    "key": "zhou2023",
+    "category": "Weight space",
+    "authors": "A. Zhou et al.",
+    "year": 2023,
+    "title": "Permutation Equivariant Neural Functionals",
+    "venue": "NeurIPS 2023; arXiv:2302.14040",
+    "url": "https://arxiv.org/abs/2302.14040",
+    "verified": "abstract",
+    "why": "Permutation-equivariant layers over weight space"
+   },
+   {
+    "key": "kofinas2024",
+    "category": "Weight space",
+    "authors": "M. Kofinas et al.",
+    "year": 2024,
+    "title": "Graph Neural Networks for Learning Equivariant Representations of Neural Networks",
+    "venue": "ICLR 2024; arXiv:2403.12143",
+    "url": "https://arxiv.org/abs/2403.12143",
+    "verified": "abstract",
+    "why": "Trained networks read as graphs, with attention-capable message passing"
+   },
+   {
+    "key": "unterthiner2020",
+    "category": "Weight space",
+    "authors": "T. Unterthiner, D. Keysers, S. Gelly, O. Bousquet, I. Tolstikhin",
+    "year": 2020,
+    "title": "Predicting Neural Network Accuracy from Weights",
+    "venue": "arXiv:2002.11448",
+    "url": "https://arxiv.org/abs/2002.11448",
+    "verified": "abstract",
+    "why": "A model zoo is enough to predict performance from weights alone"
    }
   ],
   "components": [
@@ -1093,6 +1258,46 @@ window.DECK_PROJECTS = [
      {
       "label": "Closure-sensitivity pruning",
       "detail": "Remove units whose closure cost is high and whose classification value is low, from one backward pass"
+     }
+    ]
+   },
+   {
+    "name": "Family ceiling",
+    "subtitle": "Is the default network the limit?",
+    "state": "next",
+    "summary": "Before searching inside one family, check whether another family of supervised model does better on the same inputs. Feature-token attention [@gorishniy2021] and boosted trees [@ke2017], the usual strong references for tabular data [@grinsztajn2022], are trained beside the current network on matched folds and seeds. If neither beats it by more than the seed-to-seed spread, the ceiling sits in the features, not the topology.",
+    "items": [
+     {
+      "label": "Order",
+      "detail": "Plain cross-entropy first; the decorrelation penalty is added only if a family shows a real gain, and closure is then compared against the shared baseline"
+     },
+     {
+      "label": "Metrics",
+      "detail": "Discrimination for both networks, worst signal-hypothesis discrimination, and seed spread; the closure entries of the metric vector are declared deferred for this pass, not missing"
+     },
+     {
+      "label": "Shared trunk",
+      "detail": "The attention network and its token embedding are taken from the token line rather than rebuilt [@gorishniy2022]"
+     },
+     {
+      "label": "Uniform-attention control",
+      "detail": "The same network with attention fixed to uniform [@zaheer2017], separating what attention selects from what extra capacity buys"
+     },
+     {
+      "label": "Posterior readings",
+      "detail": "Every family also read on the observatory's ratio metrics, so equal discrimination can still separate earned confidence from prior-held confidence"
+     },
+     {
+      "label": "Attribution",
+      "detail": "Attention maps read only beside permutation importance [@jain2019]"
+     },
+     {
+      "label": "Mass conditioning",
+      "detail": "One network conditioned on the signal hypothesis instead of one per hypothesis [@baldi2016][@perez2018]"
+     },
+     {
+      "label": "Per-object attention (later)",
+      "detail": "Attention over variable-length sets of detector objects [@qu2022]; needs new inputs, so outside this pass"
      }
     ]
    },
@@ -1121,8 +1326,24 @@ window.DECK_PROJECTS = [
      {
       "label": "Guardrails",
       "detail": "Disjoint seeds, winners retrained from scratch, a random-search baseline, and gates against designs that win by default"
+     },
+     {
+      "label": "Weight-space reader",
+      "detail": "A reader of trained weights that respects the order-free hidden units [@navon2023][@zhou2023][@kofinas2024], tried as the surrogate on the zoo of saved checkpoints [@unterthiner2020]"
      }
     ]
+   }
+  ],
+  "links": [
+   {
+    "project": "lexicon",
+    "title": "Shared attention trunk",
+    "text": "The token line already runs a feature-token transformer and a uniform-attention control. The ceiling test reuses both instead of building a second attention network."
+   },
+   {
+    "project": "forge",
+    "title": "Posterior readings",
+    "text": "Each model family is read on the observatory's ratio metrics as well as on discrimination, so two families that discriminate equally can still be told apart."
    }
   ],
   "logo": "projects/truss/logo.webp",
@@ -1185,6 +1406,11 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
+    "date": "2026-10-21",
+    "label": "Latent cross-attention between the two networks proposed as a gated probe",
+    "state": "done"
+   },
+   {
     "label": "Carve out the held-out probe set and add a training dump hook",
     "state": "next"
    },
@@ -1198,6 +1424,10 @@ window.DECK_PROJECTS = [
    },
    {
     "label": "Kill test: do map coordinates predict held-out closure?",
+    "state": "next"
+   },
+   {
+    "label": "Latent cross-attention, only after the first maps and under the kill test",
     "state": "next"
    }
   ],
@@ -1443,6 +1673,50 @@ window.DECK_PROJECTS = [
     "verified": "abstract",
     "why": "Isolates a protected variable in a latent subspace",
     "key": "tan2020"
+   },
+   {
+    "key": "lopezpaz2017",
+    "category": "Density-ratio critics",
+    "authors": "D. Lopez-Paz, M. Oquab",
+    "year": 2017,
+    "title": "Revisiting Classifier Two-Sample Tests",
+    "venue": "ICLR 2017; arXiv:1610.06545",
+    "url": "https://arxiv.org/abs/1610.06545",
+    "verified": "abstract",
+    "why": "A classifier that cannot beat chance is a test that two samples match"
+   },
+   {
+    "key": "vaswani2017",
+    "category": "Attention",
+    "authors": "Vaswani et al.",
+    "year": 2017,
+    "title": "Attention Is All You Need",
+    "venue": "NeurIPS 2017; arXiv:1706.03762",
+    "url": "https://arxiv.org/abs/1706.03762",
+    "verified": "abstract",
+    "why": "The transformer; cross-attention lets one block read another"
+   },
+   {
+    "key": "lee2019",
+    "category": "Attention",
+    "authors": "Lee et al.",
+    "year": 2019,
+    "title": "Set Transformer: A Framework for Attention-based Permutation-Invariant Neural Networks",
+    "venue": "ICML 2019; arXiv:1810.00825",
+    "url": "https://arxiv.org/abs/1810.00825",
+    "verified": "abstract",
+    "why": "Attention over unordered sets, the right shape for hidden units"
+   },
+   {
+    "key": "jain2019",
+    "category": "Attention",
+    "authors": "Jain and Wallace",
+    "year": 2019,
+    "title": "Attention is not Explanation",
+    "venue": "NAACL 2019; arXiv:1902.10186",
+    "url": "https://arxiv.org/abs/1902.10186",
+    "verified": "abstract",
+    "why": "Attention weights often fail to identify the inputs that drive a prediction"
    }
   ],
   "tagline": "Exploratory: is the latent space worth looking at?",
@@ -1492,6 +1766,30 @@ window.DECK_PROJECTS = [
     ]
    },
    {
+    "name": "Latent cross-attention",
+    "subtitle": "Where dependence lives before the scores",
+    "state": "next",
+    "summary": "A background-only critic that lets one network's hidden layer attend to the other's, set against the same pairs with one side shuffled [@lopezpaz2017][@vaswani2017]. Per-event attention between the two latent spaces could show where dependence enters, which a global similarity score cannot.",
+    "items": [
+     {
+      "label": "Order-free",
+      "detail": "Hidden units have no order, so attention runs without positions [@lee2019]; units of a plain network are single numbers and are grouped before use"
+     },
+     {
+      "label": "Against CKA",
+      "detail": "Kept only if it separates closing from non-closing models where representation similarity does not [@kornblith2019]"
+     },
+     {
+      "label": "Kill test",
+      "detail": "Subject to the same pre-registered kill test as every other map coordinate"
+     },
+     {
+      "label": "Attribution",
+      "detail": "Attention maps are a cross-check, not an explanation [@jain2019]"
+     }
+    ]
+   },
+   {
     "name": "Kill test",
     "subtitle": "Pre-registered exit",
     "state": "next",
@@ -1503,6 +1801,11 @@ window.DECK_PROJECTS = [
     "project": "truss",
     "title": "Architecture search",
     "text": "If latent maps prove useful, their features become an input to TRUSS's architecture generation; the dead-unit census feeds its connection sizing either way."
+   },
+   {
+    "project": "kerf",
+    "title": "Feature-level dependence probe",
+    "text": "KERF runs the same two-sample test on the input features to check its joint background model; this is the latent-space version."
    }
   ],
   "logo": "projects/lathe/logo.webp",
@@ -3053,6 +3356,11 @@ window.DECK_PROJECTS = [
     "state": "active"
    },
    {
+    "date": "2026-10-21",
+    "label": "Dependence probe added: learned two-sample test of real background against the factorized product and against each joint-model rung",
+    "state": "done"
+   },
+   {
     "date": "2026-10-24",
     "label": "Signal variant specified: conditional maximum-entropy signal model built from all simulated mass points",
     "state": "done"
@@ -3063,6 +3371,14 @@ window.DECK_PROJECTS = [
    },
    {
     "label": "Signal variant: fit on the reduced feature set from the signal/background separation pass, then validate",
+    "state": "next"
+   },
+   {
+    "label": "Dependence probe: real background against the shuffled product, full plane and corner",
+    "state": "next"
+   },
+   {
+    "label": "Dependence probe against each joint-model rung",
     "state": "next"
    }
   ],
@@ -3220,6 +3536,28 @@ window.DECK_PROJECTS = [
     "verified": "abstract",
     "why": "Classifier two-sample test used to check generated signal against real simulated signal",
     "key": "lopezpaz2017"
+   },
+   {
+    "key": "vaswani2017",
+    "category": "Attention",
+    "authors": "Vaswani et al.",
+    "year": 2017,
+    "title": "Attention Is All You Need",
+    "venue": "NeurIPS 2017; arXiv:1706.03762",
+    "url": "https://arxiv.org/abs/1706.03762",
+    "verified": "abstract",
+    "why": "The transformer; cross-attention lets one block read another"
+   },
+   {
+    "key": "belghazi2018",
+    "category": "Kernel dependence",
+    "authors": "M. I. Belghazi et al.",
+    "year": 2018,
+    "title": "MINE: Mutual Information Neural Estimation",
+    "venue": "ICML 2018; arXiv:1801.04062",
+    "url": "https://arxiv.org/abs/1801.04062",
+    "verified": "abstract",
+    "why": "Neural estimate of the dependence the probe tests for"
    }
   ],
   "links": [
@@ -3227,6 +3565,11 @@ window.DECK_PROJECTS = [
     "project": "stave",
     "title": "Applied in the barrel program",
     "text": "The barrel is the region where a factorized estimate is least trustworthy and statistics are thinnest. STAVE applies this joint-background model there and scores it against the shared barrel baseline."
+   },
+   {
+    "project": "lathe",
+    "title": "Latent version of the probe",
+    "text": "The same two-sample idea applied to the networks' hidden layers, to see where dependence lives before it reaches the scores."
    }
   ],
   "tagline": "Maximum-entropy background and signal models with kernel-modeled marginals and dependence",
@@ -3254,6 +3597,38 @@ window.DECK_PROJECTS = [
      {
       "label": "Tail bases",
       "detail": "Kernels that revert to factorization in the corner are avoided where the signal region sits"
+     }
+    ]
+   },
+   {
+    "name": "Dependence probe",
+    "subtitle": "A learned test of what the joint model missed",
+    "state": "next",
+    "summary": "A classifier two-sample test [@lopezpaz2017] on background only. Real background pairs of the two feature blocks are set against the same pairs with one block shuffled, which is exactly the factorized product. A network that lets one block attend to the other [@vaswani2017] is the critic; if it cannot beat chance, there is no dependence for any model to recover. The same critic then sets real background against draws from each joint-model rung.",
+    "items": [
+     {
+      "label": "Ladder",
+      "detail": "Real against product, then real against each rung (copulas, kernel tilt, full family); a rung that captures the dependence drives the critic toward chance"
+     },
+     {
+      "label": "Corner",
+      "detail": "A version restricted to the high-score corner, where a global dependence measure is dominated by the bulk and the signal region sits"
+     },
+     {
+      "label": "Level",
+      "detail": "Run on the features the joint model fits; if the model is fitted on scores, the probe moves to scores"
+     },
+     {
+      "label": "Scope",
+      "detail": "Attention crosses the two feature blocks only inside this background-only diagnostic and never feeds a classifier, consistent with the token line's rule"
+     },
+     {
+      "label": "Related",
+      "detail": "A neural estimate of mutual information is the continuous counterpart of the same question [@belghazi2018]"
+     },
+     {
+      "label": "Labeling",
+      "detail": "Model draws and real background stay in separate, labeled runs; no reported real-data quantity uses model draws"
      }
     ]
    },
@@ -3353,6 +3728,11 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
+    "date": "2026-10-21",
+    "label": "Attention trunk with a token-structured Laplace head proposed",
+    "state": "done"
+   },
+   {
     "label": "Explain the Laplace-versus-sampler discrepancies",
     "state": "next"
    },
@@ -3366,6 +3746,10 @@ window.DECK_PROJECTS = [
    },
    {
     "label": "Map FORGE's metrics onto the other projects",
+    "state": "next"
+   },
+   {
+    "label": "Token-structured head on the attention network from the TRUSS ceiling test",
     "state": "next"
    }
   ],
@@ -3468,6 +3852,39 @@ window.DECK_PROJECTS = [
     "verified": "full",
     "why": "Sandwich correction for the shared-label two-network likelihood",
     "key": "varin2011"
+   },
+   {
+    "key": "gorishniy2021",
+    "category": "Attention",
+    "authors": "Gorishniy et al.",
+    "year": 2021,
+    "title": "Revisiting Deep Learning Models for Tabular Data",
+    "venue": "NeurIPS 2021; arXiv:2106.11959",
+    "url": "https://arxiv.org/abs/2106.11959",
+    "verified": "abstract",
+    "why": "FT-Transformer: one token per tabular feature"
+   },
+   {
+    "key": "jain2019",
+    "category": "Attention",
+    "authors": "Jain and Wallace",
+    "year": 2019,
+    "title": "Attention is not Explanation",
+    "venue": "NAACL 2019; arXiv:1902.10186",
+    "url": "https://arxiv.org/abs/1902.10186",
+    "verified": "abstract",
+    "why": "Attention weights often fail to identify the inputs that drive a prediction"
+   },
+   {
+    "key": "heo2018",
+    "category": "Attention",
+    "authors": "J. Heo et al.",
+    "year": 2018,
+    "title": "Uncertainty-Aware Attention for Reliable Interpretation and Prediction",
+    "venue": "NeurIPS 2018; arXiv:1805.09653",
+    "url": "https://arxiv.org/abs/1805.09653",
+    "verified": "abstract",
+    "why": "Attention whose weights carry their own uncertainty"
    }
   ],
   "tagline": "Applied to the ATLAS long-lived-particle networks",
@@ -3523,6 +3940,34 @@ window.DECK_PROJECTS = [
      {
       "label": "Penalties",
       "detail": "Whether decorrelation and closure terms belong in the posterior curvature is still open"
+     }
+    ]
+   },
+   {
+    "name": "Token-structured head",
+    "subtitle": "Attention upstream, Laplace on top",
+    "state": "next",
+    "summary": "The Laplace approximation constrains only the last map, so anything upstream can be nonlinear, an attention trunk included. Reading the concatenated per-feature token states instead of one pooled vector gives a larger last layer with structure the observatory can use, while staying within the sampler's reach [@gorishniy2021].",
+    "items": [
+     {
+      "label": "Token allocation",
+      "detail": "The existing per-dimension allocation of epistemic variance, summed within each token: an exact share per input feature that still adds to the total"
+     },
+     {
+      "label": "Two attributions",
+      "detail": "Token allocation read against the attention maps; agreement counts as evidence, disagreement points at attention [@jain2019]"
+     },
+     {
+      "label": "Focus versus doubt",
+      "detail": "Whether events with diffuse attention carry more epistemic variance, with uncertainty-aware attention as the reference design [@heo2018]"
+     },
+     {
+      "label": "Matched comparison",
+      "detail": "Plain and attention networks compared on the ratio metrics at matched discrimination, with the curvature check for saturation first"
+     },
+     {
+      "label": "Scope",
+      "detail": "Attention weights stay point estimates; the decomposition covers the head only, so the known over-confidence of last-layer methods carries over"
      }
     ]
    },
