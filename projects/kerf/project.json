@@ -60,11 +60,16 @@
       "state": "done"
     },
     {
+      "date": "2026-10-27",
+      "label": "Signal variant scoped as a generative test: all fusion schemes, rungs, feature sets and regions in one grid",
+      "state": "done"
+    },
+    {
       "label": "Gated tests: toy harness, structure check, blinded toy closure, held-out corners, signal injection",
       "state": "next"
     },
     {
-      "label": "Signal variant: fit on the reduced feature set from the signal/background separation pass, then validate",
+      "label": "Signal variant generative test: fit the grid on the network input features, then validate",
       "state": "next"
     },
     {
@@ -328,17 +333,41 @@
     },
     {
       "name": "MaxEnt signal model",
-      "subtitle": "The same construction, for signal",
+      "subtitle": "The same construction, for signal: a generative test first",
       "state": "next",
-      "summary": "A maximum-entropy signal density built from all simulated mass points and conditioned on the signal hypothesis [@baldi2016], constrained to match the kernel mean embedding of each point [@muandet2017] on top of the same fitted-marginal base. Paired with the background model, it gives an explicit likelihood ratio, a test of interpolation to unseen mass points, and the injected signal the closure tests need.",
+      "summary": "A maximum-entropy signal density built from all simulated mass points [@baldi2016], constrained to match the kernel mean embedding of each point [@muandet2017] on top of the same fitted-marginal base. The first stage is labeled a generative test: it asks only whether generated signal is indistinguishable from real simulated signal, and makes no claim about discrimination, the likelihood ratio or closure. Pairing it with a background model built the same way, for an explicit likelihood ratio and injected signal for the closure tests, is a separate, later test.",
       "items": [
         {
-          "label": "Conditioning",
-          "detail": "One model across all mass points rather than one per point; with only a handful of points, interpolation is weakly constrained and is tested, not assumed"
+          "label": "Scope",
+          "detail": "Signal only. Every result carries the generative-test label so a pass is never read as discriminating power"
+        },
+        {
+          "label": "Inputs",
+          "detail": "The most recent simulated signal files, with every available mass point included in every combination"
+        },
+        {
+          "label": "Features",
+          "detail": "The network input features only; the kernel dimension is set by the input list of each network"
+        },
+        {
+          "label": "Fusion",
+          "detail": "Every scheme is run and compared: one model per mass point (the no-fusion baseline), an equal-weight mixture, a mixture weighted by sample size, and one model conditioned on the mass hypothesis with a swept kernel bandwidth in mass"
+        },
+        {
+          "label": "Grid",
+          "detail": "Fusion scheme against dependence rung (product, Gaussian copula, mixture copula, full kernel density) against feature set (each network and their union) against detector region"
         },
         {
           "label": "Validation",
-          "detail": "Classifier two-sample test of generated against real simulated signal, judged against a real-versus-real null [@lopezpaz2017]; leave-one-mass-out must beat simply reusing the nearest mass point"
+          "detail": "Classifier two-sample test judged against a real-versus-real null [@lopezpaz2017], per-feature two-sample tests, and generated events passed through the frozen networks with their score distributions compared, low-score tail included"
+        },
+        {
+          "label": "Overlap",
+          "detail": "Fidelity is also scored where signal and background overlap, since that region sets the network score; a global pass alone is not enough"
+        },
+        {
+          "label": "Interpolation",
+          "detail": "Leave-one-mass-out for every fusion scheme; it must beat simply reusing the nearest mass point"
         },
         {
           "label": "Guardrail",
