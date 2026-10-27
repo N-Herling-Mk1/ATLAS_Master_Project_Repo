@@ -3369,7 +3369,7 @@ window.DECK_PROJECTS = [
   "intro": {
    "problem": "KERF combines a maximum-entropy synthetic background [@jaynes1957] with kernel-based models of its marginals and of the dependence between them, because ABCD estimates that assume the two discriminants factorize fail when the discriminants are correlated, most of all in sparse tails [@choi2021].",
    "value": "A background model that keeps the fitted marginals but learns their dependence, rather than removing it during training [@abcdisco2021][@cms2025tec], turns non-closure from a failure into a measured and correctable quantity.",
-   "approach": "KERF keeps the first model's fitted marginals and replaces its hand-picked copula with an exponential tilt whose functions are chosen by kernel maximal correlation [@renyi1959][@huang2020], extending to a full kernel exponential family [@sriperumbudur2017] and scored on closure through a gated test plan. Conditioned on the signal hypothesis, the same construction gives a signal model and an explicit likelihood ratio [@baldi2016][@muandet2017].",
+   "approach": "KERF keeps the fitted marginals and replaces the hand-picked copula with an exponential tilt chosen by kernel maximal correlation [@renyi1959][@huang2020], extending to a full kernel exponential family [@sriperumbudur2017], scored on closure through gated tests. Fitted feature by feature to signal across all mass points, the same marginals give the networks a cross-fitted likelihood-ratio input layer [@chernozhukov2018].",
    "goals": "The end goal is an improved, and potentially novel, data-driven background estimate: a kernel maximum-entropy model whose dependence term comes with honest uncertainties and is benchmarked against extended and Bayesian ABCD methods [@choi2021][@alvarez2024]."
   },
   "questions": [
@@ -3419,11 +3419,20 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
+    "date": "2026-10-27",
+    "label": "Signal line redefined: per-feature maximum-entropy likelihood-ratio inputs with goodness and leakage scorecards, replacing the joint signal model",
+    "state": "done"
+   },
+   {
     "label": "Gated tests: toy harness, structure check, blinded toy closure, held-out corners, signal injection",
     "state": "next"
    },
    {
-    "label": "Signal variant: fit on the reduced feature set from the signal/background separation pass, then validate",
+    "label": "Per-feature signal and background models with nested cross-fitting; goodness and leakage scorecards",
+    "state": "next"
+   },
+   {
+    "label": "Likelihood-ratio input variants against the rank-scaled control in the benchmark",
     "state": "next"
    },
    {
@@ -3547,17 +3556,6 @@ window.DECK_PROJECTS = [
     "key": "sriperumbudur2017"
    },
    {
-    "category": "Kernel MaxEnt",
-    "authors": "Muandet, Fukumizu, Sriperumbudur & Schölkopf",
-    "year": 2017,
-    "title": "Kernel Mean Embedding of Distributions: A Review and Beyond",
-    "venue": "Found. Trends Mach. Learn. 10(1-2), 1-141 (arXiv:1605.09522)",
-    "url": "https://doi.org/10.1561/2200000060",
-    "verified": "abstract",
-    "why": "Kernel mean embeddings; the constraint the signal model is fitted to match",
-    "key": "muandet2017"
-   },
-   {
     "category": "Density-ratio critics",
     "authors": "van den Oord et al.",
     "year": 2018,
@@ -3611,21 +3609,48 @@ window.DECK_PROJECTS = [
     "url": "https://arxiv.org/abs/1801.04062",
     "verified": "abstract",
     "why": "Neural estimate of the dependence the probe tests for"
+   },
+   {
+    "key": "chernozhukov2018",
+    "category": "Model validation",
+    "authors": "Chernozhukov, Chetverikov, Demirer, Duflo, Hansen, Newey & Robins",
+    "year": 2018,
+    "title": "Double/Debiased Machine Learning for Treatment and Structural Parameters",
+    "venue": "Econometrics Journal 21 (arXiv:1608.00060)",
+    "url": "https://arxiv.org/abs/1608.00060",
+    "verified": "abstract",
+    "why": "Cross-fitting: every quantity fitted to the data is evaluated only on events it never saw, the rule the input layer is built on"
+   },
+   {
+    "key": "gneiting2007",
+    "category": "Model validation",
+    "authors": "Gneiting, Balabdaoui & Raftery",
+    "year": 2007,
+    "title": "Probabilistic forecasts, calibration and sharpness",
+    "venue": "J. R. Stat. Soc. B 69(2), 243-268",
+    "url": "https://doi.org/10.1111/j.1467-9868.2007.00587.x",
+    "verified": "full",
+    "why": "Probability integral transform as a calibration check, used to grade each per-feature model on held-out events"
    }
   ],
   "links": [
    {
     "project": "stave",
     "title": "Applied in the barrel program",
-    "text": "The barrel is the region where a factorized estimate is least trustworthy and statistics are thinnest. STAVE applies this joint-background model there and scores it against the shared barrel baseline."
+    "text": "The barrel is the region where a factorized estimate is least trustworthy and statistics are thinnest. STAVE applies this joint-background model there and scores it against the shared barrel baseline. The per-feature input layer is expected to matter most there, where networks have too few events to learn each feature's transform themselves."
    },
    {
     "project": "lathe",
     "title": "Latent version of the probe",
     "text": "The same two-sample idea applied to the networks' hidden layers, to see where dependence lives before it reaches the scores."
+   },
+   {
+    "project": "baseline",
+    "title": "Preprocessing axis in the benchmark",
+    "text": "The likelihood-ratio input variants run as cells beside the current rank scaling, scored with the benchmark's own separation and closure measures."
    }
   ],
-  "tagline": "Maximum-entropy background and signal models with kernel-modeled marginals and dependence",
+  "tagline": "Maximum-entropy background models with kernel-modeled marginals and dependence, plus per-feature signal evidence for the networks",
   "components": [
    {
     "name": "MaxEnt synthetic background",
@@ -3686,22 +3711,50 @@ window.DECK_PROJECTS = [
     ]
    },
    {
-    "name": "MaxEnt signal model",
-    "subtitle": "The same construction, for signal",
+    "name": "Per-feature MaxEnt signal evidence",
+    "subtitle": "A likelihood-ratio input layer for the networks",
     "state": "next",
-    "summary": "A maximum-entropy signal density built from all simulated mass points and conditioned on the signal hypothesis [@baldi2016], constrained to match the kernel mean embedding of each point [@muandet2017] on top of the same fitted-marginal base. Paired with the background model, it gives an explicit likelihood ratio, a test of interpolation to unseen mass points, and the injected signal the closure tests need.",
+    "summary": "For every network input feature, a one-dimensional maximum-entropy density is fitted to background and to signal [@jaynes1957], with the simulated mass points combined inside the signal density. Each feature is then replaced by, or paired with, its log-likelihood ratio before it reaches the network: a fixed, supervised preprocessing stage the current networks do not have. Events, labels and the training loop are unchanged; the network still learns from true labels and is left to learn how the features combine. Every model carries a goodness and leakage scorecard, and a feature whose model fails it keeps its plain input.",
     "items": [
      {
-      "label": "Conditioning",
-      "detail": "One model across all mass points rather than one per point; with only a handful of points, interpolation is weakly constrained and is tested, not assumed"
+      "label": "Densities",
+      "detail": "Maximum entropy under moment or Legendre constraints, the number of constraints chosen by held-out likelihood inside each fold"
      },
      {
-      "label": "Validation",
-      "detail": "Classifier two-sample test of generated against real simulated signal, judged against a real-versus-real null [@lopezpaz2017]; leave-one-mass-out must beat simply reusing the nearest mass point"
+      "label": "Mass handling",
+      "detail": "Pooled fit to all mass points, equal-weight mixture, size-weighted mixture, one channel per mass point, and a mass-conditioned version for a parameterized network [@baldi2016]; all compared"
      },
      {
-      "label": "Guardrail",
-      "detail": "Generated events are tagged, kept out of every evaluation set, and never counted as extra statistics"
+      "label": "Labels",
+      "detail": "Labels stay as sample provenance and are never re-assigned from model probabilities; the models change only the inputs"
+     },
+     {
+      "label": "Cross-fitting",
+      "detail": "Nested: training events get transforms from models that never saw them, held-out events from models fitted on all training folds [@chernozhukov2018]"
+     },
+     {
+      "label": "Replace or augment",
+      "detail": "Each variant runs with the ratio replacing the feature and alongside it, since a non-monotone ratio folds a feature and can lose information"
+     },
+     {
+      "label": "Control",
+      "detail": "The current rank-scaled inputs; every variant is judged against them on separation, worst mass point and closure"
+     },
+     {
+      "label": "Goodness",
+      "detail": "Held-out likelihood gain over a simple reference, calibration of the whole distribution and of each tail by the probability integral transform [@gneiting2007], fold-to-fold stability of the ratio, reliability of the ratio against observed odds, and the share of events outside the fitted range"
+     },
+     {
+      "label": "Leakage",
+      "detail": "In-sample against held-out likelihood gap for every model, and the separation lost when the network is trained on cross-fitted rather than in-sample transforms"
+     },
+     {
+      "label": "Interpolation",
+      "detail": "Leave-one-mass-out for each mass-handling scheme; it must beat reusing the nearest mass point"
+     },
+     {
+      "label": "Diagnostic",
+      "detail": "The product of the per-feature ratios is a classifier that ignores correlations; the network's gain over it measures what correlations contribute"
      }
     ]
    },
