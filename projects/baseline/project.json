@@ -201,6 +201,50 @@
       ]
     },
     {
+      "name": "DNCn_QN mk2 (β, proposed)",
+      "subtitle": "In-house: non-closure as a random variable",
+      "state": "next",
+      "summary": "Intended function: treat ABCD non-closure as a random variable with a known null distribution, rather than a number to drive to zero. A point target can be met in unphysical ways: cuts that empty the signal region, or closure tighter than the counts can resolve. mk2 penalizes only the spread of non-closure across many cuts that exceeds counting noise. If it does better than DNCn_QN under a pre-registered test, it replaces it as the β term.",
+      "items": [
+        {
+          "label": "Statistic",
+          "detail": "The same per-cut z² = g²/F as DNCn_QN, from the sealed unit's soft counts and noise floor, summed over K cut pairs: Q = Σ zₖ²"
+        },
+        {
+          "label": "Model",
+          "detail": "The fractional non-closure at each cut, rₖ = gₖ/(N_B·N_C/N_D), is treated as a draw with variance σₖ² + τ²: counting noise plus a real excess τ², the quantity an analysis carries as its closure systematic"
+        },
+        {
+          "label": "Null",
+          "detail": "The expected Q without dependence is measured each step by permuting one network's scores among background events. This keeps both score distributions and the cut positions and removes only the dependence; it also absorbs the correlation between overlapping cuts and non-Poisson counts"
+        },
+        {
+          "label": "Loss",
+          "detail": "τ̂² = max(0, Q − Q_null) / Σ σₖ⁻²: one hinge on the pooled excess rather than one per cut, with the normalization held fixed for the gradient"
+        },
+        {
+          "label": "Scale",
+          "detail": "τ² is a fraction, so the term does not grow with the number of events it sees and needs no rescaling of its weight between batch, draw or region sizes"
+        },
+        {
+          "label": "Relations",
+          "detail": "At a single cut with an analytic null it reduces to DNCn_QN's hinge times the fractional noise floor; without the hinge and pooling it is DNC_FLR's statistic. All three in-house terms are read as one model"
+        },
+        {
+          "label": "Unchanged",
+          "detail": "Cuts are drawn from background quantiles and never learned, the closure term never chooses its own epoch, and grading is on held-out cuts with a shuffle null"
+        },
+        {
+          "label": "Test",
+          "detail": "A pre-registered five-arm ladder against DNCn_QN, each arm changing one thing (aggregation, count source, null, bias handling), plus scale-invariance pairs. It is dropped if neither the scale nor the cut-stability prediction holds"
+        },
+        {
+          "label": "Status",
+          "detail": "Proposed: specified, not yet run or sealed, and not part of the current run specification"
+        }
+      ]
+    },
+    {
       "name": "Training",
       "subtitle": "Five folds, early stopping, GPU",
       "state": "active",
@@ -334,6 +378,10 @@
       "text": "Does the unhinged term, trained at deeper cuts, reduce the high-order part of the tail residual where the hinged term does not?"
     },
     {
+      "kind": "question",
+      "text": "Does penalizing the excess spread of non-closure across cuts, against a measured null, give more stable closure than penalizing each cut on its own?"
+    },
+    {
       "kind": "gap",
       "text": "Earlier sweep rounds used other closure definitions and grids, so their numbers are kept as history and cannot be compared with BASELINE number for number."
     },
@@ -376,6 +424,11 @@
     {
       "date": "2026-10-22",
       "label": "BASELINE code built to the specification; unit tests and data checks pass in both regions on the real data",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-27",
+      "label": "Closure term mk2 proposed: non-closure treated as a random variable, with a pre-registered test against the current term",
       "state": "done"
     },
     {
