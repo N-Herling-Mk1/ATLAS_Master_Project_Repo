@@ -8,15 +8,15 @@
   "accent2": "#c9c9c9",
   "code": "internal",
   "intro": {
-    "problem": "Detector events are treated as vectors of continuous features, and the co-occurrence tools that let language models learn structure [@levy2014] have barely been tried on whether events carry a grammar of their own; the closest precedent tokenizes whole events for anomaly detection [@visive2025].",
-    "value": "If they do, a token model trained only on background could score how typical an event is, giving a new axis for a data-driven background estimate, and token embeddings could become a new kind of classifier input, as tokenized jets already have [@finke2023][@birk2024].",
-    "approach": "Each feature is quantized with evidence-based edges [@scargle2013], so an event becomes a set of tokens. Route A1 fits density models to background and uses their surprise as an ABCD axis; Route A2 fits them to signal; Route A3 splits the signal-to-background likelihood ratio [@neyman1933] into what tokens carry alone and through their relations [@chowliu1968]; Route B trains classifiers.",
-    "goals": "The goal is a fair verdict on whether tokens add information beyond the raw features, with each token axis built only from the features of the network it replaces. Confirmation runs under frozen rules decide the background-only axis; comparing signal and background models decides whether events have a grammar that separates them."
+    "problem": "Detector events are treated as vectors of continuous features, and the co-occurrence tools that let language models learn structure [@levy2014] have barely been tried on them; the closest precedent tokenizes whole events for anomaly detection [@visive2025]. Co-occurrence alone gives a density, not a grammar; the open question is whether hidden structure lies behind it.",
+    "value": "A token model trained only on background could score how typical an event is, giving a new axis for a data-driven background estimate; token embeddings could become classifier inputs, as tokenized jets already have [@finke2023][@birk2024]; and hidden structure that matches the decay chain would show what the networks are learning.",
+    "approach": "Each feature is quantized with evidence-based edges [@scargle2013], so an event becomes a set of tokens. Density models, scored by exact likelihood where possible, measure how much the tokens share beyond independence [@watanabe1960]; latent models ask what form it takes. Signal and background are compared by likelihood ratio [@neyman1933], dependency trees [@chowliu1968] and a pre-registered decay chain.",
+    "goals": "Three verdicts, kept separate: whether background tokens have stable hidden structure, whether signal's structure differs from background's, and whether a token score makes a better ABCD axis. Each token axis is built only from the features of the network it replaces, and confirmation runs follow rules frozen before they start."
   },
   "questions": [
     "Does co-occurrence among binned detector features carry signal-versus-background information beyond the raw values?",
-    "Does an exact likelihood make background surprise a better ABCD axis than a pseudo-likelihood?",
-    "When signal and background token models are compared, do the relations between tokens separate the two beyond what the tokens carry one at a time?"
+    "Is there hidden structure behind background co-occurrence: how much, and in what form, whether token classes, event types, a hierarchy or a feature order?",
+    "Does signal's structure differ from background's, in its relations, its order or the decay chain that produced it, beyond what single tokens carry?"
   ],
   "timeline": [
     {
@@ -95,6 +95,26 @@
       "state": "done"
     },
     {
+      "date": "2026-10-28",
+      "label": "Feature order recast as something to measure, not assume: per-order likelihoods, order search, separate signal and background structures",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-28",
+      "label": "Grammar defined by information: total correlation as its size, conditional mutual information along the decay chain as its test",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-28",
+      "label": "Latent grammar added: hidden classes, event types and factors, with every model scored on one card and judged by fit, explanation and stability gates",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-29",
+      "label": "Project description rewritten around three separate verdicts: hidden structure, signal structure, ABCD axis",
+      "state": "done"
+    },
+    {
       "label": "Code of record for the confirmation runs: tests for every tool, raw-variable control, rebuild on new folds",
       "state": "active"
     },
@@ -115,11 +135,31 @@
       "state": "next"
     },
     {
+      "label": "Grammar budget: exact tree models on background, per network, as the lower end of the structure estimate",
+      "state": "next"
+    },
+    {
+      "label": "Per-order likelihoods: does any feature order fit better than seed noise allows?",
+      "state": "next"
+    },
+    {
+      "label": "Latent grammar on background: do a few hidden classes or factors explain the co-occurrence, scored on one card with every other model?",
+      "state": "next"
+    },
+    {
       "label": "Audit signal-only tokens for simulation-versus-data artifacts",
       "state": "next"
     },
     {
       "label": "Route A2: fit the token models to signal and measure its structure",
+      "state": "next"
+    },
+    {
+      "label": "Separate signal and background tree structures, compared edge by edge",
+      "state": "next"
+    },
+    {
+      "label": "Chain test: does the expected decay chain show up as screened-off information in signal but not in background?",
       "state": "next"
     },
     {
@@ -597,6 +637,83 @@
       "url": "https://arxiv.org/abs/1908.04626",
       "verified": "abstract",
       "why": "The rebuttal: attention can explain only under tests; why maps are a cross-check here"
+    },
+    {
+      "key": "teyssier2005",
+      "category": "Order and structure",
+      "authors": "M. Teyssier, D. Koller",
+      "year": 2005,
+      "title": "Ordering-Based Search: A Simple and Effective Algorithm for Learning Bayesian Networks",
+      "venue": "UAI 2005; arXiv:1207.1429",
+      "url": "https://arxiv.org/abs/1207.1429",
+      "verified": "abstract",
+      "why": "Search over feature orders rather than graphs; the inspiration for treating order as something to learn"
+    },
+    {
+      "key": "verma1990",
+      "category": "Order and structure",
+      "authors": "T. Verma, J. Pearl",
+      "year": 1990,
+      "title": "Equivalence and Synthesis of Causal Models",
+      "venue": "UAI 1990; arXiv:1304.1108",
+      "url": "https://arxiv.org/abs/1304.1108",
+      "verified": "abstract",
+      "why": "Observational data fix a structure only up to an equivalence class; why a learned order is read against physics, not trusted alone"
+    },
+    {
+      "key": "watanabe1960",
+      "category": "Entropy and MI",
+      "authors": "S. Watanabe",
+      "year": 1960,
+      "title": "Information Theoretical Analysis of Multivariate Correlation",
+      "venue": "IBM J. Res. Dev. 4(1):66-82",
+      "url": "https://doi.org/10.1147/rd.41.0066",
+      "verified": "citation",
+      "why": "Total correlation: the information a set of variables shares beyond independence; the size of the grammar"
+    },
+    {
+      "key": "brown1992",
+      "category": "Latent structure",
+      "authors": "P. F. Brown, V. J. Della Pietra, P. V. deSouza, J. C. Lai, R. L. Mercer",
+      "year": 1992,
+      "title": "Class-Based n-gram Models of Natural Language",
+      "venue": "Computational Linguistics 18(4):467-479",
+      "url": "https://aclanthology.org/J92-4003/",
+      "verified": "abstract",
+      "why": "Word classes chosen to keep the information between neighbours; the template for token classes"
+    },
+    {
+      "key": "versteeg2014",
+      "category": "Latent structure",
+      "authors": "G. Ver Steeg, A. Galstyan",
+      "year": 2014,
+      "title": "Discovering Structure in High-Dimensional Data Through Correlation Explanation",
+      "venue": "NeurIPS 2014; arXiv:1406.1222",
+      "url": "https://arxiv.org/abs/1406.1222",
+      "verified": "abstract",
+      "why": "Latent factors chosen to explain total correlation; grammar as hidden causes of co-occurrence"
+    },
+    {
+      "key": "versteeg2015",
+      "category": "Latent structure",
+      "authors": "G. Ver Steeg, A. Galstyan",
+      "year": 2015,
+      "title": "Maximally Informative Hierarchical Representations of High-Dimensional Data",
+      "venue": "AISTATS 2015; arXiv:1410.7404",
+      "url": "https://arxiv.org/abs/1410.7404",
+      "verified": "abstract",
+      "why": "Layers of correlation explanation; the hierarchy a dependency tree lacks"
+    },
+    {
+      "key": "vinh2010",
+      "category": "Latent structure",
+      "authors": "N. X. Vinh, J. Epps, J. Bailey",
+      "year": 2010,
+      "title": "Information Theoretic Measures for Clusterings Comparison: Variants, Properties, Normalization and Correction for Chance",
+      "venue": "JMLR 11:2837-2854",
+      "url": "https://www.jmlr.org/papers/v11/vinh10a.html",
+      "verified": "abstract",
+      "why": "Adjusted mutual information; how stability of latent partitions is scored"
     }
   ],
   "tagline": "Detector events as tokens: does an event have a grammar?",
@@ -604,8 +721,8 @@
     {
       "name": "Route A1",
       "subtitle": "Background-only surprise as an ABCD axis",
-      "state": "done",
-      "summary": "Token models trained on background alone (this was Route A before the split) score how surprising each event is, and that score replaces one network as an axis of the ABCD plane. Signal labels and network scores never enter the token models, and each model sees only the features of the network it replaces, so the axis can be independent of the other. Two such models, one per network, also give a plane with no labels on either axis.",
+      "state": "active",
+      "summary": "Token models trained on background alone (this was Route A before the split) score how surprising each event is, and that score replaces one network as an axis of the ABCD plane. Signal labels and network scores never enter the token models, and each model sees only the features of the network it replaces, so the axis can be independent of the other. Two such models, one per network, also give a plane with no labels on either axis. The same background models measure how much the tokens share beyond independence; what form that takes is left to the latent models.",
       "items": [
         {
           "label": "Independence",
@@ -614,6 +731,10 @@
         {
           "label": "Pairs and triples",
           "detail": "Count models over feature pairs and triples; the best model in the data-starved barrel"
+        },
+        {
+          "label": "Grammar budget",
+          "detail": "Total correlation, the information by which tokens fall short of independence, and the share of it a tree, pairs and triples each capture [@watanabe1960][@chowliu1968]"
         },
         {
           "label": "CutFormer",
@@ -633,7 +754,7 @@
       "name": "Route A1 variant",
       "subtitle": "Exact likelihood",
       "state": "active",
-      "summary": "The transformer's pseudo-likelihood is not a normalized density and undercounts redundant features that predict each other. An autoregressive model gives an exact negative log-likelihood by the chain rule, which holds for any feature order, so the ordering that rules recurrence out of a classifier is legitimate for a density. Status: the variants and a pre-registered evaluation are written down and under review; nothing has run yet. Runs start in the barrel, and only variants that pass there go on to the endcap.",
+      "summary": "The transformer's pseudo-likelihood is not a normalized density and undercounts redundant features that predict each other. An autoregressive model gives an exact negative log-likelihood by the chain rule, which holds for any feature order, so the ordering that rules recurrence out of a classifier is legitimate for a density. Orders are averaged as a nuisance, but each order's held-out likelihood is kept, so whether some orders fit better than others is measured rather than assumed. Status: the variants and a pre-registered evaluation are written down and under review; nothing has run yet. Runs start in the barrel, and only variants that pass there go on to the endcap.",
       "items": [
         {
           "label": "Exact count models",
@@ -641,7 +762,7 @@
         },
         {
           "label": "MADE",
-          "detail": "Masked autoregressive MLP [@germain2015]; set aside for a model that shares weights across orders, kept as a control"
+          "detail": "Masked autoregressive MLP [@germain2015]; set aside for a model that shares weights across orders, kept as a control, and fitted separately on a few fixed orders as the clean test of whether any order fits better"
         },
         {
           "label": "Any-order CutFormer",
@@ -653,11 +774,43 @@
         },
         {
           "label": "Order ensemble",
-          "detail": "Several random orderings averaged, with their spread as a per-event uncertainty [@uria2014]"
+          "detail": "Several random orderings averaged, with their spread as a per-event uncertainty [@uria2014]; each order's held-out likelihood is also logged and compared with seed-to-seed scatter"
+        },
+        {
+          "label": "Order search",
+          "detail": "Greedy orders built from the any-order model's conditionals, one feature at a time, after a search over orders [@teyssier2005]; proposed on one set of folds and scored on another"
         },
         {
           "label": "Gates",
           "detail": "Per-feature sigmoid gates showing which features carry the surprise; deferred"
+        }
+      ]
+    },
+    {
+      "name": "Latent grammar",
+      "subtitle": "Hidden structure behind the co-occurrence; background first",
+      "state": "next",
+      "summary": "Density models show how much structure the tokens share, not what it is. Latent models look for its form: token classes, event types or factors that, once known, leave the tokens nearly independent. Every model, latent or not, is scored on one card. A latent model counts as structure only if it fits held-out background, explains the shared information and stays stable across seeds, folds and tokenizations; it is called a grammar only if that structure is hierarchical or follows the decay chain. Background comes first; signal enters after the token audit.",
+      "items": [
+        {
+          "label": "Token classes",
+          "detail": "Tokens grouped into classes that keep most of the pairwise information, as in class-based language models [@brown1992]"
+        },
+        {
+          "label": "Event types",
+          "detail": "A latent class model: events drawn from a few production regimes, tokens independent within each"
+        },
+        {
+          "label": "Correlation explanation",
+          "detail": "Latent factors ranked by how much of the total correlation each explains, stacked into a hierarchy [@versteeg2014][@versteeg2015]"
+        },
+        {
+          "label": "One scorecard",
+          "detail": "Held-out exact fit, share of the shared information explained, compression, stability, signal contrast and agreement with the decay chain, for every model; scores a model cannot produce are marked, never converted"
+        },
+        {
+          "label": "Gates",
+          "detail": "Fit, then explanation measured on held-out events rather than taken from the model, then stability [@vinh2010]; signal contrast and agreement with the decay chain are read only after all three pass"
         }
       ]
     },
@@ -682,6 +835,10 @@
         {
           "label": "Signal transformer",
           "detail": "Fine-tuned from the background transformer where signal allows; it must beat the tree model and the uniform-attention control on held-out signal"
+        },
+        {
+          "label": "Signal structure",
+          "detail": "Tree skeletons fitted to signal and to background separately and compared edge by edge, with bootstrap stability and a small-sample correction to the mutual information [@chowliu1968][@paninski2003]"
         }
       ]
     },
@@ -698,6 +855,18 @@
         {
           "label": "Exact decomposition",
           "detail": "Marginal plus relational terms on a tree skeleton chosen from background alone [@chowliu1968]"
+        },
+        {
+          "label": "Structure contrast",
+          "detail": "The same ratio with each class on its own tree; the gap from the shared-skeleton ratio is what a change of structure carries, beyond a change of strength"
+        },
+        {
+          "label": "Order against physics",
+          "detail": "Expected orderings from detector geometry and the decay chain are written down before any order is learned; data alone fix an order only up to equivalent structures [@verma1990]"
+        },
+        {
+          "label": "Chain test",
+          "detail": "A decay chain is a Markov chain: given the middle step, its two ends share little information. Conditional mutual information along the chain written down in advance, compared between signal and background with a within-stratum permutation null [@cover2006]"
         },
         {
           "label": "Ratio as an axis",
@@ -729,7 +898,7 @@
         },
         {
           "label": "No recurrent classifier",
-          "detail": "A recurrent network imposes an order on features that have none; as a density that is harmless, as a classifier it is not, so it is not used here"
+          "detail": "A recurrent network imposes a fixed order the features are not given; as a density that is harmless, as a classifier it is not, so it is not used here"
         }
       ]
     },
@@ -769,11 +938,23 @@
   "open": [
     {
       "kind": "lesson",
-      "text": "A recurrent model (GRU) is used only as a density: the chain rule holds for any feature order, so an exact likelihood is legitimate, but as a classifier it would impose an order on features that have none. It appears in Routes A1, A2 and A3 as a density or a ratio of densities, with several random orders averaged, and not in Route B or as a network input encoder."
+      "text": "A recurrent model (GRU) is used only as a density: the chain rule holds for any feature order, so an exact likelihood is legitimate, but as a classifier it would impose a fixed order the features are not given. Whether a learned order exists is now a question to measure, not an assumption either way. It appears in Routes A1, A2 and A3 as a density or a ratio of densities, with several random orders averaged, and not in Route B or as a network input encoder."
     },
     {
       "kind": "lesson",
       "text": "Transformers already sit at the center of the token models, but nothing yet shows that their attention, rather than their size, does the work. Every attention claim is now read against the same model with attention fixed to uniform, and against simple counts; that test comes before any new transformer variant."
+    },
+    {
+      "kind": "lesson",
+      "text": "Grammar on this page has two parts. Its amount is the information tokens share beyond independence, which every density model measures. Its form is hidden structure that leaves the tokens nearly independent once known, which only the latent models can show. A model that measures the amount without passing the latent gates is a density, not a grammar."
+    },
+    {
+      "kind": "gap",
+      "text": "The count models report a pseudo-likelihood, which cannot be ranked against exact models; they need exact versions before the scorecard can include them."
+    },
+    {
+      "kind": "question",
+      "text": "Order is so far learned over the observed features, and the decay chain is only tested where it is written down in advance. Whether a sequence can be found among the latent factors themselves is not yet planned."
     }
   ]
 }
