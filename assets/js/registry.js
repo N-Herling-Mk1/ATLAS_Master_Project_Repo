@@ -3548,15 +3548,15 @@ window.DECK_PROJECTS = [
   "accent2": "#e0e0e0",
   "code": "internal",
   "intro": {
-   "problem": "KERF combines a maximum-entropy synthetic background [@jaynes1957] with kernel-based models of its marginals and of the dependence between them, because ABCD estimates that assume the two discriminants factorize fail when the discriminants are correlated, most of all in sparse tails [@choi2021].",
-   "value": "A background model that keeps the fitted marginals but learns their dependence, rather than removing it during training [@abcdisco2021][@cms2025tec], turns non-closure from a failure into a measured and correctable quantity.",
-   "approach": "KERF keeps the fitted marginals and replaces the hand-picked copula with an exponential tilt chosen by kernel maximal correlation [@renyi1959][@huang2020], extending to a full kernel exponential family [@sriperumbudur2017], scored on closure through gated tests. Fitted feature by feature to signal across all mass points, the same marginals give the networks a cross-fitted likelihood-ratio input layer [@chernozhukov2018].",
-   "goals": "The end goal is an improved, and potentially novel, data-driven background estimate: a kernel maximum-entropy model whose dependence term comes with honest uncertainties and is benchmarked against extended and Bayesian ABCD methods [@choi2021][@alvarez2024]."
+   "problem": "Two parts of the analysis rest on densities that are never modeled explicitly. The ABCD background estimate assumes its two discriminants factorize, which fails when they are correlated, most of all in sparse tails [@choi2021]. The networks learn each feature's evidence from scratch, which is hardest where events are few.",
+   "value": "Maximum entropy gives both a principled form [@jaynes1957]. A background model that learns the dependence, rather than removing it during training [@abcdisco2021][@cms2025tec], turns non-closure into a measured and correctable quantity. Per-feature signal and background densities hand the networks each feature's evidence, with the quality of every model graded.",
+   "approach": "KERF fits maximum-entropy marginals once and builds on them twice. For background, an exponential tilt chosen by kernel maximal correlation [@renyi1959][@huang2020], extended to a kernel exponential family [@sriperumbudur2017], is scored on closure. For signal, cross-fitted per-feature likelihood ratios across all mass points [@chernozhukov2018] become network inputs, each model graded for goodness and leakage.",
+   "goals": "Two deliverables: an improved, and potentially novel, data-driven background estimate with honest uncertainties, benchmarked against extended and Bayesian ABCD methods [@choi2021][@alvarez2024]; and a graded likelihood-ratio input layer, tested against the networks' current inputs where statistics are thinnest."
   },
   "questions": [
-   "Can a kernel-chosen dependence term recover the correlation that a factorized estimate misses?",
-   "Does it improve on the hand-picked copulas of the first maximum-entropy model, especially in the sparse tail where the signal region sits?",
-   "Can a flexible background model stay honest: closing on held-out regions without absorbing injected signal?"
+   "Can a kernel-chosen dependence term recover the correlation that a factorized estimate misses, especially in the sparse tail where the signal region sits?",
+   "Can a flexible background model stay honest: closing on held-out regions without absorbing injected signal?",
+   "Can per-feature maximum-entropy evidence, with every model's goodness and leakage measured and the mass points pooled, mixed, kept apart or conditioned on mass, give the networks inputs that beat rank scaling on separation or closure, most of all where statistics are thin?"
   ],
   "timeline": [
    {
@@ -3587,7 +3587,7 @@ window.DECK_PROJECTS = [
    {
     "date": "2026-10-15",
     "label": "Formalized as its own project and named KERF",
-    "state": "active"
+    "state": "done"
    },
    {
     "date": "2026-10-21",
@@ -3605,23 +3605,37 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
+    "date": "2026-10-29",
+    "label": "Private repository created; first signal-evidence code: per-feature densities, nested cross-fitting, scorecards, leave-one-mass-out and a correlation-free reference classifier",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-30",
+    "label": "Outline rewritten as five programs; equal-weight pooled and mass-conditioned signal densities added to the signal code",
+    "state": "active"
+   },
+   {
+    "label": "Signal evidence: data wiring, then first real-data scorecards in both regions",
+    "state": "next"
+   },
+   {
+    "label": "Gate thresholds locked before any benchmark run uses the verdicts",
+    "state": "next"
+   },
+   {
+    "label": "Folds shared with the benchmark, then likelihood-ratio input variants against the rank-scaled control",
+    "state": "next"
+   },
+   {
+    "label": "Background rungs ported onto the shared marginal engine and refitted on the current background sample",
+    "state": "next"
+   },
+   {
+    "label": "Dependence probe: real background against the shuffled product, full plane and corner, then against each rung",
+    "state": "next"
+   },
+   {
     "label": "Gated tests: toy harness, structure check, blinded toy closure, held-out corners, signal injection",
-    "state": "next"
-   },
-   {
-    "label": "Per-feature signal and background models with nested cross-fitting; goodness and leakage scorecards",
-    "state": "next"
-   },
-   {
-    "label": "Likelihood-ratio input variants against the rank-scaled control in the benchmark",
-    "state": "next"
-   },
-   {
-    "label": "Dependence probe: real background against the shuffled product, full plane and corner",
-    "state": "next"
-   },
-   {
-    "label": "Dependence probe against each joint-model rung",
     "state": "next"
    }
   ],
@@ -3831,17 +3845,27 @@ window.DECK_PROJECTS = [
     "text": "The likelihood-ratio input variants run as cells beside the current rank scaling, scored with the benchmark's own separation and closure measures."
    }
   ],
-  "tagline": "Maximum-entropy background models with kernel-modeled marginals and dependence, plus per-feature signal evidence for the networks",
+  "tagline": "Maximum-entropy and kernel models of background and signal: the dependence behind the background estimate, and graded per-feature evidence for the networks",
   "components": [
    {
     "name": "MaxEnt synthetic background",
-    "subtitle": "The first model",
+    "subtitle": "Program 1 · the first model",
     "state": "done",
-    "summary": "Per-feature marginals fitted to the total background, sampled as a product (plain ABCD), then with Gaussian and mixture copulas added as dependence rungs [@jaynes1957]."
+    "summary": "Per-feature marginals fitted to the total background, sampled as a product (plain ABCD), then with Gaussian and mixture copulas added as dependence rungs [@jaynes1957]. The marginal engine is shared with the signal program, so both sides of the analysis use one density model.",
+    "items": [
+     {
+      "label": "Rungs",
+      "detail": "Product, Gaussian copula, mixture copula; each set of draws is pushed through the frozen networks to rebuild every ABCD region"
+     },
+     {
+      "label": "Refit",
+      "detail": "Ported onto the shared marginal engine and refitted on the current background sample before the kernel rungs are compared with it"
+     }
+    ]
    },
    {
     "name": "Kernel dependence",
-    "subtitle": "Let the data choose the constraint",
+    "subtitle": "Program 2 · let the data choose the constraint",
     "state": "next",
     "summary": "Keep the marginals fixed and model the linking term as an exponential tilt. Kernel maximal correlation picks the functions [@renyi1959][@huang2020]; distance correlation is itself a kernel statistic, which ties this to the decorrelation line [@sejdinovic2013]. A density-ratio critic is an alternative route to the same term [@vandenoord2018].",
     "items": [
@@ -3861,7 +3885,7 @@ window.DECK_PROJECTS = [
    },
    {
     "name": "Dependence probe",
-    "subtitle": "A learned test of what the joint model missed",
+    "subtitle": "Program 3 · a learned test of what the joint model missed",
     "state": "next",
     "summary": "A classifier two-sample test [@lopezpaz2017] on background only. Real background pairs of the two feature blocks are set against the same pairs with one block shuffled, which is exactly the factorized product. A network that lets one block attend to the other [@vaswani2017] is the critic; if it cannot beat chance, there is no dependence for any model to recover. The same critic then sets real background against draws from each joint-model rung.",
     "items": [
@@ -3893,25 +3917,29 @@ window.DECK_PROJECTS = [
    },
    {
     "name": "Per-feature MaxEnt signal evidence",
-    "subtitle": "A likelihood-ratio input layer for the networks",
-    "state": "next",
-    "summary": "For every network input feature, a one-dimensional maximum-entropy density is fitted to background and to signal [@jaynes1957], with the simulated mass points combined inside the signal density. Each feature is then replaced by, or paired with, its log-likelihood ratio before it reaches the network: a fixed, supervised preprocessing stage the current networks do not have. Events, labels and the training loop are unchanged; the network still learns from true labels and is left to learn how the features combine. Every model carries a goodness and leakage scorecard, and a feature whose model fails it keeps its plain input.",
+    "subtitle": "Program 4 · a likelihood-ratio input layer for the networks",
+    "state": "active",
+    "summary": "For every network input feature, one-dimensional maximum-entropy densities are fitted to background and to signal built from all simulated mass points [@jaynes1957]. Each feature is then replaced by, or paired with, its log-likelihood ratio before it reaches the network: a fixed, supervised preprocessing stage the current networks do not have. Events, labels and the training loop are unchanged; the network still learns from true labels and is left to learn how the features combine. Every density carries a goodness and leakage scorecard, and a feature whose model fails keeps its plain input.",
     "items": [
      {
       "label": "Densities",
-      "detail": "Maximum entropy under moment or Legendre constraints, the number of constraints chosen by held-out likelihood inside each fold"
+      "detail": "Maximum entropy under Legendre moment constraints, on one coordinate shared by every density of a feature so the Jacobian cancels in the ratio; discrete features live on their support points and a frequent single value becomes a point mass"
+     },
+     {
+      "label": "Constraints",
+      "detail": "The number of constraints is chosen inside each fit's own events, never on an evaluation fold"
      },
      {
       "label": "Mass handling",
-      "detail": "Pooled fit to all mass points, equal-weight mixture, size-weighted mixture, one channel per mass point, and a mass-conditioned version for a parameterized network [@baldi2016]; all compared"
+      "detail": "Six options built and compared: one fit to all mass points with size or equal weights, size- and equal-weighted mixtures of per-mass fits, one channel per mass point, and a mass-conditioned density for a parameterized network [@baldi2016]"
      },
      {
       "label": "Labels",
-      "detail": "Labels stay as sample provenance and are never re-assigned from model probabilities; the models change only the inputs"
+      "detail": "Labels stay as sample provenance and are never re-assigned from model probabilities; the models change only the inputs, and their densities are never sampled to make training events"
      },
      {
       "label": "Cross-fitting",
-      "detail": "Nested: training events get transforms from models that never saw them, held-out events from models fitted on all training folds [@chernozhukov2018]"
+      "detail": "Nested: a training event's input comes from a model that saw neither the event nor the outer held-out fold; in-sample inputs are kept only as the leakage control [@chernozhukov2018]"
      },
      {
       "label": "Replace or augment",
@@ -3923,27 +3951,31 @@ window.DECK_PROJECTS = [
      },
      {
       "label": "Goodness",
-      "detail": "Held-out likelihood gain over a simple reference, calibration of the whole distribution and of each tail by the probability integral transform [@gneiting2007], fold-to-fold stability of the ratio, reliability of the ratio against observed odds, and the share of events outside the fitted range"
+      "detail": "Held-out likelihood gain over a two-moment fit and a histogram, calibration of the whole distribution and of each tail by the probability integral transform [@gneiting2007], share of events outside the fitted range, fold-to-fold stability of the ratio, and its reliability against observed odds"
      },
      {
       "label": "Leakage",
-      "detail": "In-sample against held-out likelihood gap for every model, and the separation lost when the network is trained on cross-fitted rather than in-sample transforms"
+      "detail": "In-sample against held-out likelihood gap for every density, and the separation lost when a network is trained on cross-fitted rather than in-sample inputs"
+     },
+     {
+      "label": "Gates",
+      "detail": "Pass thresholds are proposed in advance and locked before any benchmark run uses the verdicts; choosing them after seeing which features pass would be selection on the outcome"
      },
      {
       "label": "Interpolation",
-      "detail": "Leave-one-mass-out for each mass-handling scheme; it must beat reusing the nearest mass point"
+      "detail": "Leave-one-mass-out for every option that combines mass points, the mass-conditioned density included; it must beat reusing the nearest mass point"
      },
      {
       "label": "Diagnostic",
-      "detail": "The product of the per-feature ratios is a classifier that ignores correlations; the network's gain over it measures what correlations contribute"
+      "detail": "The sum of the per-feature ratios is a classifier that ignores correlations; the network's gain over it measures what correlations contribute"
      }
     ]
    },
    {
     "name": "Gated tests",
-    "subtitle": "Earn each step before the next",
+    "subtitle": "Program 5 · earn each step before the next",
     "state": "next",
-    "summary": "Toy harness, structure diagnosis, blinded toy closure, held-out pseudo-signal regions on real background, then signal injection to check the model does not absorb signal."
+    "summary": "Toy harness, structure diagnosis, blinded toy closure, held-out pseudo-signal regions on real background, then signal injection to check the background model does not absorb signal. Injected events are real simulated signal, tagged and never counted as extra statistics."
    }
   ],
   "logo": "projects/kerf/logo.webp",
