@@ -37,7 +37,7 @@ Open `index.html` directly, or serve it:
 python -m http.server 8000
 ```
 
-Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump, 0 for the tenth. Swipe on mobile.
+Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump, 0 / - / = for the tenth to twelfth. Swipe on mobile. The prev/next buttons play a short synthesized "boop" (Web Audio; no sound files).
 
 ## Edit a project
 
@@ -57,13 +57,13 @@ Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump, 0 for th
 | `status` | `active` / `planning` / `paused` / `complete` |
 | `accent`, `accent2` | `#rrggbb`; re-tints the page while selected |
 | `code` | `internal` or `public` |
-| `link` | optional URL shown under the questions |
+| `site` | optional public website URL; lights the PUBLIC SITE pill and the tile's WEB light (green, blinking) |
+| `private_repo` | optional `https://github.com/<owner>/<repo>`; lights the PRIVATE REPO pill and the tile's REPO light. Private repos return 404 to anyone not signed in with access, so the link only opens for the owner |
 | `intro.problem` | (1) topic sentence: the problem being addressed |
 | `intro.value` | (2) what solving it adds to research |
 | `intro.approach` | (3) how the problem is attacked |
 | `intro.goals` | (4) intended goals and outcomes |
 | `questions` | 2-3 questions the project is designed to answer |
-
 | `tagline` | optional one-line label under the expansion |
 | `components` | optional list of `{name, subtitle, state, summary, items:[{label, detail}]}`; renders as the PROGRAM section |
 | `caveat` | optional `{date, text}`; amber banner at the top of the project panel, date shown as written |

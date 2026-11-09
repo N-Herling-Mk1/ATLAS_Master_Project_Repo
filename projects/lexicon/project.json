@@ -7,6 +7,7 @@
   "accent": "#a6ff1f",
   "accent2": "#c9c9c9",
   "code": "internal",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_LEXICON",
   "intro": {
     "problem": "Detector events are treated as vectors of continuous features, and the co-occurrence tools that let language models learn structure [@levy2014] have barely been tried on them; the closest precedent tokenizes whole events for anomaly detection [@visive2025]. Co-occurrence alone gives a density, not a grammar; the open question is whether hidden structure lies behind it.",
     "value": "A token model trained only on background could score how typical an event is, giving a new axis for a data-driven background estimate; token embeddings could become classifier inputs, as tokenized jets already have [@finke2023][@birk2024]; and hidden structure that matches the decay chain would show what the networks are learning.",

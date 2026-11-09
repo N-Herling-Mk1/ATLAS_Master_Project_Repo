@@ -1,0 +1,217 @@
+{
+  "id": "dncn-qn",
+  "order": 10,
+  "name": "DNCn_QN",
+  "expansion": "Debiased NonClosure under the null, Quantile-Normalized",
+  "status": "active",
+  "accent": "#c43cff",
+  "accent2": "#ffc21f",
+  "code": "internal",
+  "tagline": "The queen: an in-house ABCD closure term that only pushes where the counts can see",
+  "intro": {
+    "problem": "An ABCD background estimate holds only if the two network scores are independent on background. Decorrelation penalties shrink dependence everywhere [@disco2020][@kasieczka2021], including where the counts cannot resolve it, and a term that drives non-closure to zero can be met by fitting statistical noise or by emptying the signal region.",
+    "value": "Penalizing non-closure in units of its own counting noise targets the quantity the estimate relies on, closure in the regions used [@cms2025tec], and stops pushing once the residual is within noise. The classifiers stay free wherever closure already holds, so separation is spent only where it buys closure.",
+    "approach": "Each training step draws cut pairs at background quantiles inside the trained band, forms soft region counts and their propagated variance, and penalizes the squared residual above one unit of noise. The proposed mk2 treats non-closure across many cuts as a random variable, measures its null by permutation, and penalizes only the pooled excess.",
+    "goals": "A sealed, hash-pinned closure term with its own unit tests, run as the β axis of the BASELINE sweep in both regions; a pre-registered test deciding whether mk2 replaces it; and a clear record of which dependence the queen removes and which she only relocates."
+  },
+  "questions": [
+    "Does a hinged, noise-scaled closure term reach held-out closure that matches or beats decorrelation alone, at a smaller cost in separation?",
+    "Does it remove dependence between the two scores, or move it into the high-score corner beyond the cuts it trains on?",
+    "Does treating non-closure as a random variable with a measured null give closure that holds more steadily across cuts and sample sizes than one hinge per cut?"
+  ],
+  "components": [
+    {
+      "name": "The hinged term",
+      "subtitle": "DNCn_QN · β in BASELINE · sealed",
+      "state": "done",
+      "summary": "Enforce ABCD closure directly, but only where the data can resolve non-closure, so the network is never pushed to fit statistical noise. It acts on cuts inside the trained band and is taken byte for byte from the hash-sealed code genealogy.",
+      "items": [
+        {
+          "label": "Cuts",
+          "detail": "Each step draws cut pairs uniformly in background quantiles on both axes; the boundaries are background quantiles of the current scores, held fixed for the gradient"
+        },
+        {
+          "label": "Soft counts",
+          "detail": "Each background event joins regions A–D through a steep sigmoid on its probabilities, giving weighted counts N_A…N_D and their variances V_A…V_D"
+        },
+        {
+          "label": "Residual",
+          "detail": "g = N_A − N_B·N_C/N_D: how far region A misses its ABCD prediction"
+        },
+        {
+          "label": "Noise floor",
+          "detail": "F, the propagated variance of g from the four region variances, held fixed for the gradient"
+        },
+        {
+          "label": "Statistic",
+          "detail": "z² = g²/F, the residual in units of its own noise; uniform class weights cancel in it"
+        },
+        {
+          "label": "Loss",
+          "detail": "The mean over cuts of max(0, z² − 1): zero while the residual is within noise, rising only above it"
+        },
+        {
+          "label": "Checks",
+          "detail": "Matches the reference implementation in loss and gradient on real background scores; when decorrelation already holds every drawn cut within noise, the hinge gives exactly zero gradient"
+        }
+      ]
+    },
+    {
+      "name": "mk2: non-closure as a random variable",
+      "subtitle": "Proposed successor · pre-registered against the hinged term",
+      "state": "active",
+      "summary": "A point target for closure can be met in unphysical ways: cuts that empty the signal region, or closure tighter than the counts can resolve. mk2 treats the fractional non-closure at each cut as a draw with counting noise plus a real excess, the quantity an analysis carries as its closure systematic, and penalizes only the spread across many cuts that exceeds counting noise.",
+      "items": [
+        {
+          "label": "Statistic",
+          "detail": "The same per-cut z² as the hinged term, summed over many cut pairs"
+        },
+        {
+          "label": "Null",
+          "detail": "The expected sum without dependence is measured each step by permuting one network's scores among background events; this keeps both score distributions and the cut positions and removes only the dependence"
+        },
+        {
+          "label": "Loss",
+          "detail": "One hinge on the pooled excess over the null rather than one per cut, normalized so the term is a fraction"
+        },
+        {
+          "label": "Scale",
+          "detail": "Because the excess is a fraction, the term does not grow with the number of events it sees and its weight needs no rescaling between batch, draw or region sizes"
+        },
+        {
+          "label": "Status",
+          "detail": "Test sweeps run in the endcap; results are being compiled before the pre-registered comparison decides whether mk2 takes the β slot"
+        }
+      ]
+    },
+    {
+      "name": "One family of closure terms",
+      "subtitle": "How the in-house terms relate",
+      "state": "done",
+      "summary": "At a single cut with an analytic null, mk2 reduces to the hinged term times the fractional noise floor; without the hinge and pooling it becomes the unhinged tail term DNC_FLR. All three are read as one model of closure, so each sweep result says something about the others.",
+      "items": [
+        {
+          "label": "Unchanged",
+          "detail": "Cuts are drawn from background quantiles and never learned, a closure term never chooses its own training epoch, and grading is on held-out cuts with a shuffle null"
+        },
+        {
+          "label": "Graded by",
+          "detail": "The BASELINE grader and its dependence spectrum, so a closure gain can be read as removal or as relocation"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "project": "baseline",
+      "title": "Where she is benchmarked",
+      "text": "The queen is the β axis of the BASELINE sweep: alone, paired with DisCo, and with the tail term, in both regions, under the same gate, grader and lock rule as every other loss family."
+    },
+    {
+      "project": "truss",
+      "title": "Architecture search",
+      "text": "TRUSS rebuilds the closure-term models, so architecture choices are judged with the queen in the loss rather than only with plain cross-entropy."
+    }
+  ],
+  "timeline": [
+    {
+      "date": "2026-10-10",
+      "label": "Hinged term carried over from the capstone work into the new-file baselines, run beside DisCo",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-11",
+      "label": "Refined sweeps alone and with DisCo; keep-or-drop test in the endcap and a check against her original training code",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-22",
+      "label": "Sealed as a hash-pinned unit in the BASELINE run specification, with a loss-and-gradient equivalence test",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-27",
+      "label": "mk2 proposed: non-closure treated as a random variable with a permutation null",
+      "state": "done"
+    },
+    {
+      "date": "2026-10-30",
+      "label": "mk2 test sweeps completed in the endcap; results being compiled",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-03",
+      "label": "Given her own project, linked to BASELINE",
+      "state": "done"
+    },
+    {
+      "label": "Both versions committed with their unit tests and a write-up of how and when she works",
+      "state": "active"
+    },
+    {
+      "label": "Pre-registered comparison: mk2 against the hinged term",
+      "state": "next"
+    },
+    {
+      "label": "β axis of the BASELINE Stage A and Stage B sweeps in both regions",
+      "state": "next"
+    }
+  ],
+  "literature": [
+    {
+      "key": "kasieczka2021",
+      "category": "ABCD with ML",
+      "authors": "G. Kasieczka, B. Nachman, M. D. Schwartz, D. Shih",
+      "year": 2021,
+      "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+      "venue": "Phys. Rev. D 103, 035021 (2021); arXiv:2007.14400",
+      "url": "https://arxiv.org/abs/2007.14400",
+      "verified": "full",
+      "why": "Double DisCo, the decorrelation reference the queen is run beside and compared with, and the closure ratio she is graded on"
+    },
+    {
+      "key": "disco2020",
+      "category": "Decorrelation",
+      "authors": "G. Kasieczka, D. Shih",
+      "year": 2020,
+      "title": "DisCo Fever: Robust Networks Through Distance Correlation",
+      "venue": "Phys. Rev. Lett. 125, 122001 (2020); arXiv:2001.05310",
+      "url": "https://arxiv.org/abs/2001.05310",
+      "verified": "full",
+      "why": "Distance-correlation penalty: the shrink-dependence-everywhere approach a closure term is the alternative to"
+    },
+    {
+      "key": "cms2025tec",
+      "category": "ABCD with ML",
+      "authors": "CMS Collaboration",
+      "year": 2025,
+      "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC",
+      "venue": "arXiv:2506.08826v2 (2026-09-04); DOI 10.1088/2632-2153/ae8c11",
+      "url": "https://arxiv.org/abs/2506.08826",
+      "verified": "full",
+      "why": "Adds a closure term to decorrelation training; the closest published relative of a loss that targets closure directly"
+    },
+    {
+      "key": "choi2019",
+      "category": "ABCD extensions",
+      "authors": "S. Choi, H. Oh",
+      "year": 2019,
+      "title": "Improved Extrapolation Methods of Data-driven Background Estimation in High-Energy Physics",
+      "venue": "arXiv:1906.10831",
+      "url": "https://arxiv.org/abs/1906.10831",
+      "verified": "full",
+      "why": "Extended ABCD with a correlation correction: the case where independence fails and closure has to be earned"
+    },
+    {
+      "key": "alvarez2024",
+      "category": "ABCD extensions",
+      "authors": "E. Alvarez et al.",
+      "year": 2024,
+      "title": "Improvement and generalization of ABCD method with Bayesian inference",
+      "venue": "SciPost Phys. Core 7, 043 (2024); arXiv:2402.08001",
+      "url": "https://arxiv.org/abs/2402.08001",
+      "verified": "full",
+      "why": "Generalizing ABCD beyond strict independence; prior art for treating non-closure statistically"
+    }
+  ]
+}

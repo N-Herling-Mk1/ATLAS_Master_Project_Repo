@@ -7,6 +7,7 @@
   "accent": "#ff2030",
   "accent2": "#e0e0e0",
   "code": "internal",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_KERF",
   "intro": {
     "problem": "Two parts of the analysis rest on densities that are never modeled explicitly. The ABCD background estimate assumes its two discriminants factorize, which fails when they are correlated, most of all in sparse tails [@choi2021]. The networks learn each feature's evidence from scratch, which is hardest where events are few.",
     "value": "Maximum entropy gives both a principled form [@jaynes1957]. A background model that learns the dependence, rather than removing it during training [@abcdisco2021][@cms2025tec], turns non-closure into a measured and correctable quantity. Per-feature signal and background densities hand the networks each feature's evidence, with the quality of every model graded.",

@@ -7,7 +7,7 @@
   "accent": "#22c8ff",
   "accent2": "#ff9a2a",
   "code": "public",
-  "link": "https://forge-observatory.com",
+  "site": "https://forge-observatory.com",
   "intro": {
     "problem": "FORGE, the posterior observatory built as a capstone, splits a model's predictive variance into a reducible epistemic part and an irreducible aleatoric part [@kendall2017][@hullermeier2021]; applied to the ATLAS long-lived-particle networks, it has so far raised more questions than it has answered.",
     "value": "Knowing which events, regions and networks are data-limited rather than at their physical limit would show the analysis where more simulation, better features or a different architecture would pay off, and would put an honest uncertainty on the background estimate itself.",

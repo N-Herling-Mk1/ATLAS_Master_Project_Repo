@@ -7,6 +7,7 @@
   "accent": "#18d6f0",
   "accent2": "#ffc83a",
   "code": "internal",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_BASELINE",
   "tagline": "The reference every other project is scored against",
   "intro": {
     "problem": "BASELINE builds one baseline run, a fixed algorithm and a fixed sweep sequence, for every signal and background file set the program examines. It cannot yet promise a baseline result; it fixes the procedure, so results stay comparable across files, regions and later methods instead of drifting with each file change and metric redefinition.",

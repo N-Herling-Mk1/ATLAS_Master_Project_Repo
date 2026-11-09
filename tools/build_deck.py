@@ -94,6 +94,12 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
     for k in ("accent", "accent2"):
         if k in p and not re.fullmatch(r"#[0-9a-fA-F]{6}", p[k]):
             errs.append(f"{pid}: {k} must be #rrggbb")
+    if "link" in p:
+        errs.append(f"{pid}: 'link' was renamed 'site' (public website)")
+    if p.get("site") and not str(p["site"]).startswith("https://"):
+        errs.append(f"{pid}: site must be an https URL")
+    if p.get("private_repo") and not re.fullmatch(r"https://github\.com/[\w.-]+/[\w.-]+", str(p["private_repo"])):
+        errs.append(f"{pid}: private_repo must be https://github.com/<owner>/<repo>")
     intro = p.get("intro", {})
     for k in INTRO_KEYS:
         s = intro.get(k, "").strip()

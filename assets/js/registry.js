@@ -9,6 +9,7 @@ window.DECK_PROJECTS = [
   "accent": "#18d6f0",
   "accent2": "#ffc83a",
   "code": "internal",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_BASELINE",
   "tagline": "The reference every other project is scored against",
   "intro": {
    "problem": "BASELINE builds one baseline run, a fixed algorithm and a fixed sweep sequence, for every signal and background file set the program examines. It cannot yet promise a baseline result; it fixes the procedure, so results stay comparable across files, regions and later methods instead of drifting with each file change and metric redefinition.",
@@ -875,6 +876,7 @@ window.DECK_PROJECTS = [
   "accent": "#ffd21f",
   "accent2": "#c9c9c9",
   "code": "internal",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_TRUSS",
   "intro": {
    "problem": "Network architectures in physics analyses are usually chosen by convention, and little evidence says the default topology is right once a network must deliver background closure [@abcdisco2020][@cms2025tec] as well as discrimination.",
    "value": "A statistically scored topology search, borrowed from generative structural design [@hahn2023][@nie2020], could find networks that keep their discriminating power while closing better, replacing architecture-by-habit with architecture-by-evidence.",
@@ -2215,6 +2217,7 @@ window.DECK_PROJECTS = [
   "accent": "#a6ff1f",
   "accent2": "#c9c9c9",
   "code": "internal",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_LEXICON",
   "intro": {
    "problem": "Detector events are treated as vectors of continuous features, and the co-occurrence tools that let language models learn structure [@levy2014] have barely been tried on them; the closest precedent tokenizes whole events for anomaly detection [@visive2025]. Co-occurrence alone gives a density, not a grammar; the open question is whether hidden structure lies behind it.",
    "value": "A token model trained only on background could score how typical an event is, giving a new axis for a data-driven background estimate; token embeddings could become classifier inputs, as tokenized jets already have [@finke2023][@birk2024]; and hidden structure that matches the decay chain would show what the networks are learning.",
@@ -3547,6 +3550,7 @@ window.DECK_PROJECTS = [
   "accent": "#ff2030",
   "accent2": "#e0e0e0",
   "code": "internal",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_KERF",
   "intro": {
    "problem": "Two parts of the analysis rest on densities that are never modeled explicitly. The ABCD background estimate assumes its two discriminants factorize, which fails when they are correlated, most of all in sparse tails [@choi2021]. The networks learn each feature's evidence from scratch, which is hardest where events are few.",
    "value": "Maximum entropy gives both a principled form [@jaynes1957]. A background model that learns the dependence, rather than removing it during training [@abcdisco2021][@cms2025tec], turns non-closure into a measured and correctable quantity. Per-feature signal and background densities hand the networks each feature's evidence, with the quality of every model graded.",
@@ -3990,7 +3994,7 @@ window.DECK_PROJECTS = [
   "accent": "#22c8ff",
   "accent2": "#ff9a2a",
   "code": "public",
-  "link": "https://forge-observatory.com",
+  "site": "https://forge-observatory.com",
   "intro": {
    "problem": "FORGE, the posterior observatory built as a capstone, splits a model's predictive variance into a reducible epistemic part and an irreducible aleatoric part [@kendall2017][@hullermeier2021]; applied to the ATLAS long-lived-particle networks, it has so far raised more questions than it has answered.",
    "value": "Knowing which events, regions and networks are data-limited rather than at their physical limit would show the analysis where more simulation, better features or a different architecture would pay off, and would put an honest uncertainty on the background estimate itself.",
@@ -4338,5 +4342,415 @@ window.DECK_PROJECTS = [
   ],
   "logo": "projects/forge/logo.webp",
   "thumb": "projects/forge/thumb.webp"
+ },
+ {
+  "id": "dncn-qn",
+  "order": 10,
+  "name": "DNCn_QN",
+  "expansion": "Debiased NonClosure under the null, Quantile-Normalized",
+  "status": "active",
+  "accent": "#c43cff",
+  "accent2": "#ffc21f",
+  "code": "internal",
+  "tagline": "The queen: an in-house ABCD closure term that only pushes where the counts can see",
+  "intro": {
+   "problem": "An ABCD background estimate holds only if the two network scores are independent on background. Decorrelation penalties shrink dependence everywhere [@disco2020][@kasieczka2021], including where the counts cannot resolve it, and a term that drives non-closure to zero can be met by fitting statistical noise or by emptying the signal region.",
+   "value": "Penalizing non-closure in units of its own counting noise targets the quantity the estimate relies on, closure in the regions used [@cms2025tec], and stops pushing once the residual is within noise. The classifiers stay free wherever closure already holds, so separation is spent only where it buys closure.",
+   "approach": "Each training step draws cut pairs at background quantiles inside the trained band, forms soft region counts and their propagated variance, and penalizes the squared residual above one unit of noise. The proposed mk2 treats non-closure across many cuts as a random variable, measures its null by permutation, and penalizes only the pooled excess.",
+   "goals": "A sealed, hash-pinned closure term with its own unit tests, run as the β axis of the BASELINE sweep in both regions; a pre-registered test deciding whether mk2 replaces it; and a clear record of which dependence the queen removes and which she only relocates."
+  },
+  "questions": [
+   "Does a hinged, noise-scaled closure term reach held-out closure that matches or beats decorrelation alone, at a smaller cost in separation?",
+   "Does it remove dependence between the two scores, or move it into the high-score corner beyond the cuts it trains on?",
+   "Does treating non-closure as a random variable with a measured null give closure that holds more steadily across cuts and sample sizes than one hinge per cut?"
+  ],
+  "components": [
+   {
+    "name": "The hinged term",
+    "subtitle": "DNCn_QN · β in BASELINE · sealed",
+    "state": "done",
+    "summary": "Enforce ABCD closure directly, but only where the data can resolve non-closure, so the network is never pushed to fit statistical noise. It acts on cuts inside the trained band and is taken byte for byte from the hash-sealed code genealogy.",
+    "items": [
+     {
+      "label": "Cuts",
+      "detail": "Each step draws cut pairs uniformly in background quantiles on both axes; the boundaries are background quantiles of the current scores, held fixed for the gradient"
+     },
+     {
+      "label": "Soft counts",
+      "detail": "Each background event joins regions A–D through a steep sigmoid on its probabilities, giving weighted counts N_A…N_D and their variances V_A…V_D"
+     },
+     {
+      "label": "Residual",
+      "detail": "g = N_A − N_B·N_C/N_D: how far region A misses its ABCD prediction"
+     },
+     {
+      "label": "Noise floor",
+      "detail": "F, the propagated variance of g from the four region variances, held fixed for the gradient"
+     },
+     {
+      "label": "Statistic",
+      "detail": "z² = g²/F, the residual in units of its own noise; uniform class weights cancel in it"
+     },
+     {
+      "label": "Loss",
+      "detail": "The mean over cuts of max(0, z² − 1): zero while the residual is within noise, rising only above it"
+     },
+     {
+      "label": "Checks",
+      "detail": "Matches the reference implementation in loss and gradient on real background scores; when decorrelation already holds every drawn cut within noise, the hinge gives exactly zero gradient"
+     }
+    ]
+   },
+   {
+    "name": "mk2: non-closure as a random variable",
+    "subtitle": "Proposed successor · pre-registered against the hinged term",
+    "state": "active",
+    "summary": "A point target for closure can be met in unphysical ways: cuts that empty the signal region, or closure tighter than the counts can resolve. mk2 treats the fractional non-closure at each cut as a draw with counting noise plus a real excess, the quantity an analysis carries as its closure systematic, and penalizes only the spread across many cuts that exceeds counting noise.",
+    "items": [
+     {
+      "label": "Statistic",
+      "detail": "The same per-cut z² as the hinged term, summed over many cut pairs"
+     },
+     {
+      "label": "Null",
+      "detail": "The expected sum without dependence is measured each step by permuting one network's scores among background events; this keeps both score distributions and the cut positions and removes only the dependence"
+     },
+     {
+      "label": "Loss",
+      "detail": "One hinge on the pooled excess over the null rather than one per cut, normalized so the term is a fraction"
+     },
+     {
+      "label": "Scale",
+      "detail": "Because the excess is a fraction, the term does not grow with the number of events it sees and its weight needs no rescaling between batch, draw or region sizes"
+     },
+     {
+      "label": "Status",
+      "detail": "Test sweeps run in the endcap; results are being compiled before the pre-registered comparison decides whether mk2 takes the β slot"
+     }
+    ]
+   },
+   {
+    "name": "One family of closure terms",
+    "subtitle": "How the in-house terms relate",
+    "state": "done",
+    "summary": "At a single cut with an analytic null, mk2 reduces to the hinged term times the fractional noise floor; without the hinge and pooling it becomes the unhinged tail term DNC_FLR. All three are read as one model of closure, so each sweep result says something about the others.",
+    "items": [
+     {
+      "label": "Unchanged",
+      "detail": "Cuts are drawn from background quantiles and never learned, a closure term never chooses its own training epoch, and grading is on held-out cuts with a shuffle null"
+     },
+     {
+      "label": "Graded by",
+      "detail": "The BASELINE grader and its dependence spectrum, so a closure gain can be read as removal or as relocation"
+     }
+    ]
+   }
+  ],
+  "links": [
+   {
+    "project": "baseline",
+    "title": "Where she is benchmarked",
+    "text": "The queen is the β axis of the BASELINE sweep: alone, paired with DisCo, and with the tail term, in both regions, under the same gate, grader and lock rule as every other loss family."
+   },
+   {
+    "project": "truss",
+    "title": "Architecture search",
+    "text": "TRUSS rebuilds the closure-term models, so architecture choices are judged with the queen in the loss rather than only with plain cross-entropy."
+   }
+  ],
+  "timeline": [
+   {
+    "date": "2026-10-10",
+    "label": "Hinged term carried over from the capstone work into the new-file baselines, run beside DisCo",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-11",
+    "label": "Refined sweeps alone and with DisCo; keep-or-drop test in the endcap and a check against her original training code",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-22",
+    "label": "Sealed as a hash-pinned unit in the BASELINE run specification, with a loss-and-gradient equivalence test",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-27",
+    "label": "mk2 proposed: non-closure treated as a random variable with a permutation null",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-30",
+    "label": "mk2 test sweeps completed in the endcap; results being compiled",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-03",
+    "label": "Given her own project, linked to BASELINE",
+    "state": "done"
+   },
+   {
+    "label": "Both versions committed with their unit tests and a write-up of how and when she works",
+    "state": "active"
+   },
+   {
+    "label": "Pre-registered comparison: mk2 against the hinged term",
+    "state": "next"
+   },
+   {
+    "label": "β axis of the BASELINE Stage A and Stage B sweeps in both regions",
+    "state": "next"
+   }
+  ],
+  "literature": [
+   {
+    "key": "kasieczka2021",
+    "category": "ABCD with ML",
+    "authors": "G. Kasieczka, B. Nachman, M. D. Schwartz, D. Shih",
+    "year": 2021,
+    "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+    "venue": "Phys. Rev. D 103, 035021 (2021); arXiv:2007.14400",
+    "url": "https://arxiv.org/abs/2007.14400",
+    "verified": "full",
+    "why": "Double DisCo, the decorrelation reference the queen is run beside and compared with, and the closure ratio she is graded on"
+   },
+   {
+    "key": "disco2020",
+    "category": "Decorrelation",
+    "authors": "G. Kasieczka, D. Shih",
+    "year": 2020,
+    "title": "DisCo Fever: Robust Networks Through Distance Correlation",
+    "venue": "Phys. Rev. Lett. 125, 122001 (2020); arXiv:2001.05310",
+    "url": "https://arxiv.org/abs/2001.05310",
+    "verified": "full",
+    "why": "Distance-correlation penalty: the shrink-dependence-everywhere approach a closure term is the alternative to"
+   },
+   {
+    "key": "cms2025tec",
+    "category": "ABCD with ML",
+    "authors": "CMS Collaboration",
+    "year": 2025,
+    "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC",
+    "venue": "arXiv:2506.08826v2 (2026-09-04); DOI 10.1088/2632-2153/ae8c11",
+    "url": "https://arxiv.org/abs/2506.08826",
+    "verified": "full",
+    "why": "Adds a closure term to decorrelation training; the closest published relative of a loss that targets closure directly"
+   },
+   {
+    "key": "choi2019",
+    "category": "ABCD extensions",
+    "authors": "S. Choi, H. Oh",
+    "year": 2019,
+    "title": "Improved Extrapolation Methods of Data-driven Background Estimation in High-Energy Physics",
+    "venue": "arXiv:1906.10831",
+    "url": "https://arxiv.org/abs/1906.10831",
+    "verified": "full",
+    "why": "Extended ABCD with a correlation correction: the case where independence fails and closure has to be earned"
+   },
+   {
+    "key": "alvarez2024",
+    "category": "ABCD extensions",
+    "authors": "E. Alvarez et al.",
+    "year": 2024,
+    "title": "Improvement and generalization of ABCD method with Bayesian inference",
+    "venue": "SciPost Phys. Core 7, 043 (2024); arXiv:2402.08001",
+    "url": "https://arxiv.org/abs/2402.08001",
+    "verified": "full",
+    "why": "Generalizing ABCD beyond strict independence; prior art for treating non-closure statistically"
+   }
+  ],
+  "logo": "projects/dncn-qn/logo.webp",
+  "thumb": "projects/dncn-qn/thumb.webp"
+ },
+ {
+  "id": "sig-bg",
+  "order": 11,
+  "name": "SIG/BG",
+  "expansion": "Signal / Background Feature Explorer",
+  "status": "active",
+  "accent": "#ff3030",
+  "accent2": "#d6d6d6",
+  "code": "public",
+  "site": "https://n-herling-mk1.github.io/ATLAS_SIGBG_Explorer/#/home",
+  "tagline": "Which inputs separate signal from background, and which only appear to",
+  "intro": {
+   "problem": "The networks are only as good as their inputs, yet each input list was chosen before the current signal and background files existed. Some variables separate the samples because of physics; others separate them only because of how each sample was selected, and a ranking cannot tell the two apart on its own.",
+   "value": "A per-feature map of separation, region dependence and redundancy, with every selection effect flagged, gives the network-input work a trustworthy starting pool. It tells the barrel and endcap programs where the two regions carry different physics, and it hands the feature-competition game candidate sets that are already screened.",
+   "approach": "A public pipeline scores every shared column with the two-sample Kolmogorov–Smirnov distance [@smirnov1948] per region and mass point, against its own noise floor. Spearman correlation on background [@spearman1904] groups redundant features into blocks, and a gradient-boosted surrogate [@friedman2001] scores candidate input sets, with distance correlation [@szekely2007] between the two networks' surrogate scores.",
+   "goals": "A companion site where every plot is viewable and downloadable, the full development history is kept, and the excluded-feature list is editable; data-health checks that inform without removing features; and screened candidate pools handed to GAMBIT, which makes the final choice [@guyon2003]."
+  },
+  "questions": [
+   "Which input variables separate signal from background in each region, and which only appear to because of how the samples were selected?",
+   "Where do the barrel and endcap differ in shape or in separation, so that a model trained in one region may carry the wrong physics into the other?",
+   "Which features are redundant with each other, and which strong separators do the current network input lists leave out?"
+  ],
+  "components": [
+   {
+    "name": "Data health and inventory",
+    "subtitle": "Block 00 · informational unit tests",
+    "state": "done",
+    "summary": "Every column in every input file is inventoried, duplicates are collapsed, exclusions are reported line by line, and the region split is audited. Data-health checks report pass or fail and never remove a feature; only the column rules (missing from a file, non-numeric, constant, duplicate, hard-excluded) drop one.",
+    "items": [
+     {
+      "label": "Selection",
+      "detail": "A unit test checks the selection that defines each sample, because any variable tied to that selection separates the samples by construction"
+     },
+     {
+      "label": "Exclusions",
+      "detail": "One editable file of names or globs; the site can build a new one and download it"
+     }
+    ]
+   },
+   {
+    "name": "Separation and region maps",
+    "subtitle": "Blocks A and B",
+    "state": "done",
+    "summary": "For each feature, the KS distance between signal and background in the endcap, the barrel and both, per mass point and combined with equal weight per mass point [@smirnov1948]. A separate map compares barrel and endcap shapes for background and for signal.",
+    "items": [
+     {
+      "label": "Noise floor",
+      "detail": "Each distance is judged against the KS critical value for its sample sizes"
+     },
+     {
+      "label": "Flags",
+      "detail": "Selection-linked, jet-activity-dependent and non-physics features are marked in every ranking, and a feature that separates almost perfectly at a single mass point is marked suspicious"
+     }
+    ]
+   },
+   {
+    "name": "Correlation and candidate sets",
+    "subtitle": "Blocks C and D · nominate, not decide",
+    "state": "done",
+    "summary": "Background rank correlation defines redundancy blocks [@spearman1904]. Four candidate input sets, from the current lists to an inclusive set, are scored by a gradient-boosted surrogate with five-fold cross-validation [@friedman2001]: separation per network role, the worst mass point, and dependence between the two roles [@szekely2007]. The surrogate nominates; GAMBIT decides on closure.",
+    "items": [
+     {
+      "label": "Hand-off",
+      "detail": "Unit-test results, candidate pools per region, redundancy blocks, drop suggestions and the prototype lists, written as GAMBIT inputs"
+     }
+    ]
+   },
+   {
+    "name": "Companion site",
+    "subtitle": "Public, static, every plot downloadable",
+    "state": "active",
+    "summary": "The site shows every feature page, ranking, correlation block and candidate set, every page of every PDF the work produced, and an archive of every earlier script version and run, unchanged. The code is public and runs on anyone's own copy of the files."
+   }
+  ],
+  "links": [
+   {
+    "project": "gambit",
+    "title": "Feature competition",
+    "text": "SIG/BG screens and nominates; GAMBIT takes the candidate pools and blocks and decides the partition on closure."
+   },
+   {
+    "project": "stave",
+    "title": "Barrel program",
+    "text": "The barrel-versus-endcap maps show where the two regions carry different physics, which bears directly on pretraining a barrel model on the endcap."
+   },
+   {
+    "project": "baseline",
+    "title": "Data-health checks",
+    "text": "The informational unit tests here are the same kind of alert-not-stop checks BASELINE runs on its own files."
+   }
+  ],
+  "timeline": [
+   {
+    "date": "2026-10-24",
+    "label": "First full KS pass over every shared column, by region and mass point",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-25",
+    "label": "Selection study: the sample selection found to separate the files by construction, and turned into a unit test",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-25",
+    "label": "Four-block pipeline: region maps, separation, correlation blocks and surrogate-scored candidate sets",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-26",
+    "label": "Public repository and companion site; every run and script version kept",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-30",
+    "label": "Site simplified around features and suggested network groupings",
+    "state": "done"
+   },
+   {
+    "date": "2026-10-31",
+    "label": "Data-file checks published on an EDA page; flags inform and never remove a feature",
+    "state": "done"
+   },
+   {
+    "label": "Barrel–endcap feature separation carried into the barrel program's pretraining design",
+    "state": "active"
+   },
+   {
+    "label": "Private repository for working files",
+    "state": "next"
+   }
+  ],
+  "literature": [
+   {
+    "key": "smirnov1948",
+    "category": "Separation",
+    "authors": "N. Smirnov",
+    "year": 1948,
+    "title": "Table for Estimating the Goodness of Fit of Empirical Distributions",
+    "venue": "Ann. Math. Statist. 19(2), 279–281",
+    "url": "https://doi.org/10.1214/aoms/1177730256",
+    "verified": "abstract",
+    "why": "Kolmogorov–Smirnov distance and its critical values: the per-feature separation score and its noise floor"
+   },
+   {
+    "key": "spearman1904",
+    "category": "Dependence",
+    "authors": "C. Spearman",
+    "year": 1904,
+    "title": "The Proof and Measurement of Association between Two Things",
+    "venue": "Am. J. Psychol. 15(1), 72–101",
+    "url": "https://doi.org/10.2307/1412159",
+    "verified": "abstract",
+    "why": "Rank correlation used on background to find redundancy blocks"
+   },
+   {
+    "key": "szekely2007",
+    "category": "Dependence",
+    "authors": "G. J. Székely, M. L. Rizzo, N. K. Bakirov",
+    "year": 2007,
+    "title": "Measuring and testing dependence by correlation of distances",
+    "venue": "Ann. Statist. 35(6), 2769–2794; arXiv:0803.4101",
+    "url": "https://doi.org/10.1214/009053607000000505",
+    "verified": "abstract",
+    "why": "Distance correlation between the two networks' surrogate scores on background"
+   },
+   {
+    "key": "friedman2001",
+    "category": "Surrogate model",
+    "authors": "J. H. Friedman",
+    "year": 2001,
+    "title": "Greedy function approximation: A gradient boosting machine",
+    "venue": "Ann. Statist. 29(5), 1189–1232",
+    "url": "https://doi.org/10.1214/aos/1013203451",
+    "verified": "abstract",
+    "why": "Gradient boosting, the surrogate that scores candidate input sets"
+   },
+   {
+    "key": "guyon2003",
+    "category": "Feature selection",
+    "authors": "I. Guyon, A. Elisseeff",
+    "year": 2003,
+    "title": "An Introduction to Variable and Feature Selection",
+    "venue": "J. Mach. Learn. Res. 3, 1157–1182",
+    "url": "https://www.jmlr.org/papers/v3/guyon03a.html",
+    "verified": "abstract",
+    "why": "Filter versus wrapper selection: why a univariate screen nominates and a downstream method decides"
+   }
+  ],
+  "logo": "projects/sig-bg/logo.webp",
+  "thumb": "projects/sig-bg/thumb.webp"
  }
 ];

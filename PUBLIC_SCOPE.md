@@ -8,13 +8,14 @@ This repository is public. It describes projects; it does not report them.
 - The questions it is designed to answer
 - Method names and general techniques
 - Links to results that are already public (papers, public notes, conference proceedings)
+- Public project websites, and links to the owner's own private GitHub repositories (`private_repo`). These return 404 to anyone without access; the repository name itself is public
 
 ## Not allowed
 
 - Numbers from internal work: scores, closure values, significances, event counts, cut values
 - Plots, tables, or figures from internal analyses
 - Sample, dataset, or internal analysis identifiers
-- Internal hosts, filesystem paths, or repository links
+- Internal hosts, filesystem paths, or links into internal (experiment) repositories
 - Code from the internal repositories, unless separately cleared
 
 ## Enforcement
