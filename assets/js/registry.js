@@ -1413,6 +1413,7 @@ window.DECK_PROJECTS = [
   "accent": "#22e3ff",
   "accent2": "#ff8a2a",
   "code": "internal",
+  "site": "https://n-herling-mk1.github.io/ATLAS_LATHE_explorer/",
   "intro": {
    "problem": "The hidden layers of the classifiers used in long-lived-particle searches are rarely examined, and we do not yet know whether visualizing them is merely striking or genuinely useful, for instance as an n-dimensional heat map showing where in latent space background closure succeeds and fails.",
    "value": "If it is useful, latent maps could diagnose failures, separate training objectives that score alike, guide architecture choices in TRUSS, and tie what a network learned back to physical inputs, as related work has begun to do for jet taggers [@khot2023][@komiske2020].",
