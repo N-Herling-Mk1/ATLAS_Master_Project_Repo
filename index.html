@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/deck.css?v=2efc078554">
+<link rel="stylesheet" href="assets/css/deck.css?v=3c587528d8">
 </head>
 <body>
 <div class="grid-bg" aria-hidden="true"></div>
@@ -28,17 +28,35 @@
       <p class="byline">Nathan Herling &middot; University of Arizona</p>
     </div>
   </div>
-  <nav class="deck-nav" aria-label="Project navigation">
-    <button class="nav-btn" id="prev" aria-label="Previous project">&#9664;</button>
-    <span class="counter" id="counter">01 / 12</span>
-    <button class="nav-btn" id="next" aria-label="Next project">&#9654;</button>
-  </nav>
-  <div class="top-end" aria-hidden="true"></div>
 </header>
 
 <section class="rogues" aria-label="Gallery of Rogues">
-  <div class="section-label"><span>GALLERY OF ROGUES</span><span class="rule"></span><span class="hint">&larr; &rarr; keys &middot; 1&ndash;9, 0, &minus;, =</span></div>
-  <div class="rogue-strip" id="strip" role="list"></div>
+  <div class="section-label"><span>GALLERY OF ROGUES</span><span class="rule"></span><span class="count" id="rogue-count"></span></div>
+  <div class="rogue-deck">
+    <div class="rogue-grid" id="strip" role="list"></div>
+
+    <button class="f-shot" id="f-shot" type="button" aria-label="Jump to the project page">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <img id="f-img" alt="" width="1600" height="1000">
+    </button>
+
+    <aside class="feature" id="feature" aria-label="Selected project">
+      <div class="f-body">
+        <p class="f-kicker"><span id="f-index">PROJECT 01</span><span class="dot"></span><span id="f-status" class="status">ACTIVE</span></p>
+        <div class="f-head">
+          <p class="f-name" id="f-name">&nbsp;</p>
+          <p class="f-exp" id="f-exp">&nbsp;</p>
+        </div>
+        <div class="f-leds" id="f-leds" aria-hidden="true"></div>
+      </div>
+      <nav class="deck-nav" aria-label="Project navigation">
+        <button class="nav-btn" id="prev" aria-label="Previous project">&#9664;</button>
+        <span class="counter" id="counter">01 / 13</span>
+        <button class="nav-btn" id="next" aria-label="Next project">&#9654;</button>
+        <span class="hint">&larr; &rarr; keys &middot; 1&ndash;9, 0, &minus;, =</span>
+      </nav>
+    </aside>
+  </div>
 </section>
 
 <main class="stage" id="stage" aria-live="polite">
@@ -113,7 +131,7 @@
 </footer>
 
 <noscript><p class="noscript">This page needs JavaScript to load the project deck.</p></noscript>
-<script src="assets/js/registry.js?v=36c598b38c"></script>
-<script src="assets/js/deck.js?v=2da7cb0004"></script>
+<script src="assets/js/registry.js?v=63dfcd456b"></script>
+<script src="assets/js/deck.js?v=78ee213f86"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # research-deck
 
-Public face for the project line: a static, no-build-step site with a **Gallery of Rogues** strip on top and the selected project in the main panel below.
+Public face for the project line: a static, no-build-step site with a **Gallery of Rogues** deck on top (a compact tile grid on the left, the selected project as a large tile on the right, and an info bar with the prev/next controls under the grid) and the selected project in the main panel below. Below 960 px the large tile is hidden, since the hero logo sits right under the gallery.
 
 Live structure:
 
@@ -37,7 +37,7 @@ Open `index.html` directly, or serve it:
 python -m http.server 8000
 ```
 
-Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump, 0 / - / = for the tenth to twelfth. Swipe on mobile. The prev/next buttons play a short synthesized "boop" (Web Audio; no sound files).
+Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump, 0 / - / = for the tenth to twelfth; projects past the twelfth are reached with the arrows or a click. Clicking the large tile scrolls to the project page. Swipe on mobile. The prev/next buttons play a short synthesized "boop" (Web Audio; no sound files).
 
 ## Edit a project
 

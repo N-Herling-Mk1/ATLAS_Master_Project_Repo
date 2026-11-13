@@ -4753,5 +4753,264 @@ window.DECK_PROJECTS = [
   ],
   "logo": "projects/sig-bg/logo.webp",
   "thumb": "projects/sig-bg/thumb.webp"
+ },
+ {
+  "id": "unknot",
+  "order": 12,
+  "name": "UNKNOT",
+  "expansion": "UNsupervised K-source Number and Origin Test",
+  "status": "active",
+  "accent": "#ffb31a",
+  "accent2": "#2ad4ff",
+  "code": "internal",
+  "tagline": "How many backgrounds are there? A background-only count of sources, with a stated confidence for every answer",
+  "intro": {
+   "problem": "The background to a displaced-vertex search in the muon spectrometer [@atlas2014msvtx] is usually modeled as one population, yet at least three processes feed it: punch-through from collision jets, beam-induced background and cosmic muons [@atlas2016bib]. Each has its own geometry, timing and dependence on run conditions, and a single model averages over all of them.",
+   "value": "Knowing how many sources are present, and which events belong to each, lets every source be modeled, validated and checked for stability on its own. It also tests one mechanism behind background-estimate non-closure: two scores that are independent inside each source become dependent once the sources are mixed [@abcdisco2021].",
+   "approach": "UNKNOT uses background events only and lets the data set the count. Features are fitted with maximum-entropy densities [@jaynes1957]; mixtures of one to four factorized sources are scored by information criteria [@schwarz1978][@biernacki2000], subsampling and permutation tests on real events, and checked against smooth single-source alternatives. Signal simulation serves only as a geometric acceptance reference.",
+   "goals": "A stated confidence in the number of background sources in each detector region; a per-event membership for every source; physics checks that tie each source to an origin through jets, pileup, run stability and geometry; and a verdict on whether mixing explains the dependence between the two network scores."
+  },
+  "questions": [
+   "How many distinct background sources do the data support in each region, and with what confidence once marginal misfit and correlation within a source are controlled?",
+   "Are the candidate sources discrete populations, or one background whose shape changes smoothly with detector activity?",
+   "Does mixing sources create the dependence between the two network scores that the background estimate has to assume away?"
+  ],
+  "components": [
+   {
+    "name": "mk1: built and run",
+    "subtitle": "First version · background only · both regions",
+    "state": "done",
+    "summary": "The first complete version runs end to end on the current background sample in the barrel and the endcap. Every test draws its null from real events: no generated events are used anywhere, and no signal labels or training enter any number.",
+    "items": [
+     {
+      "label": "Health check",
+      "detail": "Every column typed and flagged for fill values, point masses, heavy tails, dead or near-constant entries, run drift, pileup dependence and exact or affine copies; flags inform and never remove a feature"
+     },
+     {
+      "label": "Marginals",
+      "detail": "One-dimensional maximum-entropy fits with Legendre moment constraints, the order chosen by held-out likelihood and graded by the probability integral transform [@jaynes1957]"
+     },
+     {
+      "label": "Source count",
+      "detail": "Mixtures of factorized maximum-entropy sources for one to four sources, fitted by accelerated expectation-maximization [@varadhan2008] and scored three ways: information criteria, selection frequency under subsampling, and sequential permutation tests of each count against the next"
+     },
+     {
+      "label": "Stability",
+      "detail": "A count is accepted only where it holds as the marginals are made more flexible, and on independent halves of the runs; rigid marginals make a mixture add sources to absorb misfit"
+     },
+     {
+      "label": "Identifiability",
+      "detail": "Two variables give confidence in the count only; per-source shapes need three or more conditionally independent variables [@hall2003][@allman2009]"
+     },
+     {
+      "label": "Smooth or discrete",
+      "detail": "One source with a smooth coupling between variables, and the same models fitted within activity strata, are compared with mixtures by cross-validated likelihood, so a smooth trend is not mistaken for separate populations"
+     },
+     {
+      "label": "Profiler",
+      "detail": "Population or event-group comparisons across every other variable with permutation tests and false-discovery control [@bh1995], plus named checks: jet presence, pileup, run stability, event cleaning, geometry, and the score dependence inside each population"
+     },
+     {
+      "label": "Acceptance",
+      "detail": "Signal simulation used only as a map of where the detector reconstructs symmetric decays, so background geometry can be read against it; nothing is tuned on it"
+     },
+     {
+      "label": "Direction",
+      "detail": "A circular mixture fit of the missing-momentum direction relative to the vertex separates collision-aligned events from the rest without a biased chance model"
+     }
+    ]
+   },
+   {
+    "name": "mk2: per-source confidence",
+    "subtitle": "Next version",
+    "state": "next",
+    "summary": "Three-variable sets so that each source, not only the count, carries a confidence; sources matched across resamples and run halves; evidence beyond the information-criterion approximation; and unbinned and binned cross-checks of the mixture [@benaglia2009]."
+   }
+  ],
+  "links": [
+   {
+    "project": "kerf",
+    "title": "Shared maximum-entropy machinery",
+    "text": "UNKNOT reuses the same family of one-dimensional maximum-entropy fits, but asks a different question: how many sources the background contains, not how the background behaves under the ABCD assumption. Its results carry no implications for KERF."
+   }
+  ],
+  "timeline": [
+   {
+    "date": "2026-11",
+    "label": "Three-source background study proposed in the group: punch-through, beam-induced background and cosmic muons",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-10",
+    "label": "Framed as background-only: suppose one to four sources and state a confidence for each; feature health check first",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-10",
+    "label": "Named UNKNOT; maximum-entropy fits chosen over binning for every feature",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-10",
+    "label": "mk1 built: health check, per-feature maximum-entropy fits and the source-count test; first runs in both regions",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-11",
+    "label": "Smooth-coupling and stratified tests added; signal simulation admitted as a geometric acceptance reference only; score-provenance and profiling tools added",
+    "state": "done"
+   },
+   {
+    "date": "2026-11",
+    "label": "Missing-momentum direction model added to mk1, validated on planted toys before any real-data reading",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-13",
+    "label": "First mk1 results summarized for internal review",
+    "state": "active"
+   },
+   {
+    "label": "Three-variable sets for per-source confidence",
+    "state": "next"
+   },
+   {
+    "label": "Evidence for the count beyond the information-criterion approximation",
+    "state": "next"
+   },
+   {
+    "label": "Unbinned and binned cross-checks of the mixture",
+    "state": "next"
+   },
+   {
+    "label": "Physics labels assigned to sources only after the count is fixed",
+    "state": "next"
+   }
+  ],
+  "literature": [
+   {
+    "key": "atlas2014msvtx",
+    "category": "Muon-spectrometer backgrounds",
+    "authors": "ATLAS Collaboration",
+    "year": 2014,
+    "title": "Standalone vertex finding in the ATLAS muon spectrometer",
+    "venue": "JINST 9 P02001 (arXiv:1311.7070)",
+    "url": "https://arxiv.org/abs/1311.7070",
+    "verified": "full",
+    "why": "The vertex reconstruction whose background UNKNOT decomposes"
+   },
+   {
+    "key": "atlas2016bib",
+    "category": "Muon-spectrometer backgrounds",
+    "authors": "ATLAS Collaboration",
+    "year": 2016,
+    "title": "Beam-induced and cosmic-ray backgrounds observed in the ATLAS detector during the LHC 2012 proton-proton running period",
+    "venue": "JINST 11 P05013 (arXiv:1603.09202)",
+    "url": "https://arxiv.org/abs/1603.09202",
+    "verified": "full",
+    "why": "Characteristics of the two non-collision candidates: beam-induced background and cosmic muons"
+   },
+   {
+    "key": "abcdisco2021",
+    "category": "Muon-spectrometer backgrounds",
+    "authors": "Kasieczka et al.",
+    "year": 2021,
+    "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+    "venue": "Phys. Rev. D 103, 035021 (arXiv:2007.14400)",
+    "url": "https://doi.org/10.1103/PhysRevD.103.035021",
+    "verified": "full",
+    "why": "The background estimate whose closure depends on the two scores being independent"
+   },
+   {
+    "key": "jaynes1957",
+    "category": "Density models",
+    "authors": "Jaynes",
+    "year": 1957,
+    "title": "Information Theory and Statistical Mechanics",
+    "venue": "Phys. Rev. 106, 620",
+    "url": "https://doi.org/10.1103/PhysRev.106.620",
+    "verified": "abstract",
+    "why": "Maximum entropy principle behind every per-feature density"
+   },
+   {
+    "key": "schwarz1978",
+    "category": "Choosing the number of sources",
+    "authors": "Schwarz",
+    "year": 1978,
+    "title": "Estimating the Dimension of a Model",
+    "venue": "Ann. Statist. 6(2), 461-464",
+    "url": "https://doi.org/10.1214/aos/1176344136",
+    "verified": "full",
+    "why": "The Bayesian information criterion used for the first reading of the count"
+   },
+   {
+    "key": "biernacki2000",
+    "category": "Choosing the number of sources",
+    "authors": "Biernacki, Celeux & Govaert",
+    "year": 2000,
+    "title": "Assessing a mixture model for clustering with the integrated completed likelihood",
+    "venue": "IEEE Trans. Pattern Anal. Mach. Intell. 22(7), 719-725",
+    "url": "https://doi.org/10.1109/34.865189",
+    "verified": "abstract",
+    "why": "The integrated completed likelihood, read beside the information criterion because it favours fewer, well-separated sources"
+   },
+   {
+    "key": "bh1995",
+    "category": "Choosing the number of sources",
+    "authors": "Benjamini & Hochberg",
+    "year": 1995,
+    "title": "Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing",
+    "venue": "J. R. Stat. Soc. B 57(1), 289-300",
+    "url": "https://doi.org/10.1111/j.2517-6161.1995.tb02031.x",
+    "verified": "abstract",
+    "why": "False-discovery control across the many variables the profiler compares"
+   },
+   {
+    "key": "hall2003",
+    "category": "Mixture identifiability",
+    "authors": "Hall & Zhou",
+    "year": 2003,
+    "title": "Nonparametric estimation of component distributions in a multivariate mixture",
+    "venue": "Ann. Statist. 31(1), 201-224",
+    "url": "https://doi.org/10.1214/aos/1046294462",
+    "verified": "full",
+    "why": "Component shapes of a product mixture are identifiable from three variables, not two"
+   },
+   {
+    "key": "allman2009",
+    "category": "Mixture identifiability",
+    "authors": "Allman, Matias & Rhodes",
+    "year": 2009,
+    "title": "Identifiability of parameters in latent structure models with many observed variables",
+    "venue": "Ann. Statist. 37(6A), 3099-3132 (arXiv:0809.5032)",
+    "url": "https://doi.org/10.1214/09-AOS689",
+    "verified": "full",
+    "why": "The Kruskal-type condition used to bound how many sources a variable set can resolve"
+   },
+   {
+    "key": "varadhan2008",
+    "category": "Fitting",
+    "authors": "Varadhan & Roland",
+    "year": 2008,
+    "title": "Simple and Globally Convergent Methods for Accelerating the Convergence of Any EM Algorithm",
+    "venue": "Scand. J. Stat. 35(2), 335-353",
+    "url": "https://doi.org/10.1111/j.1467-9469.2007.00585.x",
+    "verified": "abstract",
+    "why": "Squared extrapolation that lets every mixture fit converge before it is compared"
+   },
+   {
+    "key": "benaglia2009",
+    "category": "Fitting",
+    "authors": "Benaglia, Chauveau & Hunter",
+    "year": 2009,
+    "title": "An EM-like algorithm for semi- and nonparametric estimation in multivariate mixtures",
+    "venue": "J. Comput. Graph. Stat. 18(2), 505-526",
+    "url": "https://doi.org/10.1198/jcgs.2009.07175",
+    "verified": "abstract",
+    "why": "Nonparametric mixture fit planned as an unbinned cross-check"
+   }
+  ],
+  "logo": "projects/unknot/logo.webp",
+  "thumb": "projects/unknot/thumb.webp"
  }
 ];

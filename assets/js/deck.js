@@ -12,15 +12,17 @@
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let cur = -1, timer = 0, first = true;
 
-  // ---- gallery of rogues -------------------------------------------------
+  // ---- gallery of rogues: compact tile grid + feature panel for the selected tile ----
+  $("rogue-count").textContent = `${P.length} PROJECTS`;
   const cards = P.map((p, i) => {
     const b = document.createElement("button");
     b.className = `rogue st-${p.status}`;
     b.setAttribute("role", "listitem");
     b.setAttribute("aria-label", `${p.name}: ${p.expansion}`);
+    b.title = `${p.name} · ${p.expansion}`;
     b.style.setProperty("--rc", p.accent);
     b.innerHTML =
-      `<img src="${p.thumb}" alt="" width="480" height="300" loading="${i < 6 ? "eager" : "lazy"}">` +
+      `<img src="${p.thumb}" alt="" width="480" height="300" loading="${i < 8 ? "eager" : "lazy"}">` +
       `<span class="r-access" aria-hidden="true">` +
         `<span class="r-led${p.site ? " on" : ""}" title="${p.site ? "Public site" : "No public site yet"}"><i></i>WEB</span>` +
         `<span class="r-led${p.private_repo ? " on" : ""}" title="${p.private_repo ? "Private repo" : "No private repo yet"}"><i></i>REPO</span>` +
@@ -85,10 +87,39 @@
     $("nb-next-name").textContent = next.name;
 
     cards.forEach((c, k) => c.setAttribute("aria-current", k === i ? "true" : "false"));
-    const c = cards[i];                        // centre the card in the strip without moving the page
-    strip.scrollTo({ left: c.offsetLeft - (strip.clientWidth - c.offsetWidth) / 2, behavior: reduced || first ? "auto" : "smooth" });
+    renderFeature(p, i, n);
     first = false;
     document.title = `${p.name} · Research Deck`;
+  }
+
+  // ---- feature panel: the selected tile, large, with the deck controls ----------
+  function renderFeature(p, i, n) {
+    const shot = $("f-shot"), img = $("f-img");
+    const swap = () => {
+      img.src = p.logo;
+      img.alt = `${p.name} logo`;
+      shot.classList.remove("swap");
+    };
+    if (first || reduced) swap();
+    else { shot.classList.add("swap"); setTimeout(swap, 120); }
+    $("f-index").textContent = `PROJECT ${pad(i + 1)}`;
+    const st = $("f-status");
+    st.textContent = p.status.toUpperCase();
+    st.className = `status st-${p.status}`;
+    $("f-name").textContent = p.name;
+    $("f-exp").textContent = p.expansion || "";
+    $("f-exp").title = p.expansion || "";
+    $("f-leds").replaceChildren(
+      ledPill(p.site, "WEB", "Public site", "No public site yet"),
+      ledPill(p.private_repo, "REPO", "Private repo", "No private repo yet"),
+    );
+  }
+
+  function ledPill(on, label, onTitle, offTitle) {
+    const s = el("span", `r-led${on ? " on" : ""}`);
+    s.title = on ? onTitle : offTitle;
+    s.append(el("i"), document.createTextNode(label));
+    return s;
   }
 
   // ---- sections ------------------------------------------------------------
@@ -116,6 +147,7 @@
 
   // ---- acronym title + expansion ---------------------------------------------
   // Find, for each letter of the acronym, the character in the expansion that spells it:
+  //   0) the capital right after the previous hit (a capital run: UNsupervised -> U, N)
   //   1) next word-initial with that letter   (Topology Refinement Under ...)
   //   2) next exact capital inside a word     (eXperiment, tokeNs)
   //   3) any unused word-initial, out of order (Game-Theoretic -> the T in GAMBIT)
@@ -128,7 +160,8 @@
     const used = new Set();
     let pos = 0;
     for (const L of letters) {
-      let hit = starts.find((i) => i >= pos && !used.has(i) && exp[i].toUpperCase() === L);
+      let hit = pos > 0 && used.has(pos - 1) && exp[pos] === L ? pos : undefined;
+      if (hit === undefined) hit = starts.find((i) => i >= pos && !used.has(i) && exp[i].toUpperCase() === L);
       if (hit === undefined) {
         const j = exp.indexOf(L, pos);
         if (j >= 0 && !used.has(j)) hit = j;
@@ -450,6 +483,7 @@
   // ---- controls ------------------------------------------------------------
   $("prev").onclick = $("nb-prev").onclick = () => { boop(-1); go(cur - 1); };
   $("next").onclick = $("nb-next").onclick = () => { boop(1); go(cur + 1); };
+  $("f-shot").onclick = () => stage.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
 
   addEventListener("keydown", (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;

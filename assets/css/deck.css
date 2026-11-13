@@ -40,8 +40,8 @@ img { display: block; max-width: 100%; height: auto; }
 }
 
 /* ---------- header ---------- */
-.top {
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
+.top {                    /* brand only: the prev/next controls live in the gallery's feature panel */
+  display: flex; align-items: center; gap: 16px;
   padding: 18px var(--gutter);
   border-bottom: 1px solid var(--line);
   position: relative;
@@ -62,8 +62,7 @@ img { display: block; max-width: 100%; height: auto; }
   font-size: clamp(16px, 2vw, 22px); letter-spacing: .28em;
 }
 .byline { margin: 2px 0 0; font-family: var(--f-mono); font-size: 12px; color: var(--muted); letter-spacing: .06em; }
-.deck-nav { display: flex; align-items: center; gap: 10px; justify-self: center; }
-.top-end { min-width: 0; }
+.deck-nav { display: flex; align-items: center; gap: 10px; }
 .nav-btn {
   width: 38px; height: 38px; border: 1px solid var(--line); color: var(--muted);
   font-size: 12px; transition: border-color .2s, color .2s, box-shadow .2s;
@@ -79,26 +78,32 @@ img { display: block; max-width: 100%; height: auto; }
   margin: 0 0 12px;
 }
 .section-label .rule, .q-head .rule { flex: 1; height: 1px; background: var(--line); }
-.section-label .hint { font-family: var(--f-mono); font-weight: 400; letter-spacing: .08em; color: var(--dim); font-size: 11px; }
-.rogue-strip {
-  position: relative;
-  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(128px, 1fr);
-  gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
-  padding: 6px 8px 26px; margin: 0 -6px -12px;    /* extra room so the selection glow isn't clipped */
-  scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+.hint { font-family: var(--f-mono); font-weight: 400; letter-spacing: .08em; color: var(--dim); font-size: 11px; }
+
+/* deck = compact tile grid (left) over the selected project's info bar; the selected tile, large, on the right */
+.rogue-deck {
+  display: grid; grid-template-columns: minmax(0, 1fr) clamp(300px, 33%, 470px);
+  grid-template-areas: "grid shot" "info shot"; grid-template-rows: auto 1fr;
+  column-gap: clamp(14px, 2vw, 28px); row-gap: 14px;
+}
+.rogue-grid {
+  grid-area: grid;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 14px 8px; align-content: start;
+  padding: 4px 6px 10px; margin: -4px -6px 0;      /* room so the selection glow isn't clipped */
 }
 .rogue {
-  scroll-snap-align: start;
-  position: relative; display: flex; flex-direction: column; gap: 8px;
-  padding: 0 0 8px; border: 1px solid var(--line); background: var(--panel);
+  position: relative; display: flex; flex-direction: column; gap: 5px; min-width: 0;
+  padding: 0 0 6px; border: 1px solid var(--line); background: var(--panel);
   opacity: .58; filter: saturate(.7);
   transition: opacity .25s, filter .25s, border-color .25s, transform .25s var(--ease), box-shadow .25s;
 }
 .rogue img { aspect-ratio: 16 / 10; width: 100%; object-fit: cover; background: #000; }
 .rogue .r-name {
-  display: flex; align-items: center; justify-content: space-between; gap: 6px;
-  padding: 0 10px; font-family: var(--f-mono); font-size: 12px; letter-spacing: .1em; color: var(--muted);
+  display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0;
+  padding: 0 8px; font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; color: var(--muted);
 }
+.rogue .r-name > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rogue .r-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dim); flex: none; }
 .rogue:hover, .rogue:focus-visible { opacity: .9; filter: none; outline: none; border-color: var(--rc); }
 .rogue[aria-current="true"] {
@@ -109,7 +114,7 @@ img { display: block; max-width: 100%; height: auto; }
 .rogue[aria-current="true"] .r-name { color: var(--text); }
 /* selection: glowing underline bar that overflows the card edges */
 .rogue::after {
-  content: ""; position: absolute; left: -6px; right: -6px; bottom: -10px; height: 3px; border-radius: 3px;
+  content: ""; position: absolute; left: -4px; right: -4px; bottom: -9px; height: 3px; border-radius: 3px;
   background: linear-gradient(90deg, transparent 0%, var(--rc) 14%,
               color-mix(in srgb, var(--rc) 55%, #fff) 50%, var(--rc) 86%, transparent 100%);
   box-shadow: 0 0 6px var(--rc), 0 0 14px var(--rc), 0 0 28px color-mix(in srgb, var(--rc) 65%, transparent);
@@ -121,9 +126,10 @@ img { display: block; max-width: 100%; height: auto; }
   50% { box-shadow: 0 0 4px var(--rc), 0 0 9px var(--rc), 0 0 18px color-mix(in srgb, var(--rc) 45%, transparent); }
 }
 
-/* tile access lights: WEB = public site, REPO = private repo */
+/* tile access lights: WEB = public site, REPO = private repo.
+   Small tiles show the two lights only; the feature panel shows them labelled. */
 .r-access {
-  position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; pointer-events: none;
+  position: absolute; top: 5px; right: 5px; display: flex; gap: 3px; pointer-events: none;
 }
 .r-led {
   display: flex; align-items: center; gap: 4px; padding: 2px 5px;
@@ -134,6 +140,35 @@ img { display: block; max-width: 100%; height: auto; }
 .r-led.on { color: #39ff8f; border-color: color-mix(in srgb, #39ff8f 40%, var(--line)); }
 .r-led.on i, .acc.on .led { background: #39ff8f; box-shadow: 0 0 5px #39ff8f, 0 0 11px #39ff8f; animation: ledblink 1.4s ease-in-out infinite; }
 @keyframes ledblink { 0%, 45% { opacity: 1; } 70%, 85% { opacity: .18; } 100% { opacity: 1; } }
+.rogue .r-led { padding: 3px; font-size: 0; gap: 0; }
+.rogue .r-led i { width: 5px; height: 5px; }
+
+/* ---------- feature: the selected tile, large (right) + its info bar (left, under the grid) ---------- */
+.f-shot {
+  grid-area: shot; align-self: start;
+  position: relative; display: block; width: 100%; padding: 0; background: #000; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--a) 45%, var(--line));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--a) 18%, transparent), 0 0 26px var(--a-soft);
+  transition: border-color .4s, box-shadow .4s;
+}
+.f-shot img { width: 100%; aspect-ratio: 16 / 10; object-fit: contain; transition: opacity .18s var(--ease), transform .35s var(--ease); }
+.f-shot.swap img { opacity: 0; transform: scale(.985); }
+.f-shot .corner { width: 14px; height: 14px; }
+.f-shot:hover, .f-shot:focus-visible { outline: none; box-shadow: 0 0 0 1px var(--a), 0 0 30px var(--a-glow); }
+.feature {
+  grid-area: info; align-self: end; min-width: 0;
+  display: flex; align-items: center; gap: 18px;
+  padding: 12px 14px; border: 1px solid var(--line); border-left: 3px solid var(--a); background: var(--panel);
+}
+.f-body { flex: 1; display: grid; gap: 3px; min-width: 0; }
+.f-kicker { margin: 0; display: flex; align-items: center; gap: 8px; font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; color: var(--muted); }
+.f-kicker .dot { width: 3px; height: 3px; background: var(--dim); }
+.f-head { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+.f-name { margin: 0; flex: none; font-family: var(--f-display); font-weight: 900; font-size: 20px; letter-spacing: .16em; color: var(--text); text-shadow: 0 0 18px var(--a-soft); }
+.f-exp { margin: 0; min-width: 0; font-family: var(--f-display); font-weight: 500; font-size: 12px; letter-spacing: .05em; line-height: 1.4; color: var(--a); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.f-leds { display: flex; gap: 6px; margin-top: 3px; }
+.feature .deck-nav { flex: none; flex-wrap: wrap; justify-content: flex-end; }
+.feature .deck-nav .hint { flex-basis: 100%; text-align: right; }
 
 /* status colours */
 .st-active   { --sc: #2fe08a; }
@@ -387,13 +422,20 @@ img { display: block; max-width: 100%; height: auto; }
 @media (max-width: 960px) {
   .stage { grid-template-columns: 1fr; grid-template-areas: "left" "dossier" "lower"; }
   .hero { width: 80%; margin: 0 auto; }
-  .section-label .hint { display: none; }
+  .hint { display: none; }
   .lower { grid-template-columns: 1fr; }
+  /* stacked: info bar, then the grid; the hero right below already shows the large logo */
+  .rogue-deck { grid-template-columns: 1fr; grid-template-areas: "info" "grid"; grid-template-rows: auto; }
+  .f-shot { display: none; }
 }
 @media (max-width: 600px) {
-  .top { grid-template-columns: 1fr; gap: 10px; }
-  .top-end { display: none; }
-  .rogue-strip { grid-auto-columns: 42%; }
+  .rogue-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 12px 6px; }
+  .rogue .r-name { font-size: 10px; padding: 0 5px; letter-spacing: .04em; }
+  .feature { flex-wrap: wrap; gap: 10px; }
+  .feature .deck-nav { width: 100%; justify-content: space-between; }
+  .f-head { flex-wrap: wrap; row-gap: 2px; }
+  .f-exp { white-space: normal; }
+  .f-name { font-size: 16px; }
   .byline { display: none; }
   .foot { grid-template-columns: 1fr 1fr; }
   .scope { grid-column: 1 / -1; grid-row: 2; }
