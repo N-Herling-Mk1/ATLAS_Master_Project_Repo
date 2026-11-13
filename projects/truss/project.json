@@ -7,6 +7,7 @@
   "accent": "#ffd21f",
   "accent2": "#c9c9c9",
   "code": "internal",
+  "presentations": "https://n-herling-mk1.github.io/ATLAS_presentations_TRUSS/",
   "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_TRUSS",
   "intro": {
     "problem": "Network architectures in physics analyses are usually chosen by convention, and little evidence says the default topology is right once a network must deliver background closure [@abcdisco2020][@cms2025tec] as well as discrimination.",

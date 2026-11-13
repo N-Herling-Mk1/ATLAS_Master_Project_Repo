@@ -7,6 +7,7 @@
   "accent": "#c43cff",
   "accent2": "#ffc21f",
   "code": "internal",
+  "presentations": "https://n-herling-mk1.github.io/ATLAS_presentations_DNCn_QN/",
   "tagline": "The queen: an in-house ABCD closure term that only pushes where the counts can see",
   "intro": {
     "problem": "An ABCD background estimate holds only if the two network scores are independent on background. Decorrelation penalties shrink dependence everywhere [@disco2020][@kasieczka2021], including where the counts cannot resolve it, and a term that drives non-closure to zero can be met by fitting statistical noise or by emptying the signal region.",

@@ -59,6 +59,7 @@ Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump, 0 / - / 
 | `code` | `internal` or `public` |
 | `site` | optional public website URL; lights the PUBLIC SITE pill and the tile's WEB light (green, blinking) |
 | `private_repo` | optional `https://github.com/<owner>/<repo>`; lights the PRIVATE REPO pill and the tile's REPO light. Private repos return 404 to anyone not signed in with access, so the link only opens for the owner |
+| `presentations` | optional https URL of the project's slide decks (usually its `ATLAS_presentations_<NAME>` GitHub Pages site); lights the PRESENTATIONS pill and the tile's DECK light |
 | `intro.problem` | (1) topic sentence: the problem being addressed |
 | `intro.value` | (2) what solving it adds to research |
 | `intro.approach` | (3) how the problem is attacked |

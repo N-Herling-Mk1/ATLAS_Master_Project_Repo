@@ -100,6 +100,8 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
         errs.append(f"{pid}: site must be an https URL")
     if p.get("private_repo") and not re.fullmatch(r"https://github\.com/[\w.-]+/[\w.-]+", str(p["private_repo"])):
         errs.append(f"{pid}: private_repo must be https://github.com/<owner>/<repo>")
+    if p.get("presentations") and not str(p["presentations"]).startswith("https://"):
+        errs.append(f"{pid}: presentations must be an https URL")
     intro = p.get("intro", {})
     for k in INTRO_KEYS:
         s = intro.get(k, "").strip()

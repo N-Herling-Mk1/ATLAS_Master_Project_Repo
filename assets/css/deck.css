@@ -126,8 +126,8 @@ img { display: block; max-width: 100%; height: auto; }
   50% { box-shadow: 0 0 4px var(--rc), 0 0 9px var(--rc), 0 0 18px color-mix(in srgb, var(--rc) 45%, transparent); }
 }
 
-/* tile access lights: WEB = public site, REPO = private repo.
-   Small tiles show the two lights only; the feature panel shows them labelled. */
+/* tile access lights: WEB = public site, REPO = private repo, DECK = presentations.
+   Small tiles show the lights only; the feature panel shows them labelled. */
 .r-access {
   position: absolute; top: 5px; right: 5px; display: flex; gap: 3px; pointer-events: none;
 }

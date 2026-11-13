@@ -876,6 +876,7 @@ window.DECK_PROJECTS = [
   "accent": "#ffd21f",
   "accent2": "#c9c9c9",
   "code": "internal",
+  "presentations": "https://n-herling-mk1.github.io/ATLAS_presentations_TRUSS/",
   "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_TRUSS",
   "intro": {
    "problem": "Network architectures in physics analyses are usually chosen by convention, and little evidence says the default topology is right once a network must deliver background closure [@abcdisco2020][@cms2025tec] as well as discrimination.",
@@ -4353,6 +4354,7 @@ window.DECK_PROJECTS = [
   "accent": "#c43cff",
   "accent2": "#ffc21f",
   "code": "internal",
+  "presentations": "https://n-herling-mk1.github.io/ATLAS_presentations_DNCn_QN/",
   "tagline": "The queen: an in-house ABCD closure term that only pushes where the counts can see",
   "intro": {
    "problem": "An ABCD background estimate holds only if the two network scores are independent on background. Decorrelation penalties shrink dependence everywhere [@disco2020][@kasieczka2021], including where the counts cannot resolve it, and a term that drives non-closure to zero can be met by fitting statistical noise or by emptying the signal region.",
@@ -4763,6 +4765,7 @@ window.DECK_PROJECTS = [
   "accent": "#ffb31a",
   "accent2": "#2ad4ff",
   "code": "internal",
+  "presentations": "https://n-herling-mk1.github.io/ATLAS_presentations_unKNOT/",
   "tagline": "How many backgrounds are there? A background-only count of sources, with a stated confidence for every answer",
   "intro": {
    "problem": "The background to a displaced-vertex search in the muon spectrometer [@atlas2014msvtx] is usually modeled as one population, yet at least three processes feed it: punch-through from collision jets, beam-induced background and cosmic muons [@atlas2016bib]. Each has its own geometry, timing and dependence on run conditions, and a single model averages over all of them.",

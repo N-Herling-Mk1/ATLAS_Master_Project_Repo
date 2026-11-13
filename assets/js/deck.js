@@ -26,6 +26,7 @@
       `<span class="r-access" aria-hidden="true">` +
         `<span class="r-led${p.site ? " on" : ""}" title="${p.site ? "Public site" : "No public site yet"}"><i></i>WEB</span>` +
         `<span class="r-led${p.private_repo ? " on" : ""}" title="${p.private_repo ? "Private repo" : "No private repo yet"}"><i></i>REPO</span>` +
+        `<span class="r-led${p.presentations ? " on" : ""}" title="${p.presentations ? "Presentations" : "No presentations yet"}"><i></i>DECK</span>` +
       `</span>` +
       `<span class="r-name"><span>${p.name}</span><span class="r-dot" title="${p.status}"></span></span>`;
     b.addEventListener("click", () => go(i));
@@ -112,6 +113,7 @@
     $("f-leds").replaceChildren(
       ledPill(p.site, "WEB", "Public site", "No public site yet"),
       ledPill(p.private_repo, "REPO", "Private repo", "No private repo yet"),
+      ledPill(p.presentations, "DECK", "Presentations", "No presentations yet"),
     );
   }
 
@@ -125,7 +127,7 @@
   // ---- sections ------------------------------------------------------------
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
-  // ---- access strip: public site + private repo ------------------------------
+  // ---- access strip: public site + private repo + presentations ---------------
   // Green blinking light = exists (link live); dim light = none yet.
   // Private repos answer 404 to anyone not signed in to GitHub with access, so that link only opens for the owner.
   function accessPill(kind, url, label, offText, title) {
@@ -142,6 +144,7 @@
     $("p-access").replaceChildren(
       accessPill("site", p.site, "PUBLIC SITE", "NONE YET", "Public website (opens in a new tab)"),
       accessPill("repo", p.private_repo, "PRIVATE REPO", "NONE YET", "Private GitHub repository: opens only when signed in with access"),
+      accessPill("deck", p.presentations, "PRESENTATIONS", "NONE YET", "Slide decks for this project (opens in a new tab)"),
     );
   }
 
