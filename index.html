@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/deck.css?v=4880a450dc">
+<link rel="stylesheet" href="assets/css/deck.css?v=f8df25eccf">
 </head>
 <body>
 <div class="grid-bg" aria-hidden="true"></div>
@@ -86,6 +86,11 @@
     <div class="access" id="p-access" aria-label="Public site and private repository"></div>
     <p class="intro" id="p-intro"></p>
 
+    <nav id="p-subs-wrap" class="subs-wrap" aria-label="Sub-projects" hidden>
+      <h3 class="q-head"><span>SUB-PROJECTS</span><span class="rule"></span><span class="count" id="subs-count"></span></h3>
+      <div class="subs" id="p-subs"></div>
+    </nav>
+
     <div id="p-program-wrap" hidden>
       <h3 class="q-head" id="sec-program"><span>PROGRAM</span><span class="rule"></span></h3>
       <ol class="program" id="p-program"></ol>
@@ -130,8 +135,12 @@
   <button class="neighbor right" id="nb-next"><span class="nb-dir">NEXT &#9654;</span><span class="nb-name" id="nb-next-name"></span></button>
 </footer>
 
+<button class="to-top" id="to-top" type="button" aria-label="Back to the top of the page" title="Back to top">
+  <span class="tt-arrow" aria-hidden="true">&#9650;</span><span class="tt-label">TOP</span>
+</button>
+
 <noscript><p class="noscript">This page needs JavaScript to load the project deck.</p></noscript>
-<script src="assets/js/registry.js?v=002674945c"></script>
-<script src="assets/js/deck.js?v=a6e74eea1a"></script>
+<script src="assets/js/registry.js?v=406ac8de0f"></script>
+<script src="assets/js/deck.js?v=069fda4f3d"></script>
 </body>
 </html>

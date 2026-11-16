@@ -309,8 +309,10 @@
   "tagline": "Maximum-entropy and kernel models of background and signal: the dependence behind the background estimate, and graded per-feature evidence for the networks",
   "components": [
     {
+      "codename": "LADDER",
       "name": "MaxEnt synthetic background",
       "subtitle": "Program 1 · the first model",
+      "synopsis": "Synthetic background from maximum-entropy marginals, with copula rungs that add dependence one step at a time.",
       "state": "done",
       "summary": "Per-feature marginals fitted to the total background, sampled as a product (plain ABCD), then with Gaussian and mixture copulas added as dependence rungs [@jaynes1957]. The marginal engine is shared with the signal program, so both sides of the analysis use one density model.",
       "items": [
@@ -325,8 +327,10 @@
       ]
     },
     {
+      "codename": "JOINT",
       "name": "Kernel dependence",
       "subtitle": "Program 2 · let the data choose the constraint",
+      "synopsis": "A kernel-chosen exponential tilt that models how the two discriminants depend on each other.",
       "state": "next",
       "summary": "Keep the marginals fixed and model the linking term as an exponential tilt. Kernel maximal correlation picks the functions [@renyi1959][@huang2020]; distance correlation is itself a kernel statistic, which ties this to the decorrelation line [@sejdinovic2013]. A density-ratio critic is an alternative route to the same term [@vandenoord2018].",
       "items": [
@@ -345,8 +349,10 @@
       ]
     },
     {
+      "codename": "GAUGE",
       "name": "Dependence probe",
       "subtitle": "Program 3 · a learned test of what the joint model missed",
+      "synopsis": "A learned two-sample test that measures the dependence each joint model still misses.",
       "state": "next",
       "summary": "A classifier two-sample test [@lopezpaz2017] on background only. Real background pairs of the two feature blocks are set against the same pairs with one block shuffled, which is exactly the factorized product. A network that lets one block attend to the other [@vaswani2017] is the critic; if it cannot beat chance, there is no dependence for any model to recover. The same critic then sets real background against draws from each joint-model rung.",
       "items": [
@@ -377,8 +383,10 @@
       ]
     },
     {
+      "codename": "SIGNAL LINE",
       "name": "Per-feature MaxEnt signal evidence",
       "subtitle": "Program 4 · a likelihood-ratio input layer for the networks",
+      "synopsis": "Per-feature maximum-entropy likelihood ratios, cross-fitted and graded, as inputs to the networks.",
       "state": "active",
       "summary": "For every network input feature, one-dimensional maximum-entropy densities are fitted to background and to signal built from all simulated mass points [@jaynes1957]. Each feature is then replaced by, or paired with, its log-likelihood ratio before it reaches the network: a fixed, supervised preprocessing stage the current networks do not have. Events, labels and the training loop are unchanged; the network still learns from true labels and is left to learn how the features combine. Every density carries a goodness and leakage scorecard, and a feature whose model fails keeps its plain input.",
       "items": [
@@ -433,8 +441,10 @@
       ]
     },
     {
+      "codename": "GAUNTLET",
       "name": "Gated tests",
       "subtitle": "Program 5 · earn each step before the next",
+      "synopsis": "Toy, blinded, held-out and signal-injection tests that each step must pass before the next.",
       "state": "next",
       "summary": "Toy harness, structure diagnosis, blinded toy closure, held-out pseudo-signal regions on real background, then signal injection to check the background model does not absorb signal. Injected events are real simulated signal, tagged and never counted as extra statistics."
     }

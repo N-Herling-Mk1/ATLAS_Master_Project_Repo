@@ -6,6 +6,10 @@ build_deck.py  --  normalize project logos, validate content, scan for leaks,
 Each project lives in projects/<id>/ :
     source.png     original logo (any size; black background)   <- you edit
     project.json   content                                       <- you edit
+                   components[] = programs / sub-projects; optional per component:
+                     codename  sub-project name shown as the title (e.g. "SIGNAL LINE")
+                     synopsis  one line for the sub-project strip under the intro
+                     slug      anchor override; default is the codename (or name) -> #<id>/<slug>
     logo.webp      1600x1000 normalized hero                     <- generated
     thumb.webp      480x300  normalized gallery card             <- generated
 
@@ -45,6 +49,14 @@ TL_STATES = {"done", "active", "next"}
 OPEN_KINDS = {"question", "lesson", "gap"}
 LIT_KEYS = ("category", "authors", "year", "title", "venue", "url")
 DATE_RE = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
+CODENAME_RE = re.compile(r"^[A-Z0-9][A-Z0-9 -]{0,23}$")   # sub-project names: caps, <= 24 chars
+SYNOPSIS_WORDS = 22                                       # one line in the sub-project strip
+
+
+def comp_slug(c: dict) -> str:
+    """Anchor for a program / sub-project: #<project>/<slug>. Explicit 'slug' wins, else codename, else name."""
+    src = c.get("slug") or c.get("codename") or c.get("name", "")
+    return re.sub(r"[^a-z0-9]+", "-", src.lower()).strip("-")
 
 # --- public-face leak scan --------------------------------------------------
 # Anything matching these must not reach a public repo. Extend freely.
@@ -161,11 +173,28 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
     for k in sorted(set(re.findall(r"\[@([\w-]+)\]", cite_text)) - set(lit_keys)):
         errs.append(f"{pid}: citation [@{k}] has no literature entry with that key")
 
+    slugs = set()
     for i, c in enumerate(p.get("components", []), 1):
         if not c.get("name") or not c.get("summary"):
             errs.append(f"{pid}: component {i} needs name and summary")
         if c.get("state") and c["state"] not in TL_STATES:
             errs.append(f"{pid}: component {i} state must be one of {sorted(TL_STATES)}")
+        if "codename" in c and not CODENAME_RE.match(str(c["codename"])):
+            errs.append(f"{pid}: component {i} codename '{c['codename']}' must be capitals/digits/space/hyphen, <= 24 chars")
+        if c.get("slug") and not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", c["slug"]):
+            errs.append(f"{pid}: component {i} slug must be lowercase words joined by '-'")
+        sl = comp_slug(c)
+        if not sl:
+            errs.append(f"{pid}: component {i} has no usable anchor (give it a codename or slug)")
+        elif sl in slugs:
+            errs.append(f"{pid}: component {i} anchor '#{pid}/{sl}' duplicates an earlier component")
+        slugs.add(sl)
+        syn = str(c.get("synopsis", "")).strip()
+        if syn and len(syn.split()) > SYNOPSIS_WORDS:
+            warns.append(f"{pid}: component {i} synopsis is {len(syn.split())} words (target <= {SYNOPSIS_WORDS})")
+    named = [c for c in p.get("components", []) if c.get("codename")]
+    if named and len(named) != len(p.get("components", [])):
+        warns.append(f"{pid}: {len(named)} of {len(p['components'])} components have a codename (name all or none)")
     for i, l in enumerate(p.get("links", []), 1):
         if not (PROJ / str(l.get("project", "")) / "project.json").exists():
             errs.append(f"{pid}: link {i} points at unknown project '{l.get('project')}'")
@@ -181,7 +210,7 @@ def leak_scan(p: dict) -> list[str]:
     # (an internal note masquerading as a reference is exactly the risk); URLs are not.
     text = " ".join(
         [p.get("name", ""), p.get("expansion", ""), p.get("tagline", ""), (p.get("caveat") or {}).get("text", "")]
-        + [f"{c.get('name', '')} {c.get('subtitle', '')} {c.get('summary', '')} "
+        + [f"{c.get('codename', '')} {c.get('name', '')} {c.get('subtitle', '')} {c.get('synopsis', '')} {c.get('summary', '')} "
            + " ".join(f"{it.get('label', '')} {it.get('detail', '')}" for it in c.get("items", []))
            for c in p.get("components", [])]
         + [f"{l.get('title', '')} {l.get('text', '')}" for l in p.get("links", [])]
@@ -235,6 +264,7 @@ def public_record(p: dict) -> dict:
     rec = {k: v for k, v in p.items() if not k.startswith("_")}
     rec["logo"] = f"projects/{p['id']}/logo.webp"
     rec["thumb"] = f"projects/{p['id']}/thumb.webp"
+    rec["components"] = [dict(c, slug=comp_slug(c)) for c in p.get("components", [])]
     return rec
 
 

@@ -127,9 +127,10 @@ img { display: block; max-width: 100%; height: auto; }
 }
 
 /* tile access lights: WEB = public site, REPO = private repo, DECK = presentations.
-   Small tiles show the lights only; the feature panel shows them labelled. */
+   Small tiles show the lights only, stacked down the left edge (top to bottom: WEB, REPO, DECK);
+   the feature panel shows them labelled. */
 .r-access {
-  position: absolute; top: 5px; right: 5px; display: flex; gap: 3px; pointer-events: none;
+  position: absolute; top: 5px; left: 5px; display: flex; flex-direction: column; gap: 3px; pointer-events: none;
 }
 .r-led {
   display: flex; align-items: center; gap: 4px; padding: 2px 5px;
@@ -301,11 +302,53 @@ img { display: block; max-width: 100%; height: auto; }
 .prog-state { margin-left: auto; font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; padding: 2px 8px; border: 1px solid var(--line); color: var(--muted); }
 .prog.st-active .prog-state { color: var(--a2); border-color: var(--a2); }
 .prog.st-done .prog-state { color: #2fe08a; border-color: #2fe08a; }
+.prog-desc { margin: 3px 0 0 32px; font-family: var(--f-display); font-weight: 500; font-size: 13px; letter-spacing: .06em; color: var(--muted); }
 .prog-sub { margin: 4px 0 8px 32px; font-family: var(--f-mono); font-size: 13px; color: var(--a); letter-spacing: .04em; }
 .prog-sum { margin: 0 0 0 32px; font-size: 14px; line-height: 1.55; color: var(--text); }
 .prog-items { margin: 10px 0 0 32px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 13px; }
 .prog-items dt { font-family: var(--f-mono); color: var(--a2); white-space: nowrap; }
 .prog-items dd { margin: 0; color: var(--muted); line-height: 1.45; }
+
+.prog.flash { animation: progflash 1.6s ease-out; }
+@keyframes progflash { 0% { background: var(--a-soft); box-shadow: 0 0 0 1px var(--a); } 100% { background: var(--panel); box-shadow: none; } }
+
+/* ---------- sub-project strip (under the intro): one line each, jump links ---------- */
+.subs-wrap { margin: 0 0 26px; max-width: 72ch; }
+.subs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.sub {
+  display: flex; flex-direction: column; gap: 4px; min-width: 0; text-align: left;
+  padding: 10px 12px; border: 1px solid var(--line); border-left: 3px solid var(--a); background: var(--panel);
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.sub.st-next { border-left-color: var(--dim); }
+.sub:hover, .sub:focus-visible {
+  outline: none; border-color: var(--a); background: color-mix(in srgb, var(--a) 7%, var(--panel));
+  box-shadow: 0 0 14px var(--a-soft);
+}
+.sub-top { display: flex; align-items: center; gap: 7px; font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; color: var(--dim); }
+.sub-led { width: 6px; height: 6px; border-radius: 50%; background: #262c34; flex: none; }
+.sub.st-done .sub-led { background: #2fe08a; box-shadow: 0 0 5px #2fe08a; }
+.sub.st-active .sub-led { background: var(--a2); box-shadow: 0 0 6px var(--a2); animation: ledblink 1.4s ease-in-out infinite; }
+.sub-state { margin-left: auto; }
+.sub.st-done .sub-state { color: #2fe08a; }
+.sub.st-active .sub-state { color: var(--a2); }
+.sub-name { font-family: var(--f-display); font-weight: 900; font-size: 14px; letter-spacing: .12em; color: var(--text); overflow-wrap: anywhere; }
+.sub-syn { font-size: 13px; line-height: 1.45; color: var(--muted); }
+
+/* ---------- back to top (floating, every project page) ---------- */
+.to-top {
+  position: fixed; right: clamp(12px, 2vw, 28px); bottom: clamp(12px, 2vw, 28px); z-index: 20;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  width: 52px; height: 52px; background: rgba(0, 0, 0, .82);
+  border: 1px solid color-mix(in srgb, var(--a) 60%, var(--line)); color: var(--a);
+  box-shadow: 0 0 14px var(--a-soft);
+  opacity: 0; transform: translateY(10px); pointer-events: none;
+  transition: opacity .2s, transform .2s var(--ease), border-color .2s, box-shadow .2s, color .4s;
+}
+.to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+.to-top:hover, .to-top:focus-visible { outline: none; border-color: var(--a); box-shadow: 0 0 0 1px var(--a), 0 0 22px var(--a-glow); }
+.tt-arrow { font-size: 13px; line-height: 1; }
+.tt-label { font-family: var(--f-display); font-weight: 700; font-size: 9px; letter-spacing: .22em; padding-left: .22em; }
 
 /* ---------- current results ---------- */
 .results { list-style: none; margin: 0 0 24px; padding: 0; counter-reset: r; display: grid; gap: 8px; max-width: 72ch; }
@@ -448,7 +491,9 @@ img { display: block; max-width: 100%; height: auto; }
   .open-items li { grid-template-columns: 1fr; gap: 4px; }
   .xlink { grid-template-columns: 1fr; }
   .xlink img { width: 100%; height: auto; aspect-ratio: 16 / 10; }
-  .prog-sub, .prog-sum, .prog-items { margin-left: 0; }
+  .prog-desc, .prog-sub, .prog-sum, .prog-items { margin-left: 0; }
+  .subs { grid-template-columns: 1fr; }
+  .to-top { width: 44px; height: 44px; }
   .prog-items { grid-template-columns: 1fr; gap: 2px; }
   .prog-items dd { margin-bottom: 6px; }
 }

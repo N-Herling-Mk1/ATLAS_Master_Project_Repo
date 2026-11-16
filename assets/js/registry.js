@@ -45,7 +45,8 @@ window.DECK_PROJECTS = [
       "label": "Ledger",
       "detail": "One row per run, appended and never edited; a regrade keeps the replaced row in a separate file"
      }
-    ]
+    ],
+    "slug": "run-specification"
    },
    {
     "name": "Unit tests and data checks",
@@ -93,7 +94,8 @@ window.DECK_PROJECTS = [
       "label": "T9 · region split (stops)",
       "detail": "Each region is cut from the shared files by its own flag column; unsplit data is refused"
      }
-    ]
+    ],
+    "slug": "unit-tests-and-data-checks"
    },
    {
     "name": "Loss families",
@@ -121,7 +123,8 @@ window.DECK_PROJECTS = [
       "label": "F5–F8",
       "detail": "α+β, α+γ, β+γ and α+β+γ. Running two closure terms in one step is the only structural extension of the earlier trainer"
      }
-    ]
+    ],
+    "slug": "loss-families"
    },
    {
     "name": "DNCn_QN (β)",
@@ -161,7 +164,8 @@ window.DECK_PROJECTS = [
       "label": "Checks",
       "detail": "Matches the reference implementation in loss and gradient (T2). When DisCo already holds every drawn cut within noise, the hinge gives exactly zero gradient and α+β reproduces α alone"
      }
-    ]
+    ],
+    "slug": "dncn-qn"
    },
    {
     "name": "DNC_FLR mk2.1 (γ)",
@@ -201,7 +205,8 @@ window.DECK_PROJECTS = [
       "label": "Status",
       "detail": "Experimental: mk2.1 is not yet a sealed truth unit; its code is pinned by hash in the sweep code"
      }
-    ]
+    ],
+    "slug": "dnc-flr-mk2-1"
    },
    {
     "name": "DNCn_QN mk2 (β, proposed)",
@@ -245,13 +250,15 @@ window.DECK_PROJECTS = [
       "label": "Status",
       "detail": "Proposed: specified, not yet run or sealed, and not part of the current run specification"
      }
-    ]
+    ],
+    "slug": "dncn-qn-mk2-proposed"
    },
    {
     "name": "Training",
     "subtitle": "Five folds, early stopping, GPU",
     "state": "active",
-    "summary": "Five folds stratified on label and mass point, with the input scaler fitted inside each fold on training rows only. Early stopping uses a slice of the training rows, never the test fold, and selects the epoch on cross-entropy plus the DisCo term only, so a closure term can never choose its own epoch. Out-of-fold scores are saved as logits with probabilities alongside, with one checkpoint per fold; everything downstream reads only these files."
+    "summary": "Five folds stratified on label and mass point, with the input scaler fitted inside each fold on training rows only. Early stopping uses a slice of the training rows, never the test fold, and selects the epoch on cross-entropy plus the DisCo term only, so a closure term can never choose its own epoch. Out-of-fold scores are saved as logits with probabilities alongside, with one checkpoint per fold; everything downstream reads only these files.",
+    "slug": "training"
    },
    {
     "name": "Grader",
@@ -279,7 +286,8 @@ window.DECK_PROJECTS = [
       "label": "Closure health (in-house)",
       "detail": "Pull of the region-A count against its propagated Poisson error with coverage, map coherence, roughness of closure along the grid, saturation of the scores, and fold-to-fold stability"
      }
-    ]
+    ],
+    "slug": "grader"
    },
    {
     "name": "Legendre dependence spectrum",
@@ -315,7 +323,8 @@ window.DECK_PROJECTS = [
       "label": "Limits",
       "detail": "Diagnostic only: the lock rule never reads it. Truncated at order 8 per axis in the endcap and 4 in the barrel; low order means j + k ≤ 4. The truncation and the low/high boundary are choices whose sensitivity is unchecked, and the smaller barrel sample may resolve nothing, which is an expected outcome rather than a failure"
      }
-    ]
+    ],
+    "slug": "legendre-dependence-spectrum"
    },
    {
     "name": "Sweep and lock",
@@ -343,7 +352,8 @@ window.DECK_PROJECTS = [
       "label": "Verdict",
       "detail": "The locked baseline is the six-item evaluation matrix's verdict on the confirmation run: robustness, confirmation, deep tail, transfer, cut scan and signal cost, each with a paired, seed-by-seed pass rule and an event bootstrap"
      }
-    ]
+    ],
+    "slug": "sweep-and-lock"
    }
   ],
   "links": [
@@ -805,7 +815,8 @@ window.DECK_PROJECTS = [
     "name": "DNC_FLR",
     "subtitle": "Noise-floor closure term",
     "state": "next",
-    "summary": "A closure-aware loss term that subtracts the expected statistical noise floor from the measured closure error, with no hinge, so training is penalized only for non-closure the data can actually resolve. Built for low-count regions; early barrel evidence is promising but thin and needs a replicated grid."
+    "summary": "A closure-aware loss term that subtracts the expected statistical noise floor from the measured closure error, with no hinge, so training is penalized only for non-closure the data can actually resolve. Built for low-count regions; early barrel evidence is promising but thin and needs a replicated grid.",
+    "slug": "dnc-flr"
    },
    {
     "name": "Loss sweeps",
@@ -829,7 +840,8 @@ window.DECK_PROJECTS = [
       "label": "BCE + DNC_FLR + DisCo",
       "detail": "Both terms, swept on the λ × μ grid"
      }
-    ]
+    ],
+    "slug": "loss-sweeps"
    },
    {
     "name": "Endcap pretraining",
@@ -849,7 +861,8 @@ window.DECK_PROJECTS = [
       "label": "Frozen trunk",
       "detail": "Freeze the endcap trunk and train only a barrel head"
      }
-    ]
+    ],
+    "slug": "endcap-pretraining"
    }
   ],
   "links": [
@@ -1315,7 +1328,8 @@ window.DECK_PROJECTS = [
       "label": "Closure-sensitivity pruning",
       "detail": "Remove units whose closure cost is high and whose classification value is low, from one backward pass"
      }
-    ]
+    ],
+    "slug": "testing-existing"
    },
    {
     "name": "Family ceiling",
@@ -1355,7 +1369,8 @@ window.DECK_PROJECTS = [
       "label": "Per-object attention (later)",
       "detail": "Attention over variable-length sets of detector objects [@qu2022]; needs new inputs, so outside this pass"
      }
-    ]
+    ],
+    "slug": "family-ceiling"
    },
    {
     "name": "Testing new",
@@ -1387,7 +1402,8 @@ window.DECK_PROJECTS = [
       "label": "Weight-space reader",
       "detail": "A reader of trained weights that respects the order-free hidden units [@navon2023][@zhou2023][@kofinas2024], tried as the surrogate on the zoo of saved checkpoints [@unterthiner2020]"
      }
-    ]
+    ],
+    "slug": "testing-new"
    }
   ],
   "links": [
@@ -1804,7 +1820,8 @@ window.DECK_PROJECTS = [
       "label": "Dead-unit census",
       "detail": "Count hidden units that never activate, which also feeds the connection sizing in TRUSS [@khot2023]"
      }
-    ]
+    ],
+    "slug": "first-attempts"
    },
    {
     "name": "The heat-map idea",
@@ -1820,7 +1837,8 @@ window.DECK_PROJECTS = [
       "label": "Stability",
       "detail": "Display only structures that persist across seeds and projection choices; mode connectivity tests whether two solutions are really distinct [@garipov2018]"
      }
-    ]
+    ],
+    "slug": "the-heat-map-idea"
    },
    {
     "name": "Latent cross-attention",
@@ -1844,13 +1862,15 @@ window.DECK_PROJECTS = [
       "label": "Attribution",
       "detail": "Attention maps are a cross-check, not an explanation [@jain2019]"
      }
-    ]
+    ],
+    "slug": "latent-cross-attention"
    },
    {
     "name": "Kill test",
     "subtitle": "Pre-registered exit",
     "state": "next",
-    "summary": "Before anything is built into a tool, test whether map-derived quantities predict closure on held-out events better than the training hyperparameters alone. If they do not, the project stops with that result written down."
+    "summary": "Before anything is built into a tool, test whether map-derived quantities predict closure on held-out events better than the training hyperparameters alone. If they do not, the project stops with that result written down.",
+    "slug": "kill-test"
    }
   ],
   "links": [
@@ -2156,7 +2176,8 @@ window.DECK_PROJECTS = [
       "label": "Pruning",
       "detail": "Correlated feature families reduced to representatives before selection"
      }
-    ]
+    ],
+    "slug": "cooperative-game"
    },
    {
     "name": "Adversarial game",
@@ -2176,13 +2197,15 @@ window.DECK_PROJECTS = [
       "label": "Worst case",
       "detail": "Weakest signal mass point kept in the payoff, not the loss [@sagawa2019]"
      }
-    ]
+    ],
+    "slug": "adversarial-game"
    },
    {
     "name": "Pipeline",
     "subtitle": "Cooperative into adversarial",
     "state": "active",
-    "summary": "The cooperative stage hands a pruned pool to the adversarial stage, and the result is promoted and graded on seeds neither search ever used. Built and run end to end on the barrel; the endcap run and the upstream data gates are next."
+    "summary": "The cooperative stage hands a pruned pool to the adversarial stage, and the result is promoted and graded on seeds neither search ever used. Built and run end to end on the barrel; the endcap run and the upstream data gates are next.",
+    "slug": "pipeline"
    }
   ],
   "results": [
@@ -2961,7 +2984,8 @@ window.DECK_PROJECTS = [
       "label": "Attention test",
       "detail": "The same transformer with its attention fixed to uniform, so it can mix context but not choose it [@zaheer2017]; separates what attention selects from what extra capacity buys"
      }
-    ]
+    ],
+    "slug": "route-a1"
    },
    {
     "name": "Route A1 variant",
@@ -2997,7 +3021,8 @@ window.DECK_PROJECTS = [
       "label": "Gates",
       "detail": "Per-feature sigmoid gates showing which features carry the surprise; deferred"
      }
-    ]
+    ],
+    "slug": "route-a1-variant"
    },
    {
     "name": "Latent grammar",
@@ -3025,7 +3050,8 @@ window.DECK_PROJECTS = [
       "label": "Gates",
       "detail": "Fit, then explanation measured on held-out events rather than taken from the model, then stability [@vinh2010]; signal contrast and agreement with the decay chain are read only after all three pass"
      }
-    ]
+    ],
+    "slug": "latent-grammar"
    },
    {
     "name": "Route A2",
@@ -3053,7 +3079,8 @@ window.DECK_PROJECTS = [
       "label": "Signal structure",
       "detail": "Tree skeletons fitted to signal and to background separately and compared edge by edge, with bootstrap stability and a small-sample correction to the mutual information [@chowliu1968][@paninski2003]"
      }
-    ]
+    ],
+    "slug": "route-a2"
    },
    {
     "name": "Route A3",
@@ -3089,7 +3116,8 @@ window.DECK_PROJECTS = [
       "label": "Transformer ratios",
       "detail": "Approximate and exact transformer likelihood ratios, read against the exact tree ratio rather than trusted on their own"
      }
-    ]
+    ],
+    "slug": "route-a3"
    },
    {
     "name": "Route B",
@@ -3113,13 +3141,15 @@ window.DECK_PROJECTS = [
       "label": "No recurrent classifier",
       "detail": "A recurrent network imposes a fixed order the features are not given; as a density that is harmless, as a classifier it is not, so it is not used here"
      }
-    ]
+    ],
+    "slug": "route-b"
    },
    {
     "name": "Route C",
     "subtitle": "Tokens into the networks",
     "state": "next",
-    "summary": "Feed token or event embeddings to the existing networks as inputs; per-event pooled vectors are where the value is expected to be. Attention stays within one network's inputs and never runs across the two networks' feature sets."
+    "summary": "Feed token or event embeddings to the existing networks as inputs; per-event pooled vectors are where the value is expected to be. Attention stays within one network's inputs and never runs across the two networks' feature sets.",
+    "slug": "route-c"
    }
   ],
   "results": [
@@ -3268,7 +3298,8 @@ window.DECK_PROJECTS = [
   },
   "tagline": "Exploratory: definitions and concept maps for the other projects",
   "logo": "projects/info-theory/logo.webp",
-  "thumb": "projects/info-theory/thumb.webp"
+  "thumb": "projects/info-theory/thumb.webp",
+  "components": []
  },
  {
   "id": "beam-agent",
@@ -3487,19 +3518,22 @@ window.DECK_PROJECTS = [
       "label": "Unit tests",
       "detail": "Equations, tables and section boundaries survive extraction intact"
      }
-    ]
+    ],
+    "slug": "step-1-tokenize-and-vet"
    },
    {
     "name": "BEAM PIPE",
     "subtitle": "The agent and the dense prompt",
     "state": "next",
-    "summary": "The local model chooses its own tools (search the papers, search the record, open code, search again), loops until it can answer or says it cannot, and composes the dense prompt: restated question, definitions, equations and cited passages. It can propose actions but never commits them."
+    "summary": "The local model chooses its own tools (search the papers, search the record, open code, search again), loops until it can answer or says it cannot, and composes the dense prompt: restated question, definitions, equations and cited passages. It can propose actions but never commits them.",
+    "slug": "beam-pipe"
    },
    {
     "name": "BEAM HALO",
     "subtitle": "Cross-source synthesis",
     "state": "next",
-    "summary": "A batch job that clusters passages across papers and sweeps open problems against the textbooks to surface connections. This is passage-level proximity; any deeper insight comes from reasoning over what was retrieved, so it is only as good as the retrieval."
+    "summary": "A batch job that clusters passages across papers and sweeps open problems against the textbooks to surface connections. This is passage-level proximity; any deeper insight comes from reasoning over what was retrieved, so it is only as good as the retrieval.",
+    "slug": "beam-halo"
    },
    {
     "name": "VELOCITY",
@@ -3531,13 +3565,15 @@ window.DECK_PROJECTS = [
       "label": "Deployment",
       "detail": "Full-stack site, or a static front end plus a local server the researcher starts for read and write"
      }
-    ]
+    ],
+    "slug": "velocity"
    },
    {
     "name": "Training, deferred",
     "subtitle": "Only if vetting shows misses",
     "state": "next",
-    "summary": "Fine-tuning the embedding model or a reranker on question-passage pairs is cheap and keeps provenance, but waits until retrieval is measured to miss. Retrieval-aware fine-tuning and adapters stay on the shelf until then [@zhang2024][@hu2021]."
+    "summary": "Fine-tuning the embedding model or a reranker on question-passage pairs is cheap and keeps provenance, but waits until retrieval is measured to miss. Retrieval-aware fine-tuning and adapters stay on the shelf until then [@zhang2024][@hu2021].",
+    "slug": "training-deferred"
    }
   ],
   "logo": "projects/beam-agent/logo.webp",
@@ -3854,8 +3890,10 @@ window.DECK_PROJECTS = [
   "tagline": "Maximum-entropy and kernel models of background and signal: the dependence behind the background estimate, and graded per-feature evidence for the networks",
   "components": [
    {
+    "codename": "LADDER",
     "name": "MaxEnt synthetic background",
     "subtitle": "Program 1 · the first model",
+    "synopsis": "Synthetic background from maximum-entropy marginals, with copula rungs that add dependence one step at a time.",
     "state": "done",
     "summary": "Per-feature marginals fitted to the total background, sampled as a product (plain ABCD), then with Gaussian and mixture copulas added as dependence rungs [@jaynes1957]. The marginal engine is shared with the signal program, so both sides of the analysis use one density model.",
     "items": [
@@ -3867,11 +3905,14 @@ window.DECK_PROJECTS = [
       "label": "Refit",
       "detail": "Ported onto the shared marginal engine and refitted on the current background sample before the kernel rungs are compared with it"
      }
-    ]
+    ],
+    "slug": "ladder"
    },
    {
+    "codename": "JOINT",
     "name": "Kernel dependence",
     "subtitle": "Program 2 · let the data choose the constraint",
+    "synopsis": "A kernel-chosen exponential tilt that models how the two discriminants depend on each other.",
     "state": "next",
     "summary": "Keep the marginals fixed and model the linking term as an exponential tilt. Kernel maximal correlation picks the functions [@renyi1959][@huang2020]; distance correlation is itself a kernel statistic, which ties this to the decorrelation line [@sejdinovic2013]. A density-ratio critic is an alternative route to the same term [@vandenoord2018].",
     "items": [
@@ -3887,11 +3928,14 @@ window.DECK_PROJECTS = [
       "label": "Tail bases",
       "detail": "Kernels that revert to factorization in the corner are avoided where the signal region sits"
      }
-    ]
+    ],
+    "slug": "joint"
    },
    {
+    "codename": "GAUGE",
     "name": "Dependence probe",
     "subtitle": "Program 3 · a learned test of what the joint model missed",
+    "synopsis": "A learned two-sample test that measures the dependence each joint model still misses.",
     "state": "next",
     "summary": "A classifier two-sample test [@lopezpaz2017] on background only. Real background pairs of the two feature blocks are set against the same pairs with one block shuffled, which is exactly the factorized product. A network that lets one block attend to the other [@vaswani2017] is the critic; if it cannot beat chance, there is no dependence for any model to recover. The same critic then sets real background against draws from each joint-model rung.",
     "items": [
@@ -3919,11 +3963,14 @@ window.DECK_PROJECTS = [
       "label": "Labeling",
       "detail": "Model draws and real background stay in separate, labeled runs; no reported real-data quantity uses model draws"
      }
-    ]
+    ],
+    "slug": "gauge"
    },
    {
+    "codename": "SIGNAL LINE",
     "name": "Per-feature MaxEnt signal evidence",
     "subtitle": "Program 4 · a likelihood-ratio input layer for the networks",
+    "synopsis": "Per-feature maximum-entropy likelihood ratios, cross-fitted and graded, as inputs to the networks.",
     "state": "active",
     "summary": "For every network input feature, one-dimensional maximum-entropy densities are fitted to background and to signal built from all simulated mass points [@jaynes1957]. Each feature is then replaced by, or paired with, its log-likelihood ratio before it reaches the network: a fixed, supervised preprocessing stage the current networks do not have. Events, labels and the training loop are unchanged; the network still learns from true labels and is left to learn how the features combine. Every density carries a goodness and leakage scorecard, and a feature whose model fails keeps its plain input.",
     "items": [
@@ -3975,13 +4022,17 @@ window.DECK_PROJECTS = [
       "label": "Diagnostic",
       "detail": "The sum of the per-feature ratios is a classifier that ignores correlations; the network's gain over it measures what correlations contribute"
      }
-    ]
+    ],
+    "slug": "signal-line"
    },
    {
+    "codename": "GAUNTLET",
     "name": "Gated tests",
     "subtitle": "Program 5 · earn each step before the next",
+    "synopsis": "Toy, blinded, held-out and signal-injection tests that each step must pass before the next.",
     "state": "next",
-    "summary": "Toy harness, structure diagnosis, blinded toy closure, held-out pseudo-signal regions on real background, then signal injection to check the background model does not absorb signal. Injected events are real simulated signal, tagged and never counted as extra statistics."
+    "summary": "Toy harness, structure diagnosis, blinded toy closure, held-out pseudo-signal regions on real background, then signal injection to check the background model does not absorb signal. Injected events are real simulated signal, tagged and never counted as extra statistics.",
+    "slug": "gauntlet"
    }
   ],
   "logo": "projects/kerf/logo.webp",
@@ -4232,13 +4283,15 @@ window.DECK_PROJECTS = [
       "label": "Checks",
       "detail": "Sampler convergence diagnostics and a dispersed second chain, as done for the other experiments [@izmailov2021]"
      }
-    ]
+    ],
+    "slug": "laplace-versus-sampler"
    },
    {
     "name": "Ratio metrics",
     "subtitle": "Epistemic-to-aleatoric, not yet read",
     "state": "next",
-    "summary": "FORGE reports the ratio of epistemic to aleatoric variance per event and per region. These readings exist for the ATLAS networks but have not been examined or compared across the loss configurations."
+    "summary": "FORGE reports the ratio of epistemic to aleatoric variance per event and per region. These readings exist for the ATLAS networks but have not been examined or compared across the loss configurations.",
+    "slug": "ratio-metrics"
    },
    {
     "name": "Network requirements",
@@ -4266,7 +4319,8 @@ window.DECK_PROJECTS = [
       "label": "Penalties",
       "detail": "Whether decorrelation and closure terms belong in the posterior curvature is still open"
      }
-    ]
+    ],
+    "slug": "network-requirements"
    },
    {
     "name": "Token-structured head",
@@ -4294,7 +4348,8 @@ window.DECK_PROJECTS = [
       "label": "Scope",
       "detail": "Attention weights stay point estimates; the decomposition covers the head only, so the known over-confidence of last-layer methods carries over"
      }
-    ]
+    ],
+    "slug": "token-structured-head"
    },
    {
     "name": "Fit with the program",
@@ -4318,7 +4373,8 @@ window.DECK_PROJECTS = [
       "label": "KERF and GAMBIT",
       "detail": "A posterior on the background estimate, and on how stable a feature partition is"
      }
-    ]
+    ],
+    "slug": "fit-with-the-program"
    }
   ],
   "results": [
@@ -4402,7 +4458,8 @@ window.DECK_PROJECTS = [
       "label": "Checks",
       "detail": "Matches the reference implementation in loss and gradient on real background scores; when decorrelation already holds every drawn cut within noise, the hinge gives exactly zero gradient"
      }
-    ]
+    ],
+    "slug": "the-hinged-term"
    },
    {
     "name": "mk2: non-closure as a random variable",
@@ -4430,7 +4487,8 @@ window.DECK_PROJECTS = [
       "label": "Status",
       "detail": "Test sweeps run in the endcap; results are being compiled before the pre-registered comparison decides whether mk2 takes the β slot"
      }
-    ]
+    ],
+    "slug": "mk2-non-closure-as-a-random-variable"
    },
    {
     "name": "One family of closure terms",
@@ -4446,7 +4504,8 @@ window.DECK_PROJECTS = [
       "label": "Graded by",
       "detail": "The BASELINE grader and its dependence spectrum, so a closure gain can be read as removal or as relocation"
      }
-    ]
+    ],
+    "slug": "one-family-of-closure-terms"
    }
   ],
   "links": [
@@ -4602,7 +4661,8 @@ window.DECK_PROJECTS = [
       "label": "Exclusions",
       "detail": "One editable file of names or globs; the site can build a new one and download it"
      }
-    ]
+    ],
+    "slug": "data-health-and-inventory"
    },
    {
     "name": "Separation and region maps",
@@ -4618,7 +4678,8 @@ window.DECK_PROJECTS = [
       "label": "Flags",
       "detail": "Selection-linked, jet-activity-dependent and non-physics features are marked in every ranking, and a feature that separates almost perfectly at a single mass point is marked suspicious"
      }
-    ]
+    ],
+    "slug": "separation-and-region-maps"
    },
    {
     "name": "Correlation and candidate sets",
@@ -4630,13 +4691,15 @@ window.DECK_PROJECTS = [
       "label": "Hand-off",
       "detail": "Unit-test results, candidate pools per region, redundancy blocks, drop suggestions and the prototype lists, written as GAMBIT inputs"
      }
-    ]
+    ],
+    "slug": "correlation-and-candidate-sets"
    },
    {
     "name": "Companion site",
     "subtitle": "Public, static, every plot downloadable",
     "state": "active",
-    "summary": "The site shows every feature page, ranking, correlation block and candidate set, every page of every PDF the work produced, and an archive of every earlier script version and run, unchanged. The code is public and runs on anyone's own copy of the files."
+    "summary": "The site shows every feature page, ranking, correlation block and candidate set, every page of every PDF the work produced, and an archive of every earlier script version and run, unchanged. The code is public and runs on anyone's own copy of the files.",
+    "slug": "companion-site"
    }
   ],
   "links": [
@@ -4821,13 +4884,15 @@ window.DECK_PROJECTS = [
       "label": "Direction",
       "detail": "A circular mixture fit of the missing-momentum direction relative to the vertex separates collision-aligned events from the rest without a biased chance model"
      }
-    ]
+    ],
+    "slug": "mk1-built-and-run"
    },
    {
     "name": "mk2: per-source confidence",
     "subtitle": "Next version",
     "state": "next",
-    "summary": "Three-variable sets so that each source, not only the count, carries a confidence; sources matched across resamples and run halves; evidence beyond the information-criterion approximation; and unbinned and binned cross-checks of the mixture [@benaglia2009]."
+    "summary": "Three-variable sets so that each source, not only the count, carries a confidence; sources matched across resamples and run halves; evidence beyond the information-criterion approximation; and unbinned and binned cross-checks of the mixture [@benaglia2009].",
+    "slug": "mk2-per-source-confidence"
    }
   ],
   "links": [
