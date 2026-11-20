@@ -1,0 +1,637 @@
+{
+  "revised": "2026-11-20",
+  "terms": [
+    {
+      "key": "abcd-method",
+      "term": "ABCD method",
+      "category": "The ABCD method",
+      "aka": [
+        "ABCD estimate",
+        "regions A, B, C, D"
+      ],
+      "short": "A data-driven background estimate: two independent variables and one cut on each split events into four regions, and the background in the signal region $A$ is predicted from the other three as $\\hat N_A = N_B N_C / N_D$.",
+      "long": [
+        "Here the two variables are the scores $s_1$ and $s_2$ of two networks, [[nn1-nn2|NN1 and NN2]]. A [[cut-pair]] places one cut on each score. Region $A$ passes both cuts and is the signal region; $B$ and $C$ each pass one; $D$ passes neither.",
+        "If the scores are independent on background, the region counts factorise and $N_A N_D = N_B N_C$, which gives the prediction above. When they are not independent the prediction misses; how far it misses is the [[closure|non-closure]]."
+      ],
+      "see": [
+        "closure",
+        "cut-pair",
+        "nn1-nn2"
+      ],
+      "refs": [
+        {
+          "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+          "venue": "Phys. Rev. D 103, 035021 (2021)",
+          "url": "https://arxiv.org/abs/2007.14400"
+        }
+      ]
+    },
+    {
+      "key": "closure",
+      "term": "Closure and non-closure",
+      "category": "The ABCD method",
+      "inline": "non-closure",
+      "aka": [
+        "non-closure",
+        "closure error"
+      ],
+      "short": "Closure: the ABCD prediction for region $A$ matches the true background there. Non-closure: the amount by which it misses, often quoted as a fraction of the prediction.",
+      "long": [
+        "At one cut pair the non-closure is the [[closure-residual]] $g = N_A - N_B N_C / N_D$, or as a fraction $g / \\hat N_A$.",
+        "Even two perfectly independent scores miss by an amount set by counting noise, so non-closure is a random variable. Only the part above its noise points to real dependence between the scores. That reading is the idea the [[dncn-qn|queen]] is built on."
+      ],
+      "see": [
+        "abcd-method",
+        "closure-residual",
+        "z-squared",
+        "dncn-qn"
+      ]
+    },
+    {
+      "key": "cut-pair",
+      "term": "Cut pair",
+      "category": "The ABCD method",
+      "aka": [
+        "$k$, $K$"
+      ],
+      "short": "One cut on each network score. Together the two cuts split the score plane into the four ABCD regions.",
+      "long": [
+        "In the queen's training, cut pairs are drawn afresh at every step, at [[background-quantile|background quantiles]] inside the [[trained-band]]. They are never learned and are [[held-fixed|held fixed]] for the gradient, so the networks cannot satisfy the loss by moving the cuts.",
+        "The index $k$ runs over the cut pairs drawn in one step, and $K$ is how many there are."
+      ],
+      "see": [
+        "background-quantile",
+        "trained-band",
+        "abcd-method"
+      ]
+    },
+    {
+      "key": "background-quantile",
+      "term": "Background quantile",
+      "category": "The ABCD method",
+      "short": "A cut placed so that a given fraction of background events lies below it; the 0.5 quantile is the background median of that score.",
+      "long": [
+        "Stating cuts as quantiles keeps them meaningful while the score distributions change during training. A range such as $[0.3,\\,0.8]^2$ means both cuts are drawn between the 0.3 and 0.8 background quantiles of their score."
+      ],
+      "see": [
+        "cut-pair",
+        "trained-band"
+      ]
+    },
+    {
+      "key": "trained-band",
+      "term": "Trained band",
+      "category": "The ABCD method",
+      "short": "The range of background quantiles the queen draws her cuts from during training. She is only expected to act on cuts inside it.",
+      "long": [
+        "Cuts outside the band, in particular the high-score tail next to the signal region, are held out. Whether closure carries into that tail is a separate question and is checked separately."
+      ],
+      "see": [
+        "background-quantile",
+        "cut-pair"
+      ]
+    },
+    {
+      "key": "hard-count",
+      "term": "Hard count",
+      "category": "Closure terms: ingredients",
+      "aka": [
+        "$N_X^{\\mathrm{hard}}$"
+      ],
+      "short": "The ordinary count of events in a region: each event is either in it or not, $N_X^{\\mathrm{hard}} = \\sum_i w_i\\,\\mathbb{1}[\\,i \\in X\\,]$.",
+      "long": [
+        "Hard counts give the real ABCD estimate, and they are what the BASELINE grader scores. The draw-fed forms also skip a cut pair whose hard counts in $A$ to $D$ are too small to grade.",
+        "A hard count is a step function of the scores, so its gradient is zero almost everywhere. A loss built from hard counts cannot train the networks; that is why training uses the [[soft-count]]."
+      ],
+      "see": [
+        "soft-count"
+      ]
+    },
+    {
+      "key": "soft-count",
+      "term": "Soft count",
+      "category": "Closure terms: ingredients",
+      "aka": [
+        "soft membership $m_X(i)$",
+        "$N_X$",
+        "$w_i$"
+      ],
+      "short": "A differentiable stand-in for the hard count: $N_X = \\sum_i w_i\\, m_X(i)$, where the soft membership $m_X(i)$ lies between 0 and 1 instead of being exactly 0 or 1.",
+      "long": [
+        "Each event's membership is built from a sigmoid of its distance to each cut, so an event close to a cut is shared between neighbouring regions and an event far from it belongs to one region. As the [[steepness]] grows, the soft count approaches the [[hard-count]].",
+        "Here $i$ runs over background events, $w_i$ is the event weight and $X$ is any one of the regions $A$, $B$, $C$, $D$. Each soft count also carries a variance, which feeds the [[noise-floor]].",
+        "Softening also shifts the noise level: in toy studies with independent scores, $z_k^2$ from soft counts averaged somewhat below one rather than exactly one. The pooled form [[tau-hat-squared]] measures its null by [[shuffle-null|permutation]] partly for this reason."
+      ],
+      "see": [
+        "hard-count",
+        "steepness",
+        "count-space",
+        "noise-floor"
+      ],
+      "refs": [
+        {
+          "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC",
+          "venue": "CMS Collaboration, arXiv:2506.08826",
+          "url": "https://arxiv.org/abs/2506.08826"
+        }
+      ]
+    },
+    {
+      "key": "steepness",
+      "term": "Steepness",
+      "category": "Closure terms: ingredients",
+      "aka": [
+        "$\\kappa$"
+      ],
+      "short": "How sharp the sigmoid in the soft membership is. A large steepness approaches a hard cut; a small one blurs the region edges.",
+      "long": [
+        "Too steep, and almost no events sit on the ramp, so the gradient is weak and noisy. Too gentle, and the soft counts no longer resemble the regions being graded. The right steepness depends on the [[count-space]] the cuts are applied in."
+      ],
+      "see": [
+        "soft-count",
+        "count-space"
+      ]
+    },
+    {
+      "key": "count-space",
+      "term": "Probabilities vs logits",
+      "category": "Closure terms: ingredients",
+      "inline": "probabilities or logits",
+      "aka": [
+        "probability space",
+        "logit space"
+      ],
+      "short": "Soft counts can be formed on a network's output after its final sigmoid (a probability in $[0, 1]$) or before it (a logit, anywhere on the real line).",
+      "long": [
+        "Background events crowd together at low probability, so cuts in the high-score region sit in a narrow strip. On logits the same region is spread out and a gentler steepness resolves it. [[qb]] counts on probabilities; [[qdr]] and [[tau-hat-squared]] count on logits."
+      ],
+      "see": [
+        "steepness",
+        "soft-count"
+      ]
+    },
+    {
+      "key": "closure-residual",
+      "term": "Closure residual",
+      "category": "Closure terms: ingredients",
+      "sort": "g",
+      "aka": [
+        "$g_k$"
+      ],
+      "short": "At cut pair $k$, how far region $A$ misses its ABCD prediction: $g_k = N_A - N_B N_C / N_D$.",
+      "long": [
+        "It is computed from [[soft-count|soft counts]] during training. Positive $g_k$ means the ABCD prediction is too low."
+      ],
+      "see": [
+        "closure",
+        "z-squared",
+        "noise-floor"
+      ]
+    },
+    {
+      "key": "abcd-prediction",
+      "term": "ABCD prediction",
+      "category": "Closure terms: ingredients",
+      "aka": [
+        "$\\tilde P_k$",
+        "$\\hat N_A$"
+      ],
+      "short": "The background the ABCD method expects in region $A$ at cut pair $k$: $\\tilde P_k = N_B N_C / N_D$.",
+      "long": [
+        "The tilde marks it as [[held-fixed]] when it is used to normalise the pooled form [[tau-hat-squared]]."
+      ],
+      "see": [
+        "abcd-method",
+        "w-normaliser"
+      ]
+    },
+    {
+      "key": "noise-floor",
+      "term": "Noise floor",
+      "category": "Closure terms: ingredients",
+      "sort": "noise floor",
+      "aka": [
+        "$\\tilde F_k$"
+      ],
+      "short": "$\\tilde F_k$: the variance of the residual $g_k$ that counting noise alone would produce, propagated from the variances of the four soft counts.",
+      "long": [
+        "It is obtained by first-order error propagation (the delta method) through $g_k = N_A - N_B N_C/N_D$. It is [[held-fixed]]: otherwise the optimiser could lower the penalty by inflating the variance instead of improving closure."
+      ],
+      "see": [
+        "closure-residual",
+        "z-squared",
+        "held-fixed"
+      ]
+    },
+    {
+      "key": "held-fixed",
+      "term": "Held fixed (detached)",
+      "category": "Closure terms: ingredients",
+      "inline": "held fixed",
+      "aka": [
+        "detached",
+        "stop-gradient",
+        "tilde"
+      ],
+      "short": "A quantity computed in the forward pass but treated as a constant when gradients are taken. A tilde marks it, as in $\\tilde F_k$ and $\\tilde P_k$.",
+      "long": [
+        "The cuts, the noise floor, the ABCD prediction used for normalising and the normaliser $W$ are all held fixed. Each closes a shortcut: without it the networks could shrink the penalty by moving cuts, inflating counts or inflating variances rather than by making the scores more independent."
+      ],
+      "see": [
+        "noise-floor",
+        "cut-pair",
+        "w-normaliser"
+      ]
+    },
+    {
+      "key": "z-squared",
+      "term": "$z_k^2$: closure in noise units",
+      "category": "Closure terms: ingredients",
+      "sort": "z squared",
+      "inline": "$z_k^2$",
+      "aka": [
+        "z-squared"
+      ],
+      "short": "The squared residual divided by its noise floor, $z_k^2 = g_k^2 / \\tilde F_k$. With hard counts and independent scores it averages about one.",
+      "long": [
+        "$z_k^2 \\approx 1$ means the miss at that cut pair is what counting noise alone gives; $z_k^2 \\gg 1$ means real dependence. Uniform class weights cancel in the ratio.",
+        "At a fixed fractional non-closure, $z_k^2$ grows with the number of events counted. That is why the hinge forms need their weight set per region and the pooled form does not."
+      ],
+      "see": [
+        "closure-residual",
+        "noise-floor",
+        "hinge",
+        "q-statistic"
+      ]
+    },
+    {
+      "key": "hinge",
+      "term": "Hinge",
+      "category": "Closure terms: ingredients",
+      "aka": [
+        "ReLU on $z_k^2 - 1$"
+      ],
+      "short": "$\\max(0,\\, z_k^2 - 1)$: zero while the residual is within its noise, and growing only with the excess above it.",
+      "long": [
+        "The hinge is what stops the queen from pushing the networks to fit statistical noise. When every drawn cut is already within noise it contributes exactly zero gradient.",
+        "[[qb]] and [[qdr]] apply one hinge per cut pair and average. [[tau-hat-squared]] applies a single hinge to the pooled excess."
+      ],
+      "see": [
+        "z-squared",
+        "qb",
+        "qdr",
+        "tau-hat-squared"
+      ]
+    },
+    {
+      "key": "shuffle-null",
+      "term": "Shuffle null",
+      "category": "Closure terms: ingredients",
+      "aka": [
+        "permutation null",
+        "$Q_{\\mathrm{null}}$"
+      ],
+      "short": "The behaviour expected with no dependence, measured by permuting one network's scores among the background events.",
+      "long": [
+        "A permutation keeps both score distributions, and therefore the cut positions, exactly as they are and removes only the dependence between the two scores. That makes it a better reference than an analytic one when soft counts, event weights or an irregular background shape break the textbook noise model.",
+        "The pooled form uses it in training as $Q_{\\mathrm{null}}$, the mean of $Q$ over a few shuffles of NN2. The grader uses it to judge held-out closure."
+      ],
+      "see": [
+        "q-statistic",
+        "tau-hat-squared",
+        "pull"
+      ]
+    },
+    {
+      "key": "dncn-qn",
+      "term": "DNCn_QN, the queen",
+      "category": "Closure terms: the queen's forms",
+      "inline": "the queen",
+      "aka": [
+        "the queen",
+        "$L_Q$"
+      ],
+      "short": "Debiased NonClosure under the null, Quantile-Normalized: the in-house family of loss terms that penalise ABCD non-closure only where it exceeds counting noise.",
+      "long": [
+        "Every form draws [[cut-pair|cut pairs]] at background quantiles inside the trained band, forms [[soft-count|soft counts]] in $A$ to $D$, computes $z_k^2$ for each pair and penalises only the part above noise. The forms differ in what they count and how they pool: [[qb]], [[qdr]] and [[tau-hat-squared]].",
+        "She enters the training loss as $\\beta\\,L_Q$, where $L_Q$ is whichever form the run uses, on top of DisCo:",
+        "$$L = \\mathrm{BCE}_1 + \\mathrm{BCE}_2 + \\alpha\\,\\mathrm{dCor}^2(s_1, s_2 \\mid \\mathrm{bkg}) + \\beta\\,L_Q$$"
+      ],
+      "see": [
+        "qb",
+        "qdr",
+        "tau-hat-squared",
+        "loss-weights"
+      ],
+      "refs": [
+        {
+          "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC",
+          "venue": "CMS Collaboration, arXiv:2506.08826",
+          "url": "https://arxiv.org/abs/2506.08826"
+        }
+      ]
+    },
+    {
+      "key": "qb",
+      "term": "QB",
+      "category": "Closure terms: the queen's forms",
+      "aka": [
+        "batch queen",
+        "$L_{\\mathrm{QB}}$"
+      ],
+      "short": "The queen's per-cut hinge, applied to a few cut pairs on each training batch, with soft counts on probabilities: $L_{\\mathrm{QB}} = \\frac{1}{K}\\sum_{k=1}^{K} \\max(0,\\, z_k^2 - 1)$.",
+      "long": [
+        "This is the form sealed as the β term in BASELINE. It reuses the events already in the batch, so it is cheap to add.",
+        "Where it fits: the working point is locked and the aim is less bias without stretching the score shapes. In the endcap studies it lowers overall dependence and the bias inside the trained band, but it does not even out closure from one cut to the next."
+      ],
+      "see": [
+        "qdr",
+        "tau-hat-squared",
+        "hinge",
+        "count-space"
+      ]
+    },
+    {
+      "key": "qdr",
+      "term": "QDR",
+      "category": "Closure terms: the queen's forms",
+      "aka": [
+        "queen on the draw",
+        "$L_{\\mathrm{QDR}}$"
+      ],
+      "short": "The same per-cut hinge as QB, fed different inputs: more cut pairs, drawn on a separate background-only draw each step, with soft counts on logits. $L_{\\mathrm{QDR}} = \\frac{1}{K}\\sum_{k=1}^{K} \\max(0,\\, z_k^2 - 1)$.",
+      "long": [
+        "The Q is the queen and the D is the [[background-draw]] she is fed. Moving to the draw gives every cut pair enough events in all four regions, including cuts nearer the tail.",
+        "Where it fits: the working point is not locked, cuts are scanned, several signal regions are used, or the analysis region sits in the tail. In the endcap studies it is the form that evens out closure across cuts; the price is that it stretches NN2's background logits and costs a little separation."
+      ],
+      "see": [
+        "qb",
+        "tau-hat-squared",
+        "background-draw"
+      ]
+    },
+    {
+      "key": "q-statistic",
+      "term": "$Q$, the pooled statistic",
+      "category": "Closure terms: the queen's forms",
+      "sort": "q",
+      "inline": "$Q$",
+      "aka": [
+        "$Q$",
+        "$Q_{\\mathrm{null}}$"
+      ],
+      "short": "$Q = \\sum_k z_k^2$, the per-cut statistic summed over the cut pairs drawn in one step.",
+      "long": [
+        "With no dependence $Q$ would sit at its null value, measured each step as $Q_{\\mathrm{null}}$ by the [[shuffle-null]]. An excess of $Q$ over $Q_{\\mathrm{null}}$ is spread across cuts that counting noise cannot explain.",
+        "It is the analogue of Cochran's $Q$ in meta-analysis, with cut pairs in the role of studies, measured from zero non-closure rather than from a pooled mean."
+      ],
+      "see": [
+        "tau-hat-squared",
+        "shuffle-null",
+        "z-squared"
+      ],
+      "refs": [
+        {
+          "title": "Meta-analysis in clinical trials (DerSimonian and Laird)",
+          "venue": "Controlled Clinical Trials 7, 177 (1986)",
+          "url": "https://doi.org/10.1016/0197-2456(86)90046-2"
+        }
+      ]
+    },
+    {
+      "key": "tau-hat-squared",
+      "term": "$\\hat\\tau^2$: excess non-closure variance",
+      "category": "Closure terms: the queen's forms",
+      "sort": "tau hat squared",
+      "inline": "$\\hat\\tau^2$",
+      "aka": [
+        "tau-hat-squared",
+        "$L_{\\tau^2}$",
+        "pooled queen"
+      ],
+      "short": "The pooled form: one hinge on the excess of $Q$ over its shuffle null, normalised to a fraction, $\\hat\\tau^2 = \\max(0,\\, Q - Q_{\\mathrm{null}})/W$.",
+      "long": [
+        "It treats the fractional non-closure at each cut as a draw: counting noise plus a real spread $\\tau^2$. That spread is the quantity an analysis carries as its closure systematic. Under that model $\\hat\\tau^2$ is a moment estimator of $\\tau^2$ of the DerSimonian–Laird type, truncated at zero.",
+        "Because one hinge acts on the pooled excess, a cut slightly over noise and one slightly under can cancel; the term fires only when the set of cuts shows more spread than noise allows. Dividing by [[w-normaliser|$W$]] makes it a fraction that does not grow with the number of events, so its weight carries between batch, draw and region sizes.",
+        "Proposed as the queen's successor; it uses the same inputs as [[qdr]]. At a single cut with an analytic null it reduces to the per-cut hinge times the fractional noise floor."
+      ],
+      "see": [
+        "q-statistic",
+        "w-normaliser",
+        "shuffle-null",
+        "qdr"
+      ],
+      "refs": [
+        {
+          "title": "Meta-analysis in clinical trials (DerSimonian and Laird)",
+          "venue": "Controlled Clinical Trials 7, 177 (1986)",
+          "url": "https://doi.org/10.1016/0197-2456(86)90046-2"
+        }
+      ]
+    },
+    {
+      "key": "w-normaliser",
+      "term": "$W$, the normaliser",
+      "category": "Closure terms: the queen's forms",
+      "sort": "w",
+      "inline": "$W$",
+      "aka": [
+        "$W$"
+      ],
+      "short": "$W = \\sum_k \\tilde P_k^2 / \\tilde F_k$: the summed inverse variance of the fractional residual $g_k / \\tilde P_k$, held fixed.",
+      "long": [
+        "Each term $\\tilde P_k^2/\\tilde F_k$ is one over the counting variance of the fractional non-closure at cut $k$. $W$ grows in proportion to the number of events, and so does the expected excess of $Q$ for a given real spread. Dividing by $W$ cancels that growth, which is what makes [[tau-hat-squared]] scale-free.",
+        "It is the denominator of the DerSimonian–Laird estimator with an empirical null in place of the degrees of freedom."
+      ],
+      "see": [
+        "tau-hat-squared",
+        "abcd-prediction",
+        "noise-floor"
+      ],
+      "refs": [
+        {
+          "title": "Meta-analysis in clinical trials (DerSimonian and Laird)",
+          "venue": "Controlled Clinical Trials 7, 177 (1986)",
+          "url": "https://doi.org/10.1016/0197-2456(86)90046-2"
+        }
+      ]
+    },
+    {
+      "key": "dnc-flr",
+      "term": "DNC_FLR",
+      "category": "Closure terms: the queen's forms",
+      "aka": [
+        "tail term",
+        "γ term"
+      ],
+      "short": "The unhinged relative of the queen: the mean of $z_k^2 - 1$ over cuts, with no hinge, so it keeps closure pressure on at all times.",
+      "long": [
+        "It is aimed at deeper cuts, toward region $A$, than the queen reaches. It is the BASELINE sweep's γ term and is experimental. Without the hinge and the pooling, $\\hat\\tau^2$'s statistic becomes DNC_FLR's."
+      ],
+      "see": [
+        "hinge",
+        "tau-hat-squared"
+      ],
+      "projects": [
+        "baseline"
+      ]
+    },
+    {
+      "key": "nn1-nn2",
+      "term": "NN1 and NN2",
+      "category": "Training",
+      "inline": "NN1 and NN2",
+      "aka": [
+        "$s_1$, $s_2$",
+        "two-network ABCD"
+      ],
+      "short": "The two networks trained together. Their output scores $s_1$ and $s_2$ are the two axes of the ABCD plane.",
+      "long": [
+        "Each is trained to separate signal from background. The decorrelation and closure terms then ask that their scores be independent on background, so the ABCD estimate holds."
+      ],
+      "see": [
+        "abcd-method",
+        "disco",
+        "bce"
+      ]
+    },
+    {
+      "key": "bce",
+      "term": "BCE",
+      "category": "Training",
+      "aka": [
+        "binary cross-entropy",
+        "$\\mathrm{BCE}_1$, $\\mathrm{BCE}_2$"
+      ],
+      "short": "Binary cross-entropy: the standard classification loss for signal versus background, one term per network ($\\mathrm{BCE}_1$, $\\mathrm{BCE}_2$).",
+      "see": [
+        "nn1-nn2",
+        "loss-weights"
+      ]
+    },
+    {
+      "key": "disco",
+      "term": "DisCo",
+      "category": "Training",
+      "aka": [
+        "distance correlation",
+        "double DisCo",
+        "$\\mathrm{dCor}^2$"
+      ],
+      "short": "Distance-correlation decorrelation: a penalty $\\mathrm{dCor}^2(s_1, s_2 \\mid \\mathrm{bkg})$ on the squared distance correlation of the two scores, computed on background events only.",
+      "long": [
+        "Distance correlation is zero if and only if the two variables are independent, so the penalty pushes towards independence everywhere in the plane, with no cuts, no sign and no noise floor. With two networks this is double DisCo.",
+        "The queen is run on top of DisCo, not instead of it: DisCo gives the reach across the plane, and the queen targets closure itself, cut by cut."
+      ],
+      "see": [
+        "loss-weights",
+        "dncn-qn"
+      ],
+      "refs": [
+        {
+          "title": "DisCo Fever: Robust Networks Through Distance Correlation",
+          "venue": "Phys. Rev. Lett. 125, 122001 (2020)",
+          "url": "https://arxiv.org/abs/2001.05310"
+        },
+        {
+          "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+          "venue": "Phys. Rev. D 103, 035021 (2021)",
+          "url": "https://arxiv.org/abs/2007.14400"
+        }
+      ]
+    },
+    {
+      "key": "loss-weights",
+      "term": "Loss weights α, β, γ",
+      "category": "Training",
+      "sort": "loss weights",
+      "inline": "loss weights",
+      "aka": [
+        "α",
+        "β",
+        "γ"
+      ],
+      "short": "The weights of the extra terms in the training loss: α for DisCo, β for the queen, γ for DNC_FLR.",
+      "long": [
+        "$$L = \\mathrm{BCE}_1 + \\mathrm{BCE}_2 + \\alpha\\,\\mathrm{dCor}^2 + \\beta\\,L_Q + \\gamma\\,L_{\\mathrm{FLR}}$$",
+        "For the hinge forms, β has to be set per region, because $z_k^2$ grows with the number of events counted and the regions count different numbers of events. [[tau-hat-squared]] is built so that its β carries over."
+      ],
+      "see": [
+        "disco",
+        "dncn-qn",
+        "dnc-flr"
+      ]
+    },
+    {
+      "key": "epoch-selection",
+      "term": "Epoch selection",
+      "category": "Training",
+      "short": "The checkpoint kept from a run is chosen on $\\mathrm{BCE}_1 + \\mathrm{BCE}_2 + \\alpha\\,\\mathrm{dCor}^2$ alone. A closure term never picks its own epoch.",
+      "long": [
+        "If the closure term chose the epoch, it could pick a checkpoint that happens to close well on its own training cuts, and the closure gain would be partly selection."
+      ],
+      "see": [
+        "loss-weights"
+      ]
+    },
+    {
+      "key": "background-draw",
+      "term": "Background draw",
+      "category": "Training",
+      "short": "A sample of background-only events drawn at every training step, separate from the training batch, on which QDR and $\\hat\\tau^2$ form their soft counts.",
+      "long": [
+        "A training batch has too few events near the high-score corner to fill region $A$ at many cuts. A larger, background-only draw gives every cut pair usable counts. In a region with little background the draw can exceed what one training fold holds, which changes how strong a given β is."
+      ],
+      "see": [
+        "qdr",
+        "tau-hat-squared"
+      ]
+    },
+    {
+      "key": "pull",
+      "term": "Pull",
+      "category": "Grading and context",
+      "short": "How far the ABCD estimate misses region $A$ at one cut pair, in units of its counting noise. Under perfect closure, pulls over many random cut pairs have mean 0 and width 1.",
+      "long": [
+        "Plotted over many random cut pairs across the plane, the mean of the pulls measures bias, and their width measures how much closure varies from cut to cut. The [[shuffle-null]] gives the reference curve with mean 0 and width 1."
+      ],
+      "see": [
+        "shuffle-null",
+        "z-squared"
+      ]
+    },
+    {
+      "key": "barrel-endcap",
+      "term": "Barrel and endcap",
+      "category": "Grading and context",
+      "inline": "barrel and endcap",
+      "aka": [
+        "barrel",
+        "endcap"
+      ],
+      "short": "The two detector regions the analysis is split into. Models are trained and graded in each separately.",
+      "long": [
+        "The two regions hold very different amounts of background, so a setting that works in one need not transfer. With little background, closure is dominated by counting noise, and a loss term has less real spread to remove."
+      ],
+      "see": [
+        "loss-weights",
+        "background-draw"
+      ]
+    },
+    {
+      "key": "htmiss",
+      "term": "$H_T^{\\mathrm{miss}}$",
+      "category": "Grading and context",
+      "sort": "ht miss",
+      "aka": [
+        "HTmiss",
+        "missing $H_T$"
+      ],
+      "short": "The magnitude of the negative vector sum of the jets' transverse momenta: missing transverse momentum computed from jets.",
+      "long": [
+        "A shift in its distribution changes the mix of background the networks see. The queen does not survive such a shift: she works on a background mix like the one she was trained on."
+      ]
+    }
+  ]
+}

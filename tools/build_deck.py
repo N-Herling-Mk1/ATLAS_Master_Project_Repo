@@ -17,15 +17,21 @@ Normalization never stretches or crops artwork: the logo is trimmed to its
 visible content, given a uniform margin, and centred on a pure-black 16:10
 canvas. All sources are on #000, so the padding is invisible.
 
+The glossary lives in glossary/glossary.json (one list of terms for the whole site).
+Project text links a term with [[key]] or [[key|shown text]]; math is $...$ (KaTeX).
+
 Usage:
-    python tools/build_deck.py            # build (fails on errors)
-    python tools/build_deck.py --check    # validate + leak-scan only, write nothing
+    python tools/build_deck.py                  # build (fails on errors)
+    python tools/build_deck.py --check          # validate + leak-scan only, write nothing
+    python tools/build_deck.py --revise dncn-qn # stamp today's date as that project's 'revised', then build
+    python tools/build_deck.py --revise glossary
 
 Requires: Pillow
 """
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import re
 import sys
@@ -37,6 +43,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parent.parent
 PROJ = ROOT / "projects"
 REGISTRY = ROOT / "assets" / "js" / "registry.js"
+GLOSSARY = ROOT / "glossary" / "glossary.json"
 
 HERO = (1600, 1000)
 THUMB = (480, 300)
@@ -49,6 +56,9 @@ TL_STATES = {"done", "active", "next"}
 OPEN_KINDS = {"question", "lesson", "gap"}
 LIT_KEYS = ("category", "authors", "year", "title", "venue", "url")
 DATE_RE = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
+DAY_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")          # 'revised' must be a full date
+TERM_RE = re.compile(r"\[\[([a-z0-9-]+)(?:\|([^\]]+))?\]\]")  # [[key]] or [[key|shown text]]
+KEY_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 CODENAME_RE = re.compile(r"^[A-Z0-9][A-Z0-9 -]{0,23}$")   # sub-project names: caps, <= 24 chars
 SYNOPSIS_WORDS = 22                                       # one line in the sub-project strip
 
@@ -114,6 +124,13 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
         errs.append(f"{pid}: private_repo must be https://github.com/<owner>/<repo>")
     if p.get("presentations") and not str(p["presentations"]).startswith("https://"):
         errs.append(f"{pid}: presentations must be an https URL")
+    rv = p.get("revised")
+    if not rv:
+        warns.append(f"{pid}: no 'revised' date (run --revise {pid} after editing)")
+    elif not DAY_RE.match(str(rv)):
+        errs.append(f"{pid}: revised '{rv}' must be YYYY-MM-DD")
+    elif str(rv) > dt.date.today().isoformat():
+        errs.append(f"{pid}: revised '{rv}' is in the future")
     intro = p.get("intro", {})
     for k in INTRO_KEYS:
         s = intro.get(k, "").strip()
@@ -205,10 +222,10 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
     return errs, warns
 
 
-def leak_scan(p: dict) -> list[str]:
-    # Everything a visitor can read. Literature titles/venues are scanned too
+def project_text(p: dict) -> str:
+    # Everything a visitor can read. Literature titles/venues are included
     # (an internal note masquerading as a reference is exactly the risk); URLs are not.
-    text = " ".join(
+    return " ".join(
         [p.get("name", ""), p.get("expansion", ""), p.get("tagline", ""), (p.get("caveat") or {}).get("text", "")]
         + [f"{c.get('codename', '')} {c.get('name', '')} {c.get('subtitle', '')} {c.get('synopsis', '')} {c.get('summary', '')} "
            + " ".join(f"{it.get('label', '')} {it.get('detail', '')}" for it in c.get("items", []))
@@ -221,11 +238,117 @@ def leak_scan(p: dict) -> list[str]:
         + [t.get("label", "") for t in p.get("timeline", [])]
         + [f"{r.get('title', '')} {r.get('venue', '')} {r.get('why', '')}" for r in p.get("literature", [])]
     )
+
+
+def leak_scan(p: dict) -> list[str]:
+    text = project_text(p)
     hits = []
     for pat, why in LEAK_PATTERNS:
         for m in re.finditer(pat, text):
             hits.append(f"{p['id']}: '{m.group(0)}'  -> {why}")
     return hits
+
+
+# --- glossary ----------------------------------------------------------------
+GLOSS_KEYS = ("key", "term", "category", "short")
+
+
+def load_glossary() -> dict:
+    if not GLOSSARY.exists():
+        return {"revised": "", "terms": []}
+    return json.loads(GLOSSARY.read_text(encoding="utf-8"))
+
+
+def gloss_text(t: dict) -> str:
+    refs = " ".join(f"{r.get('title', '')} {r.get('venue', '')}" for r in t.get("refs", []))
+    return " ".join([t.get("term", ""), " ".join(t.get("aka", [])), t.get("category", ""), t.get("short", ""),
+                     " ".join(t.get("long", [])), refs])
+
+
+def validate_glossary(g: dict, projs: list[dict]) -> tuple[list[str], list[str]]:
+    errs, warns = [], []
+    terms = g.get("terms", [])
+    rv = g.get("revised", "")
+    if terms and not DAY_RE.match(str(rv)):
+        errs.append("glossary: 'revised' must be YYYY-MM-DD (run --revise glossary)")
+    keys = [t.get("key") for t in terms]
+    if len(keys) != len(set(keys)):
+        errs.append("glossary: duplicate keys")
+    known = set(keys)
+    pids = {p["id"] for p in projs}
+    for i, t in enumerate(terms, 1):
+        k = t.get("key", f"#{i}")
+        for f in GLOSS_KEYS:
+            if not str(t.get(f, "")).strip():
+                errs.append(f"glossary {k}: missing '{f}'")
+        if not KEY_RE.match(str(t.get("key", ""))):
+            errs.append(f"glossary {k}: key must be lowercase words joined by '-'")
+        if "$" in t.get("short", "") and len(t["short"]) > 400:
+            warns.append(f"glossary {k}: short definition is long; move detail into 'long'")
+        if not isinstance(t.get("long", []), list):
+            errs.append(f"glossary {k}: 'long' must be a list of paragraphs")
+        for s in t.get("see", []):
+            if s not in known:
+                errs.append(f"glossary {k}: see-also '{s}' is not a glossary key")
+        for pid in t.get("projects", []):
+            if pid not in pids:
+                errs.append(f"glossary {k}: project '{pid}' does not exist")
+        for r in t.get("refs", []):
+            if not str(r.get("url", "")).startswith("https://") or not r.get("title"):
+                errs.append(f"glossary {k}: each ref needs a title and an https url")
+        body = " ".join([t.get("short", "")] + t.get("long", []))
+        for m in TERM_RE.finditer(body):
+            if m.group(1) not in known:
+                errs.append(f"glossary {k}: link [[{m.group(1)}]] is not a glossary key")
+        if body.count("$") % 2:
+            errs.append(f"glossary {k}: unbalanced $ (math delimiters)")
+    # every [[key]] in project text must resolve
+    for p in projs:
+        for m in TERM_RE.finditer(project_text(p)):
+            if m.group(1) not in known:
+                errs.append(f"{p['id']}: term link [[{m.group(1)}]] is not a glossary key")
+        if project_text(p).count("$") % 2:
+            errs.append(f"{p['id']}: unbalanced $ (math delimiters)")
+    return errs, warns
+
+
+def gloss_scan(g: dict) -> list[str]:
+    hits = []
+    for t in g.get("terms", []):
+        text = gloss_text(t)
+        for pat, why in LEAK_PATTERNS:
+            for m in re.finditer(pat, text):
+                hits.append(f"glossary {t.get('key')}: '{m.group(0)}'  -> {why}")
+    return hits
+
+
+def public_glossary(g: dict, projs: list[dict]) -> dict:
+    """Terms sorted by name, each with 'used_in': explicit projects plus every project whose text links it."""
+    terms = []
+    for t in sorted(g.get("terms", []), key=lambda t: (t.get("sort") or t["term"]).lower()):
+        used = list(t.get("projects", []))
+        for p in projs:
+            if p["id"] not in used and re.search(r"\[\[" + re.escape(t["key"]) + r"(\||\]\])", project_text(p)):
+                used.append(p["id"])
+        terms.append(dict(t, used_in=sorted(used, key=lambda pid: next(q.get("order", 999) for q in projs if q["id"] == pid))))
+    cats = []
+    for t in g.get("terms", []):                  # categories in the order they first appear in glossary.json
+        if t.get("category") not in cats:
+            cats.append(t.get("category"))
+    return {"revised": g.get("revised", ""), "categories": cats, "terms": terms}
+
+
+def revise(target: str) -> int:
+    today = dt.date.today().isoformat()
+    f = GLOSSARY if target == "glossary" else PROJ / target / "project.json"
+    if not f.exists():
+        print(f"  ! no such project or glossary: {target}")
+        return 1
+    data = json.loads(f.read_text(encoding="utf-8"))
+    data["revised"] = today
+    f.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"  {target}: revised -> {today}")
+    return 0
 
 
 def normalize(src: Path, size: tuple[int, int]) -> Image.Image:
@@ -249,15 +372,22 @@ def stamp_assets() -> None:
     index.html breaks the layout. A changed file gets a new URL, so it is always refetched.
     """
     import hashlib
-    page = ROOT / "index.html"
-    html = page.read_text(encoding="utf-8")
-    for rel in ("assets/css/deck.css", "assets/js/deck.js", "assets/js/registry.js"):
-        h = hashlib.sha1((ROOT / rel).read_bytes()).hexdigest()[:10]
-        html, n = re.subn(re.escape(rel) + r"(\?v=[\w-]*)?", f"{rel}?v={h}", html)
-        if not n:
-            print(f"  ! {rel} not referenced in index.html")
-    page.write_text(html, encoding="utf-8")
-    print("  stamped asset versions in index.html")
+    assets = {"index.html": ("assets/css/deck.css", "assets/js/deck.js", "assets/js/registry.js"),
+              "glossary.html": ("assets/css/deck.css", "assets/css/glossary.css", "assets/js/registry.js",
+                                "assets/js/glossary.js")}
+    for name, rels in assets.items():
+        page = ROOT / name
+        if not page.exists():
+            print(f"  ! {name} missing")
+            continue
+        html = page.read_text(encoding="utf-8")
+        for rel in rels:
+            h = hashlib.sha1((ROOT / rel).read_bytes()).hexdigest()[:10]
+            html, n = re.subn(re.escape(rel) + r"(\?v=[\w-]*)?", f"{rel}?v={h}", html)
+            if not n:
+                print(f"  ! {rel} not referenced in {name}")
+        page.write_text(html, encoding="utf-8")
+    print("  stamped asset versions in index.html and glossary.html")
 
 
 def public_record(p: dict) -> dict:
@@ -271,12 +401,16 @@ def public_record(p: dict) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--check", action="store_true", help="validate + leak-scan only")
+    ap.add_argument("--revise", metavar="ID", help="set 'revised' to today for project ID (or 'glossary'), then build")
     args = ap.parse_args()
+    if args.revise and revise(args.revise):
+        return 1
 
     t0 = time.time()
     print("== research-deck build ==")
     projs = load_projects()
-    print(f"  found {len(projs)} projects")
+    gloss = load_glossary()
+    print(f"  found {len(projs)} projects, {len(gloss.get('terms', []))} glossary terms")
 
     print("[1/3] validate")
     errs, warns = [], []
@@ -284,6 +418,9 @@ def main() -> int:
         e, w = validate(p)
         errs += e
         warns += w
+    e, w = validate_glossary(gloss, projs)
+    errs += e
+    warns += w
     for w in warns:
         print(f"  warn  {w}")
     for e in errs:
@@ -291,7 +428,7 @@ def main() -> int:
     print(f"  {len(errs)} errors, {len(warns)} warnings")
 
     print("[2/3] leak scan")
-    leaks = [h for p in projs for h in leak_scan(p)]
+    leaks = [h for p in projs for h in leak_scan(p)] + gloss_scan(gloss)
     for h in leaks:
         print(f"  LEAK  {h}")
     print(f"  {len(leaks)} hits")
@@ -314,11 +451,18 @@ def main() -> int:
 
     REGISTRY.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps([public_record(p) for p in projs], indent=1, ensure_ascii=False)
+    pub_gloss = public_glossary(gloss, projs)
+    # site-wide 'last revised' = newest of any project's or the glossary's revised date
+    dates = [str(p["revised"]) for p in projs if p.get("revised")] + ([pub_gloss["revised"]] if pub_gloss["revised"] else [])
+    meta = {"revised": max(dates) if dates else ""}
     REGISTRY.write_text(
-        "// GENERATED by tools/build_deck.py -- edit projects/<id>/project.json instead.\n"
-        f"window.DECK_PROJECTS = {payload};\n",
+        "// GENERATED by tools/build_deck.py -- edit projects/<id>/project.json or glossary/glossary.json instead.\n"
+        f"window.DECK_META = {json.dumps(meta)};\n"
+        f"window.DECK_PROJECTS = {payload};\n"
+        f"window.DECK_GLOSSARY = {json.dumps(pub_gloss, indent=1, ensure_ascii=False)};\n",
         encoding="utf-8",
     )
+    print(f"  site revised {meta['revised'] or '(none)'}  |  glossary {len(pub_gloss['terms'])} terms")
     stamp_assets()
     kb = sum((p["_dir"] / f).stat().st_size for p in projs for f in ("logo.webp", "thumb.webp")) / 1024
     print(f"  wrote {REGISTRY.relative_to(ROOT)}  |  images {kb:.0f} KB total")

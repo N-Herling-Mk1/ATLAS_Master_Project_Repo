@@ -7,6 +7,7 @@
   "accent": "#1ff0b0",
   "accent2": "#ff2a8a",
   "code": "internal",
+  "revised": "2026-10-16",
   "intro": {
     "problem": "A two-network background estimate [@abcdisco2021] needs its input features split between the networks, and that split is usually made by hand even though features interact and the choice directly decides how well the estimate closes.",
     "value": "A principled, data-driven partition would make the background estimate more defensible and show which features actually drive closure, extending distance-correlation feature selection [@das2024] from one network to the assignment between two.",

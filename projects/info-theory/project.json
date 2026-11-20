@@ -7,6 +7,7 @@
   "accent": "#ff2a2a",
   "accent2": "#e8e8e8",
   "code": "internal",
+  "revised": "2026-10-16",
   "intro": {
     "problem": "Entropy and mutual information are used loosely in physics machine learning, and defining them meaningfully for mixed continuous and discrete detector features, or for a network's latent space, is not straightforward.",
     "value": "Working definitions would give principled tools for feature selection and redundancy, a way to compare named and latent feature spaces, and a common footing for the tokenization and maximum-entropy lines of work.",

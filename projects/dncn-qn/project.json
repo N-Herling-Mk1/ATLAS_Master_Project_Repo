@@ -8,12 +8,17 @@
   "accent2": "#ffc21f",
   "code": "internal",
   "presentations": "https://n-herling-mk1.github.io/ATLAS_presentations_DNCn_QN/",
-  "tagline": "The queen: an in-house ABCD closure term that only pushes where the counts can see",
+  "revised": "2026-11-20",
+  "tagline": "The queen: an in-house ABCD closure term that only pushes where the counts can see, now in three forms",
+  "caveat": {
+    "date": "2026-11-20",
+    "text": "Internal, exploratory studies. Nothing on this page is an ATLAS result; results are given in words, and the numbers stay in the internal record."
+  },
   "intro": {
     "problem": "An ABCD background estimate holds only if the two network scores are independent on background. Decorrelation penalties shrink dependence everywhere [@disco2020][@kasieczka2021], including where the counts cannot resolve it, and a term that drives non-closure to zero can be met by fitting statistical noise or by emptying the signal region.",
     "value": "Penalizing non-closure in units of its own counting noise targets the quantity the estimate relies on, closure in the regions used [@cms2025tec], and stops pushing once the residual is within noise. The classifiers stay free wherever closure already holds, so separation is spent only where it buys closure.",
-    "approach": "Each training step draws cut pairs at background quantiles inside the trained band, forms soft region counts and their propagated variance, and penalizes the squared residual above one unit of noise. The proposed mk2 treats non-closure across many cuts as a random variable, measures its null by permutation, and penalizes only the pooled excess.",
-    "goals": "A sealed, hash-pinned closure term with its own unit tests, run as the β axis of the BASELINE sweep in both regions; a pre-registered test deciding whether mk2 replaces it; and a clear record of which dependence the queen removes and which she only relocates."
+    "approach": "Each training step draws [[cut-pair|cut pairs]] at background quantiles inside the [[trained-band]], forms [[soft-count|soft region counts]] and their propagated variance, and penalizes closure only above one unit of counting noise. Three forms differ in what they count and how they pool: [[qb]], [[qdr]] and the pooled [[tau-hat-squared|$\\hat\\tau^2$]].",
+    "goals": "Sealed, hash-pinned closure terms with their own unit tests, run as the β axis of the BASELINE sweep in both regions; a pre-registered record of where each form should work; and a clear account of which dependence the queen removes and which she only relocates."
   },
   "questions": [
     "Does a hinged, noise-scaled closure term reach held-out closure that matches or beats decorrelation alone, at a smaller cost in separation?",
@@ -22,66 +27,114 @@
   ],
   "components": [
     {
-      "name": "The hinged term",
-      "subtitle": "DNCn_QN · β in BASELINE · sealed",
+      "name": "The per-cut statistic",
+      "subtitle": "Shared by every form",
       "state": "done",
-      "summary": "Enforce ABCD closure directly, but only where the data can resolve non-closure, so the network is never pushed to fit statistical noise. It acts on cuts inside the trained band and is taken byte for byte from the hash-sealed code genealogy.",
+      "summary": "Enforce ABCD closure directly, but only where the data can resolve [[closure|non-closure]], so the networks are never pushed to fit statistical noise. Every form builds the same per-cut quantity before pooling it.",
       "items": [
         {
           "label": "Cuts",
-          "detail": "Each step draws cut pairs uniformly in background quantiles on both axes; the boundaries are background quantiles of the current scores, held fixed for the gradient"
+          "detail": "Each step draws [[cut-pair|cut pairs]] at [[background-quantile|background quantiles]] on both scores, inside the [[trained-band]]; the boundaries are [[held-fixed|held fixed]] for the gradient and never learned"
         },
         {
           "label": "Soft counts",
-          "detail": "Each background event joins regions A–D through a steep sigmoid on its probabilities, giving weighted counts N_A…N_D and their variances V_A…V_D"
+          "detail": "Each background event joins regions $A$ to $D$ through a sigmoid of its distance to each cut: $N_X = \\sum_i w_i\\, m_X(i)$, with $m_X(i)$ between 0 and 1. These are [[soft-count|soft counts]]; grading uses [[hard-count|hard counts]]"
         },
         {
           "label": "Residual",
-          "detail": "g = N_A − N_B·N_C/N_D: how far region A misses its ABCD prediction"
+          "detail": "$g_k = N_A - N_B N_C / N_D$: how far region $A$ misses its [[abcd-prediction]]"
         },
         {
           "label": "Noise floor",
-          "detail": "F, the propagated variance of g from the four region variances, held fixed for the gradient"
+          "detail": "$\\tilde F_k$, the [[noise-floor|variance of $g_k$]] propagated from the four soft counts, held fixed for the gradient"
         },
         {
           "label": "Statistic",
-          "detail": "z² = g²/F, the residual in units of its own noise; uniform class weights cancel in it"
+          "detail": "[[z-squared|$z_k^2 = g_k^2 / \\tilde F_k$]], the residual in units of its own noise; $z_k^2 \\approx 1$ is counting noise alone"
         },
         {
-          "label": "Loss",
-          "detail": "The mean over cuts of max(0, z² − 1): zero while the residual is within noise, rising only above it"
-        },
-        {
-          "label": "Checks",
-          "detail": "Matches the reference implementation in loss and gradient on real background scores; when decorrelation already holds every drawn cut within noise, the hinge gives exactly zero gradient"
+          "label": "Hinge",
+          "detail": "The [[hinge]] $\\max(0,\\, z_k^2 - 1)$: zero while the residual is within noise, rising only above it"
         }
       ]
     },
     {
-      "name": "mk2: non-closure as a random variable",
-      "subtitle": "Proposed successor · pre-registered against the hinged term",
+      "name": "QB: the hinge on the training batch",
+      "subtitle": "Sealed in BASELINE as the β term",
+      "state": "done",
+      "summary": "The original queen: the per-cut hinge averaged over a few cut pairs drawn on each training batch, with soft counts on [[count-space|probabilities]]. It is taken byte for byte from the hash-sealed code genealogy.",
+      "items": [
+        {
+          "label": "Loss",
+          "detail": "$L_{\\mathrm{QB}} = \\frac{1}{K}\\sum_{k=1}^{K} \\max(0,\\, z_k^2 - 1)$ over the cut pairs of one training batch"
+        },
+        {
+          "label": "Checks",
+          "detail": "Matches the reference implementation in loss and gradient on real background scores; when decorrelation already holds every drawn cut within noise, the hinge gives exactly zero gradient"
+        },
+        {
+          "label": "Where it fits",
+          "detail": "The working point is locked, and the aim is less bias without stretching the score shapes"
+        },
+        {
+          "label": "Limit",
+          "detail": "It lowers the bias but does not even out closure from one cut to the next"
+        }
+      ]
+    },
+    {
+      "name": "QDR: the hinge on a background draw",
+      "subtitle": "Same hinge, new inputs",
       "state": "active",
-      "summary": "A point target for closure can be met in unphysical ways: cuts that empty the signal region, or closure tighter than the counts can resolve. mk2 treats the fractional non-closure at each cut as a draw with counting noise plus a real excess, the quantity an analysis carries as its closure systematic, and penalizes only the spread across many cuts that exceeds counting noise.",
+      "summary": "The same per-cut hinge as QB, fed a separate [[background-draw]] every step instead of the training batch, with more cut pairs and soft counts on [[count-space|logits]]. The draw gives every cut pair usable counts in all four regions.",
+      "items": [
+        {
+          "label": "Loss",
+          "detail": "$L_{\\mathrm{QDR}} = \\frac{1}{K}\\sum_{k=1}^{K} \\max(0,\\, z_k^2 - 1)$ over the cut pairs of one background draw"
+        },
+        {
+          "label": "Name",
+          "detail": "Q for the queen, D for the draw she is fed"
+        },
+        {
+          "label": "Where it fits",
+          "detail": "The working point is not locked: cuts are scanned, several signal regions are used, or the analysis region sits in the tail"
+        },
+        {
+          "label": "Cost",
+          "detail": "It stretches NN2's background logits and gives up a little separation"
+        }
+      ]
+    },
+    {
+      "name": "τ̂²: non-closure as a random variable",
+      "subtitle": "Proposed successor · pooled excess over a measured null",
+      "state": "active",
+      "summary": "A point target for closure can be met in unphysical ways: cuts that empty the signal region, or closure tighter than the counts can resolve. [[tau-hat-squared|$\\hat\\tau^2$]] treats the fractional non-closure at each cut as a draw with counting noise plus a real spread, the quantity an analysis carries as its closure systematic, and penalizes only the spread across many cuts that exceeds counting noise.",
       "items": [
         {
           "label": "Statistic",
-          "detail": "The same per-cut z² as the hinged term, summed over many cut pairs"
+          "detail": "The same per-cut $z_k^2$, summed over the cut pairs: [[q-statistic|$Q = \\sum_k z_k^2$]]"
         },
         {
           "label": "Null",
-          "detail": "The expected sum without dependence is measured each step by permuting one network's scores among background events; this keeps both score distributions and the cut positions and removes only the dependence"
+          "detail": "[[shuffle-null|$Q_{\\mathrm{null}}$]], measured each step by permuting NN2's scores among background events; this keeps both score distributions and the cut positions and removes only the dependence"
         },
         {
           "label": "Loss",
-          "detail": "One hinge on the pooled excess over the null rather than one per cut, normalized so the term is a fraction"
+          "detail": "$\\hat\\tau^2 = \\max(0,\\, Q - Q_{\\mathrm{null}}) / W$: one hinge on the pooled excess, with [[w-normaliser|$W = \\sum_k \\tilde P_k^2 / \\tilde F_k$]] making it a fraction"
         },
         {
           "label": "Scale",
-          "detail": "Because the excess is a fraction, the term does not grow with the number of events it sees and its weight needs no rescaling between batch, draw or region sizes"
+          "detail": "Because the excess is a fraction, the term does not grow with the number of events it sees, and its weight needs no rescaling between batch, draw or region sizes"
+        },
+        {
+          "label": "Inputs",
+          "detail": "The same background draw, logit counts and cut pairs as QDR, so the two differ only in how they pool"
         },
         {
           "label": "Status",
-          "detail": "Test sweeps run in the endcap; results are being compiled before the pre-registered comparison decides whether mk2 takes the β slot"
+          "detail": "Confirmed on fresh seeds beside QDR; on closure the two are not yet told apart"
         }
       ]
     },
@@ -89,17 +142,39 @@
       "name": "One family of closure terms",
       "subtitle": "How the in-house terms relate",
       "state": "done",
-      "summary": "At a single cut with an analytic null, mk2 reduces to the hinged term times the fractional noise floor; without the hinge and pooling it becomes the unhinged tail term DNC_FLR. All three are read as one model of closure, so each sweep result says something about the others.",
+      "summary": "At a single cut with an analytic null, $\\hat\\tau^2$ reduces to the per-cut hinge times the fractional noise floor; without the hinge and pooling it becomes the unhinged tail term [[dnc-flr]]. All of them are read as one model of closure, so each sweep result says something about the others.",
       "items": [
         {
           "label": "Unchanged",
-          "detail": "Cuts are drawn from background quantiles and never learned, a closure term never chooses its own training epoch, and grading is on held-out cuts with a shuffle null"
+          "detail": "Cuts are drawn from background quantiles and never learned, a closure term never [[epoch-selection|chooses its own training epoch]], and grading is on held-out cuts with a shuffle null"
+        },
+        {
+          "label": "Run with",
+          "detail": "Every form goes on top of [[disco|DisCo]], never instead of it: $L = \\mathrm{BCE}_1 + \\mathrm{BCE}_2 + \\alpha\\,\\mathrm{dCor}^2 + \\beta\\,L_Q$, with $L_Q$ the form in use and α, β the [[loss-weights]]"
         },
         {
           "label": "Graded by",
           "detail": "The BASELINE grader and its dependence spectrum, so a closure gain can be read as removal or as relocation"
         }
       ]
+    }
+  ],
+  "results": [
+    {
+      "title": "Every form helps on top of DisCo",
+      "text": "In both regions, adding any form of the queen to [[disco|DisCo]] moves the distribution of [[pull|pulls]] over random cut pairs toward the noise-only reference. Raising DisCo's own weight does not do the same."
+    },
+    {
+      "title": "Only the draw-fed forms even closure out across cuts",
+      "text": "In the endcap, QDR and $\\hat\\tau^2$ narrow the spread of closure from cut to cut; QB moves the average but keeps DisCo's spread. In the [[barrel-endcap|barrel]] the spread is already close to counting noise, so the gain there is in the offset."
+    },
+    {
+      "title": "The trade",
+      "text": "QB leaves the score shapes alone. QDR and $\\hat\\tau^2$ stretch NN2's background logits and cost a little separation."
+    },
+    {
+      "title": "Shared limit",
+      "text": "Every form shrinks the closure error but none changes its direction: region $A$ stays above its ABCD prediction in every run."
     }
   ],
   "links": [
@@ -112,6 +187,24 @@
       "project": "truss",
       "title": "Architecture search",
       "text": "TRUSS rebuilds the closure-term models, so architecture choices are judged with the queen in the loss rather than only with plain cross-entropy."
+    }
+  ],
+  "open": [
+    {
+      "kind": "question",
+      "text": "QDR and $\\hat\\tau^2$ are not yet told apart on closure: which one should hold the β slot?"
+    },
+    {
+      "kind": "gap",
+      "text": "No form changes the direction of the closure error, only its size."
+    },
+    {
+      "kind": "gap",
+      "text": "She works only on a background mix like the one she was trained on; she does not survive an [[htmiss|$H_T^{\\mathrm{miss}}$]] shift."
+    },
+    {
+      "kind": "lesson",
+      "text": "The hinge forms need their β set per region, because $z_k^2$ grows with the events counted; the same β is several times weaker in the barrel. $\\hat\\tau^2$ is built not to need this."
     }
   ],
   "timeline": [
@@ -146,11 +239,31 @@
       "state": "done"
     },
     {
-      "label": "Both versions committed with their unit tests and a write-up of how and when she works",
+      "date": "2026-11",
+      "label": "Pre-registered confirmation on fresh seeds in the endcap: QB, QDR and the pooled form, each on top of DisCo",
+      "state": "done"
+    },
+    {
+      "date": "2026-11",
+      "label": "Confirmation on fresh seeds in the barrel",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-19",
+      "label": "Overview deck: the loss in full and where each form should work",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-20",
+      "label": "Project page split into QB, QDR and the pooled form; glossary added",
+      "state": "done"
+    },
+    {
+      "label": "All forms committed with their unit tests and a write-up of how and when each works",
       "state": "active"
     },
     {
-      "label": "Pre-registered comparison: mk2 against the hinged term",
+      "label": "Choose between QDR and the pooled form for the β slot",
       "state": "next"
     },
     {

@@ -7,6 +7,7 @@
   "accent": "#22c8ff",
   "accent2": "#ffc21f",
   "code": "internal",
+  "revised": "2026-10-16",
   "intro": {
     "problem": "Research in this group spans dozens of papers, textbooks and an evolving record of notes and code, and a general-purpose language model has none of that local context, so dense, accurate prompts have to be assembled by hand every time.",
     "value": "A local agent over a tokenized library could turn a short request into a dense, cited prompt for a larger model [@lewis2020] and answer simple questions directly; folded into VELOCITY, a platform where only locked, versioned canon is trusted, every answer stays traceable to its source paper.",

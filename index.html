@@ -15,7 +15,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/deck.css?v=f8df25eccf">
+<link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="assets/css/deck.css?v=98c91ec204">
 </head>
 <body>
 <div class="grid-bg" aria-hidden="true"></div>
@@ -27,6 +28,10 @@
       <h1>RESEARCH&nbsp;DECK</h1>
       <p class="byline">Nathan Herling &middot; University of Arizona</p>
     </div>
+  </div>
+  <div class="top-right">
+    <p class="revised" id="site-revised-wrap" hidden title="Newest revision date of any project page or the glossary"><span class="rv-k">LAST REVISED</span><span class="rv-v" id="site-revised"></span></p>
+    <a class="gloss-link" href="glossary.html" title="Extended definitions of the terms used across the projects"><span>GLOSSARY</span><span class="gl-n" id="gloss-count"></span><span aria-hidden="true">&#9654;</span></a>
   </div>
 </header>
 
@@ -78,7 +83,7 @@
       <p class="cv-head"><span class="cv-tag">CAVEAT</span><span class="cv-date" id="p-caveat-date"></span></p>
       <p class="cv-text" id="p-caveat-text"></p>
     </aside>
-    <p class="kicker"><span id="k-index">PROJECT 01</span><span class="dot"></span><span id="k-status" class="status">ACTIVE</span></p>
+    <p class="kicker"><span id="k-index">PROJECT 01</span><span class="dot"></span><span id="k-status" class="status">ACTIVE</span><span class="dot" id="k-revised-dot" hidden></span><span id="k-revised" class="k-revised" hidden></span></p>
     <h2 id="p-name">&nbsp;</h2>
     <p class="expansion" id="p-exp">&nbsp;</p>
 
@@ -140,7 +145,9 @@
 </button>
 
 <noscript><p class="noscript">This page needs JavaScript to load the project deck.</p></noscript>
-<script src="assets/js/registry.js?v=406ac8de0f"></script>
-<script src="assets/js/deck.js?v=069fda4f3d"></script>
+<script src="assets/vendor/katex/katex.min.js"></script>
+<script src="assets/vendor/katex/contrib/auto-render.min.js"></script>
+<script src="assets/js/registry.js?v=487f06690d"></script>
+<script src="assets/js/deck.js?v=73586f9f2c"></script>
 </body>
 </html>

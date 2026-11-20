@@ -6,13 +6,18 @@ Live structure:
 
 ```
 index.html                    page shell
+glossary.html                 glossary page (extended definitions, filter, deep links #<term-key>)
 assets/css/deck.css           TRON Ares dark theme; accent re-tints per project
-assets/js/deck.js             gallery + stage controller (routing, keys, swipe)
-assets/js/registry.js         GENERATED: all project data bundled for the page
+assets/css/glossary.css       glossary page layout
+assets/js/deck.js             gallery + stage controller (routing, keys, swipe, term cards, math)
+assets/js/glossary.js         glossary page controller
+assets/js/registry.js         GENERATED: projects, glossary and the site's last-revised date, bundled
+assets/vendor/katex/          KaTeX 0.16.11 (MIT), vendored so math renders without a CDN
 projects/<id>/
     project.json              content you edit
     source.png                original logo you replace
     logo.webp  thumb.webp     GENERATED: normalized 1600x1000 / 480x300
+glossary/glossary.json        glossary terms you edit (one list for the whole site)
 tools/build_deck.py           normalize + validate + leak-scan + bundle
 PUBLIC_SCOPE.md               what may and may not appear here
 ```
@@ -57,6 +62,7 @@ Deep links: `index.html#gambit`. Keys: Left/Right to step, 1-9 to jump, 0 / - / 
 | `status` | `active` / `planning` / `paused` / `complete` |
 | `accent`, `accent2` | `#rrggbb`; re-tints the page while selected |
 | `code` | `internal` or `public` |
+| `revised` | `YYYY-MM-DD`, the date the page was last revised; shown in the project kicker. Set it with `--revise <id>` |
 | `site` | optional public website URL; lights the PUBLIC SITE pill and the tile's WEB light (green, blinking) |
 | `private_repo` | optional `https://github.com/<owner>/<repo>`; lights the PRIVATE REPO pill and the tile's REPO light. Private repos return 404 to anyone not signed in with access, so the link only opens for the owner |
 | `presentations` | optional https URL of the project's slide decks (usually its `ATLAS_presentations_<NAME>` GitHub Pages site); lights the PRESENTATIONS pill and the tile's DECK light |
@@ -96,6 +102,50 @@ Labels are leak-scanned like everything else: no numbers, sample names or intern
 To cite inline, give the reference a `key` and write `[@key]` in the intro or in any component summary or detail. Citations are numbered by first appearance, link to the entry in the literature list, and open its category when clicked. The build fails if a `[@key]` has no matching entry.
 
 Every entry needs an https `url` to the paper's own page (arXiv abs, DOI or publisher). `verified` records how far the citation was checked: `full` if confirmed on the paper's own page, `abstract` if confirmed from metadata only. It does not say how deeply the paper was read. Titles and venues are leak-scanned too, so an internal note can't pass as a reference.
+
+## Last revised
+
+Every `project.json` carries `revised`, and `glossary/glossary.json` carries its own. The header shows **LAST REVISED**, the newest of all of them, computed at build time; each project page shows its own date next to its status.
+
+After editing a page:
+
+```
+python tools/build_deck.py --revise dncn-qn     # stamps today's date, then builds
+python tools/build_deck.py --revise glossary
+```
+
+The builder warns when a project has no `revised` and fails on a malformed or future date. The dates first set on 20 Nov 2026 are the last commit that touched each `project.json`.
+
+## Glossary
+
+`glossary/glossary.json` holds one list of terms for the whole site; `glossary.html` shows them grouped by category, with a filter and a link per entry (`glossary.html#<key>`).
+
+```json
+{"key": "soft-count", "term": "Soft count", "category": "Closure terms: ingredients",
+ "inline": "soft count", "sort": "soft count",
+ "aka": ["$N_X$"], "short": "One or two sentences.", "long": ["Paragraph.", "Paragraph."],
+ "see": ["hard-count"], "projects": ["baseline"],
+ "refs": [{"title": "...", "venue": "...", "url": "https://..."}]}
+```
+
+| field | rule |
+|---|---|
+| `key` | lowercase words joined by `-`; the anchor and the link target |
+| `term` | heading shown in the glossary; may hold math |
+| `category` | groups entries; categories appear in the order they first occur in the file |
+| `short` | the definition shown on a project page's term card |
+| `long` | optional paragraphs, shown only in the glossary |
+| `inline` | optional: the words a bare `[[key]]` shows in running text. Default: `term`, with the first letter lowered when it is the only capital |
+| `sort` | optional sort name (for terms that start with math) |
+| `aka`, `see` | other names; related keys (must exist) |
+| `projects` | optional extra project ids for USED IN; projects that link the term are added automatically |
+| `refs` | optional sources, https only |
+
+**Linking a term.** In any intro, component summary or detail, result or open item, write `[[key]]` or `[[key|shown words]]`. It renders with a dashed underline; clicking opens a card with the short definition and a link to the full entry. Glossary entries can link each other the same way. The build fails on a link to a key that doesn't exist.
+
+**Math.** Write `$...$` inline and `$$...$$` for a display line, in project text and in the glossary. KaTeX renders it; the build fails on an unbalanced `$`.
+
+The glossary is leak-scanned with the same patterns as project text and falls under the same public scope: method definitions, no internal numbers.
 
 ## Add a project
 

@@ -8,6 +8,7 @@
   "accent2": "#2ad4ff",
   "code": "internal",
   "presentations": "https://n-herling-mk1.github.io/ATLAS_presentations_unKNOT/",
+  "revised": "2026-11-13",
   "tagline": "How many backgrounds are there? A background-only count of sources, with a stated confidence for every answer",
   "intro": {
     "problem": "The background to a displaced-vertex search in the muon spectrometer [@atlas2014msvtx] is usually modeled as one population, yet at least three processes feed it: punch-through from collision jets, beam-induced background and cosmic muons [@atlas2016bib]. Each has its own geometry, timing and dependence on run conditions, and a single model averages over all of them.",

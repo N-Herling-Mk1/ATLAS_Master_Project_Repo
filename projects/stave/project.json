@@ -7,6 +7,7 @@
   "accent": "#ff2a3c",
   "accent2": "#3b6bff",
   "code": "internal",
+  "revised": "2026-10-20",
   "intro": {
     "problem": "The barrel region is data-starved: it holds too few background events to train on comfortably and too few to give the ABCD closure test real power, so a barrel closure test can pass simply because its error bars are too wide to fail.",
     "value": "Techniques that recover usable statistics from a small region would let data-driven background estimation work where it cannot yet be trusted, and would separate estimators that close on merit from ones that only appear to.",

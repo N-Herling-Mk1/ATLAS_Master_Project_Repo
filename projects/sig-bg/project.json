@@ -8,6 +8,7 @@
   "accent2": "#d6d6d6",
   "code": "public",
   "site": "https://n-herling-mk1.github.io/ATLAS_SIGBG_Explorer/#/home",
+  "revised": "2026-11-09",
   "tagline": "Which inputs separate signal from background, and which only appear to",
   "intro": {
     "problem": "The networks are only as good as their inputs, yet each input list was chosen before the current signal and background files existed. Some variables separate the samples because of physics; others separate them only because of how each sample was selected, and a ranking cannot tell the two apart on its own.",
