@@ -8,7 +8,7 @@
   "accent2": "#ffc83a",
   "code": "internal",
   "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_BASELINE",
-  "revised": "2026-11-09",
+  "revised": "2026-11-20",
   "tagline": "The reference every other project is scored against",
   "intro": {
     "problem": "BASELINE builds one baseline run, a fixed algorithm and a fixed sweep sequence, for every signal and background file set the program examines. It cannot yet promise a baseline result; it fixes the procedure, so results stay comparable across files, regions and later methods instead of drifting with each file change and metric redefinition.",
@@ -91,6 +91,36 @@
         {
           "label": "T9 · region split (stops)",
           "detail": "Each region is cut from the shared files by its own flag column; unsplit data is refused"
+        }
+      ]
+    },
+    {
+      "codename": "SEAM",
+      "name": "Station-Encoded Assignment Map",
+      "subtitle": "Which detector region each input column measures",
+      "synopsis": "Two locked lists, barrel and endcap, built from independent sources that must agree before a column is assigned.",
+      "state": "active",
+      "summary": "A feature-selection pass placed endcap muon-segment counts among barrel candidates. The input files were correctly split by region; the region tag the code used knew only the words barrel and endcap and never read the muon spectrometer's station codes. SEAM assigns every column a detector region from three independent sources and writes one list per region. A candidate set for one region may not hold a name from the other region's list. Using a column outside its region on purpose is recorded as a separate choice, never made by default.",
+      "items": [
+        {
+          "label": "A · naming rule",
+          "detail": "Muon spectrometer station codes (barrel or endcap; inner, middle, outer, extended), segment ratios, and chamber type: resistive plate chambers are barrel, thin gap and cathode strip chambers are endcap, drift tubes are both"
+        },
+        {
+          "label": "B · reference lists",
+          "detail": "Lists written by people: the advisor's network input lists per region, the event selection's separate barrel and endcap segment minima, earlier-run lists, and hand resolutions, each line naming its source"
+        },
+        {
+          "label": "C · empirical check",
+          "detail": "Each column's activity and mean size in barrel-vertex against endcap-vertex events, on background and signal separately; it votes only when both agree, and never resolves a conflict"
+        },
+        {
+          "label": "Verdict",
+          "detail": "Locked when two or more sources agree and none disagrees; provisional on one source; conflicts go to hand review, whose resolution feeds back into B"
+        },
+        {
+          "label": "Record",
+          "detail": "Every run appends to a genealogy log with a hash of both lists, so each version of the lists can be traced to its inputs"
         }
       ]
     },
@@ -431,6 +461,11 @@
     {
       "date": "2026-10-27",
       "label": "Closure term mk2 proposed: non-closure treated as a random variable, with a pre-registered test against the current term",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-20",
+      "label": "SEAM started: barrel and endcap column lists from the naming rule and reference lists; empirical check next",
       "state": "done"
     },
     {
