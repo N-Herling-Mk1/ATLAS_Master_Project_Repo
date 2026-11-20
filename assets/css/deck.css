@@ -540,8 +540,32 @@ body.sub-mode .rogues { display: none; }
 .gloss-link:hover, .gloss-link:focus-visible { color: var(--a); border-color: var(--a); box-shadow: 0 0 12px var(--a-soft); outline: none; }
 .gl-n { font-family: var(--f-mono); font-weight: 400; letter-spacing: .06em; color: var(--dim); }
 /* outbound links in the header (personal site, LinkedIn) */
-.ext-link span[aria-hidden] { color: var(--dim); font-family: var(--f-mono); letter-spacing: 0; }
-.ext-link:hover span[aria-hidden], .ext-link:focus-visible span[aria-hidden] { color: var(--a); }
+/* each link carries its own colour (--lc), independent of the selected project's accent */
+.ext-site { --lc: #ffc83a; }
+.ext-in   { --lc: #2d9cff; }
+.ext-link {
+  position: relative; color: var(--lc);
+  border-color: var(--lc);
+  background: color-mix(in srgb, var(--lc) 8%, var(--panel));
+  text-shadow: 0 0 8px color-mix(in srgb, var(--lc) 55%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--lc) 40%, transparent),
+              0 0 26px color-mix(in srgb, var(--lc) 16%, transparent),
+              inset 0 0 10px color-mix(in srgb, var(--lc) 16%, transparent);
+  animation: ext-breathe 3.2s ease-in-out infinite;
+}
+.ext-in { animation-delay: -1.6s; }                  /* the two glows breathe out of step */
+.ext-link span[aria-hidden] { color: var(--lc); opacity: .8; font-family: var(--f-mono); letter-spacing: 0; }
+.ext-link:hover, .ext-link:focus-visible {
+  outline: none; color: #000; background: var(--lc); border-color: var(--lc); text-shadow: none;
+  box-shadow: 0 0 16px var(--lc), 0 0 38px color-mix(in srgb, var(--lc) 45%, transparent);
+  animation: none;
+}
+.ext-link:hover span[aria-hidden], .ext-link:focus-visible span[aria-hidden] { color: #000; opacity: 1; }
+@keyframes ext-breathe {
+  0%, 100% { box-shadow: 0 0 10px color-mix(in srgb, var(--lc) 48%, transparent), 0 0 28px color-mix(in srgb, var(--lc) 20%, transparent), inset 0 0 10px color-mix(in srgb, var(--lc) 16%, transparent); }
+  50%      { box-shadow: 0 0 18px color-mix(in srgb, var(--lc) 68%, transparent), 0 0 44px color-mix(in srgb, var(--lc) 32%, transparent), inset 0 0 14px color-mix(in srgb, var(--lc) 26%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .ext-link { animation: none; } }
 @media (max-width: 760px) {
   .top { flex-wrap: wrap; }
   .top-right { flex-wrap: wrap; justify-content: flex-end; }
