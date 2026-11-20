@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
-<link rel="stylesheet" href="assets/css/deck.css?v=688946976e">
+<link rel="stylesheet" href="assets/css/deck.css?v=5f1daa2450">
 </head>
 <body>
 <div class="grid-bg" aria-hidden="true"></div>
@@ -36,6 +36,11 @@
     <a class="gloss-link" href="glossary.html" title="Extended definitions of the terms used across the projects"><span>GLOSSARY</span><span class="gl-n" id="gloss-count"></span><span aria-hidden="true">&#9654;</span></a>
   </div>
 </header>
+
+<nav class="home-bar" id="home-bar" aria-label="Sub-project navigation" hidden>
+  <a class="home-btn" id="home-btn" href="#"><span class="hb-arrow" aria-hidden="true">&#9664;</span><span>HOME</span></a>
+  <p class="crumb"><span class="cr-proj" id="cr-proj"></span><span class="cr-sep" aria-hidden="true">|</span><span class="cr-sub" id="cr-sub"></span></p>
+</nav>
 
 <section class="rogues" aria-label="Gallery of Rogues">
   <div class="section-label"><span>GALLERY OF ROGUES</span><span class="rule"></span><span class="count" id="rogue-count"></span></div>
@@ -124,6 +129,33 @@
     <p class="meta" id="p-meta"></p>
   </article>
 
+  <article class="dossier subpage" id="subpage" hidden>
+    <p class="kicker"><span id="sp-index">SUB-PROJECT 01</span><span class="dot"></span><span id="sp-status" class="status"></span><span class="dot"></span><span id="sp-parent" class="k-revised"></span></p>
+    <h2 id="sp-name">&nbsp;</h2>
+    <p class="expansion" id="sp-exp">&nbsp;</p>
+    <p class="tagline" id="sp-sub" hidden></p>
+    <div class="access" id="sp-access"></div>
+    <p class="intro" id="sp-lede"></p>
+    <figure class="sp-figure" id="sp-figure" hidden>
+      <div class="sp-svg" id="sp-svg"></div>
+      <figcaption id="sp-cap"></figcaption>
+    </figure>
+    <div id="sp-sections"></div>
+    <div id="sp-outputs-wrap" hidden>
+      <h3 class="q-head" id="sp-sec-outputs"><span>OUTPUTS</span><span class="rule"></span></h3>
+      <dl class="prog-items sp-outputs" id="sp-outputs"></dl>
+      <p class="sp-note" id="sp-repo-note" hidden></p>
+    </div>
+    <div id="sp-open-wrap" hidden>
+      <h3 class="q-head" id="sp-sec-open"><span>OPEN ITEMS</span><span class="rule"></span></h3>
+      <ul class="open-items" id="sp-open"></ul>
+    </div>
+    <div id="sp-tl-wrap" hidden>
+      <h3 class="q-head" id="sp-sec-progress"><span>SUB-PROJECT PROGRESS</span><span class="rule"></span></h3>
+      <ol class="timeline" id="sp-timeline"></ol>
+    </div>
+  </article>
+
   <section class="lower" aria-label="Progress and literature">
     <div class="tl-col" id="sec-progress">
       <h3 class="q-head"><span>PROGRESS</span><span class="rule"></span></h3>
@@ -149,7 +181,7 @@
 <noscript><p class="noscript">This page needs JavaScript to load the project deck.</p></noscript>
 <script src="assets/vendor/katex/katex.min.js"></script>
 <script src="assets/vendor/katex/contrib/auto-render.min.js"></script>
-<script src="assets/js/registry.js?v=fd2a111d43"></script>
-<script src="assets/js/deck.js?v=4fbf2c8150"></script>
+<script src="assets/js/registry.js?v=41fb5f3a43"></script>
+<script src="assets/js/deck.js?v=3f612ccf9a"></script>
 </body>
 </html>

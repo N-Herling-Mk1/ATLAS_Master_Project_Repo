@@ -103,7 +103,7 @@ window.DECK_PROJECTS = [
     "codename": "SEAM",
     "name": "Station-Encoded Assignment Map",
     "subtitle": "Which detector region each input column measures",
-    "synopsis": "Two locked lists, barrel and endcap, built from independent sources that must agree before a column is assigned.",
+    "synopsis": "Barrel and endcap column lists; a column is locked only when independent sources agree.",
     "state": "active",
     "summary": "A feature-selection pass placed endcap muon-segment counts among barrel candidates. The input files were correctly split by region; the region tag the code used knew only the words barrel and endcap and never read the muon spectrometer's station codes. SEAM assigns every column a detector region from three independent sources and writes one list per region. A candidate set for one region may not hold a name from the other region's list. Using a column outside its region on purpose is recorded as a separate choice, never made by default.",
     "items": [
@@ -128,6 +128,154 @@ window.DECK_PROJECTS = [
       "detail": "Every run appends to a genealogy log with a hash of both lists, so each version of the lists can be traced to its inputs"
      }
     ],
+    "page": {
+     "lede": "Every input column measures either the barrel, the endcap, or neither. SEAM decides which one, using three sources that do not depend on each other, and keeps the answer as two lists: one for the barrel and one for the endcap. A candidate set for one region may not take a column from the other region's list unless that use is recorded as a choice. Each version of the lists is logged, so any later model can be traced back to the lists it was given.",
+     "figure": {
+      "svg": "seam_flow.svg",
+      "caption": "Vet flow. Each column gets a vote from up to three sources. When they agree it is assigned; when they disagree it goes to hand review, and the resolution becomes a reference entry for the next run.",
+      "markup": "<svg viewBox=\"0 0 1100 620\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"SEAM vet flow: three sources vote on each column's detector region; agreement locks it, disagreement goes to hand review\" class=\"sf\">\n  <defs>\n    <marker id=\"sf-ar\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#8a93a3\"/></marker>\n    <marker id=\"sf-arA\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#ffc83a\"/></marker>\n  </defs>\n  <style>\n    .sf { font-family: \"Share Tech Mono\", ui-monospace, monospace; font-size: 13px; }\n    .sf .bx { fill: #0b0f14; stroke: #2a3240; stroke-width: 1.2; }\n    .sf .hd { fill: #e6e9ee; font-size: 14px; font-family: Orbitron, \"Segoe UI\", sans-serif; font-weight: 700; letter-spacing: 1px; }\n    .sf .tx { fill: #8a93a3; font-size: 12px; }\n    .sf .ln { stroke: #8a93a3; stroke-width: 1.3; fill: none; }\n  </style>\n  <rect class=\"bx\" x=\"400\" y=\"14\" width=\"300\" height=\"56\" rx=\"3\" style=\"stroke:#18d6f0\"/>\n  <text class=\"hd\" x=\"550\" y=\"38\" text-anchor=\"middle\">COLUMNS</text>\n  <text class=\"tx\" x=\"550\" y=\"57\" text-anchor=\"middle\">every input column in the files</text>\n  <path class=\"ln\" d=\"M550 70 V92 H175 V112\" marker-end=\"url(#sf-ar)\"/>\n  <path class=\"ln\" d=\"M550 70 V112\" marker-end=\"url(#sf-ar)\"/>\n  <path class=\"ln\" d=\"M550 92 H925 V112\" marker-end=\"url(#sf-ar)\"/>\n  <rect class=\"bx\" x=\"40\" y=\"114\" width=\"270\" height=\"118\" rx=\"3\"/>\n  <text class=\"hd\" x=\"56\" y=\"138\">A · NAMING RULE</text>\n  <text class=\"tx\" x=\"56\" y=\"160\">station codes {B,E}{I,M,O,E}{L,S}</text>\n  <text class=\"tx\" x=\"56\" y=\"178\">BOL → barrel · EOL → endcap</text>\n  <text class=\"tx\" x=\"56\" y=\"196\">RPC → barrel · TGC, CSC, NSW → endcap</text>\n  <text class=\"tx\" x=\"56\" y=\"214\">MDT and the rest → shared</text>\n  <rect class=\"bx\" x=\"415\" y=\"114\" width=\"270\" height=\"118\" rx=\"3\"/>\n  <text class=\"hd\" x=\"431\" y=\"138\">B · REFERENCE LISTS</text>\n  <text class=\"tx\" x=\"431\" y=\"160\">network input lists per region</text>\n  <text class=\"tx\" x=\"431\" y=\"178\">selection: per-region segment minima</text>\n  <text class=\"tx\" x=\"431\" y=\"196\">earlier-run lists (drop-in)</text>\n  <text class=\"tx\" x=\"431\" y=\"214\">hand resolutions, each with a source</text>\n  <rect class=\"bx\" x=\"790\" y=\"114\" width=\"270\" height=\"118\" rx=\"3\" stroke-dasharray=\"5 4\"/>\n  <text class=\"hd\" x=\"806\" y=\"138\">C · EMPIRICAL</text>\n  <text class=\"tx\" x=\"806\" y=\"160\">activity, |mean|: barrel vs endcap</text>\n  <text class=\"tx\" x=\"806\" y=\"178\">bkg and sig, separately</text>\n  <text class=\"tx\" x=\"806\" y=\"196\">votes if both agree, ratio ≥ 2</text>\n  <text class=\"tx\" x=\"806\" y=\"214\">never resolves a conflict</text>\n  <path class=\"ln\" d=\"M175 232 V262 H550\"/>\n  <path class=\"ln\" d=\"M550 232 V286\" marker-end=\"url(#sf-ar)\"/>\n  <path class=\"ln\" d=\"M925 232 V262 H550\"/>\n  <rect class=\"bx\" x=\"430\" y=\"288\" width=\"240\" height=\"44\" rx=\"3\"/>\n  <text class=\"hd\" x=\"550\" y=\"315\" text-anchor=\"middle\">ADMIN / LEAK?</text>\n  <path class=\"ln\" d=\"M670 310 H880\" marker-end=\"url(#sf-ar)\"/>\n  <text class=\"tx\" x=\"690\" y=\"302\">yes</text>\n  <rect class=\"bx\" x=\"882\" y=\"290\" width=\"178\" height=\"40\" rx=\"3\" style=\"stroke:#5b6370\"/>\n  <text class=\"tx\" x=\"971\" y=\"315\" text-anchor=\"middle\" style=\"fill:#c0c6d0\">admin list · never input</text>\n  <path class=\"ln\" d=\"M550 332 V356\" marker-end=\"url(#sf-ar)\"/>\n  <text class=\"tx\" x=\"558\" y=\"350\">no</text>\n  <polygon class=\"bx\" points=\"550,358 690,402 550,446 410,402\" style=\"stroke:#ffc83a\"/>\n  <text class=\"hd\" x=\"550\" y=\"398\" text-anchor=\"middle\" style=\"font-size:12px\">REGION VOTES</text>\n  <text class=\"tx\" x=\"550\" y=\"416\" text-anchor=\"middle\">compare A, B, C</text>\n  <path class=\"ln\" d=\"M410 402 H120 V474\" marker-end=\"url(#sf-ar)\"/>\n  <path class=\"ln\" d=\"M500 430 L370 474\" marker-end=\"url(#sf-ar)\"/>\n  <path class=\"ln\" d=\"M600 430 L730 474\" marker-end=\"url(#sf-ar)\"/>\n  <path class=\"ln\" d=\"M690 402 H980 V474\" marker-end=\"url(#sf-ar)\"/>\n  <rect class=\"bx\" x=\"30\" y=\"476\" width=\"190\" height=\"62\" rx=\"3\" style=\"stroke:#3ddc97\"/>\n  <text class=\"hd\" x=\"125\" y=\"500\" text-anchor=\"middle\" style=\"fill:#3ddc97\">LOCKED</text>\n  <text class=\"tx\" x=\"125\" y=\"522\" text-anchor=\"middle\">≥ 2 agree, none against</text>\n  <rect class=\"bx\" x=\"275\" y=\"476\" width=\"190\" height=\"62\" rx=\"3\" style=\"stroke:#ffc83a\"/>\n  <text class=\"hd\" x=\"370\" y=\"500\" text-anchor=\"middle\" style=\"fill:#ffc83a\">PROVISIONAL</text>\n  <text class=\"tx\" x=\"370\" y=\"522\" text-anchor=\"middle\">1 source, none against</text>\n  <rect class=\"bx\" x=\"635\" y=\"476\" width=\"190\" height=\"62\" rx=\"3\" style=\"stroke:#9aa3b2\"/>\n  <text class=\"hd\" x=\"730\" y=\"500\" text-anchor=\"middle\" style=\"fill:#9aa3b2\">SHARED</text>\n  <text class=\"tx\" x=\"730\" y=\"522\" text-anchor=\"middle\">no region vote anywhere</text>\n  <rect class=\"bx\" x=\"880\" y=\"476\" width=\"190\" height=\"62\" rx=\"3\" style=\"stroke:#ff4d6a\"/>\n  <text class=\"hd\" x=\"975\" y=\"500\" text-anchor=\"middle\" style=\"fill:#ff4d6a\">CONFLICT · REVIEW</text>\n  <text class=\"tx\" x=\"975\" y=\"522\" text-anchor=\"middle\">votes disagree</text>\n  <path class=\"ln\" d=\"M125 538 V566 H370 V538\"/>\n  <path class=\"ln\" d=\"M248 566 V580\" marker-end=\"url(#sf-ar)\"/>\n  <rect class=\"bx\" x=\"70\" y=\"582\" width=\"356\" height=\"32\" rx=\"3\" style=\"stroke:#18d6f0\"/>\n  <text x=\"160\" y=\"603\" text-anchor=\"middle\" style=\"fill:#ff8a3d\">barrel list</text>\n  <text x=\"248\" y=\"603\" text-anchor=\"middle\" style=\"fill:#4a5260\">·</text>\n  <text x=\"336\" y=\"603\" text-anchor=\"middle\" style=\"fill:#3d9bff\">endcap list</text>\n  <path class=\"ln\" d=\"M730 538 V580\" marker-end=\"url(#sf-ar)\"/>\n  <rect class=\"bx\" x=\"640\" y=\"582\" width=\"180\" height=\"32\" rx=\"3\"/>\n  <text class=\"tx\" x=\"730\" y=\"603\" text-anchor=\"middle\" style=\"fill:#c0c6d0\">shared list</text>\n  <path class=\"ln\" d=\"M975 538 V580\" marker-end=\"url(#sf-ar)\"/>\n  <rect class=\"bx\" x=\"885\" y=\"582\" width=\"180\" height=\"32\" rx=\"3\" style=\"stroke:#ff4d6a\"/>\n  <text class=\"tx\" x=\"975\" y=\"603\" text-anchor=\"middle\" style=\"fill:#c0c6d0\">hand review</text>\n  <path d=\"M1065 598 H1088 V172 H1062\" fill=\"none\" stroke=\"#ffc83a\" stroke-width=\"1.3\" stroke-dasharray=\"6 4\" marker-end=\"url(#sf-arA)\"/>\n  <text x=\"1080\" y=\"400\" fill=\"#ffc83a\" font-size=\"11\" transform=\"rotate(-90 1080 400)\" text-anchor=\"middle\">resolution → reference lists (B) · logged in the genealogy</text>\n</svg>\n"
+     },
+     "sections": [
+      {
+       "heading": "Why it exists",
+       "text": "A feature-selection pass placed endcap muon-segment counts among the barrel candidates, and barrel counts among the endcap candidates. The input files were split by region correctly. The fault was in the code: it tagged a column's region only when the column name contained the word barrel or endcap, and it never read the muon spectrometer's station codes. Columns named by station were treated as fitting either region and were then ranked on separation alone."
+      },
+      {
+       "heading": "Sources",
+       "items": [
+        {
+         "label": "A · naming rule",
+         "detail": "Muon spectrometer nomenclature: station codes (barrel or endcap; inner, middle, outer, extended; large or small, plus the barrel's special chambers), inner-to-middle segment ratios, and chamber technology. Resistive plate chambers are barrel only. Thin gap chambers, cathode strip chambers and the New Small Wheel are endcap only. Drift tubes are in both regions."
+        },
+        {
+         "label": "B · reference lists",
+         "detail": "Lists written by people, independent of the regex: the advisor's network input lists for each region, the event selection's separate barrel and endcap segment minima, lists from earlier runs, and hand resolutions. Every line names its source."
+        },
+        {
+         "label": "C · empirical check",
+         "detail": "For each column: how often it is active, and its mean size, in barrel-vertex events against endcap-vertex events. Background and signal are measured separately. C votes only when both samples point the same way by a clear margin. It can confirm or contradict a tag, and it never resolves a conflict."
+        }
+       ]
+      },
+      {
+       "heading": "Verdict rules",
+       "items": [
+        {
+         "label": "Locked",
+         "detail": "Two or more sources agree on the region and none disagrees"
+        },
+        {
+         "label": "Provisional",
+         "detail": "One source votes a region and none disagrees"
+        },
+        {
+         "label": "Shared",
+         "detail": "No source votes a region: calorimeter, track and event-level quantities"
+        },
+        {
+         "label": "Conflict",
+         "detail": "Sources vote different regions; the column goes on neither list until it is resolved by hand"
+        },
+        {
+         "label": "Review",
+         "detail": "The name gives no region but a reference list or the data does; a person decides whether that is the column's region or only where it is used"
+        },
+        {
+         "label": "Admin",
+         "detail": "Weights, identifiers, triggers, quality flags, region selectors and known leakage columns; never inputs"
+        }
+       ]
+      },
+      {
+       "heading": "Region versus use",
+       "text": "What a column measures and where a network may use it are kept as separate facts. An endcap column can carry real information about a barrel-vertex event, for example from the second long-lived particle or from punch-through. Using it there is allowed only when it is recorded as a choice with a reason. It is never a default."
+      },
+      {
+       "heading": "Vetting",
+       "items": [
+        {
+         "label": "Unit tests",
+         "detail": "The naming rule is checked against known cases on every run, including the background term BIB, which must never be read as a barrel station. The run fails if a test fails."
+        },
+        {
+         "label": "List guard",
+         "detail": "The run fails if a name carrying an endcap code sits on the barrel list, or the reverse"
+        },
+        {
+         "label": "Rule review",
+         "detail": "Station codes extended to the barrel's special chambers, and the Run-3 New Small Wheel added as endcap only; the first lists did not change"
+        },
+        {
+         "label": "Still open",
+         "detail": "The empirical check on the analysis files, and one column listed for only one region that a person must decide"
+        }
+       ]
+      }
+     ],
+     "outputs": [
+      {
+       "label": "barrel list",
+       "detail": "Columns that measure the barrel; locked entries first, provisional after"
+      },
+      {
+       "label": "endcap list",
+       "detail": "Columns that measure the endcap; same layout"
+      },
+      {
+       "label": "conflicts",
+       "detail": "Every column still needing a decision, with each source's vote"
+      },
+      {
+       "label": "audit",
+       "detail": "Input hashes, thresholds, counts and unit-test results for the run"
+      },
+      {
+       "label": "genealogy",
+       "detail": "One line per run with a hash of both lists, never rewritten"
+      }
+     ],
+     "repo_path": "subprojects/SEAM",
+     "timeline": [
+      {
+       "date": "2026-11-20",
+       "label": "Cross-region columns found in a feature-selection pass; cause traced to the code, not the files",
+       "state": "done"
+      },
+      {
+       "date": "2026-11-20",
+       "label": "Tagger built: naming rule and reference lists; first barrel and endcap lists",
+       "state": "done"
+      },
+      {
+       "date": "2026-11-20",
+       "label": "Rule review: special barrel chambers and the New Small Wheel added; lists unchanged",
+       "state": "done"
+      },
+      {
+       "label": "Empirical check run on the analysis files",
+       "state": "active"
+      },
+      {
+       "label": "Open columns resolved by hand; lists locked",
+       "state": "next"
+      },
+      {
+       "label": "Feature-selection pools filtered by the lists",
+       "state": "next"
+      }
+     ],
+     "open": [
+      {
+       "kind": "question",
+       "text": "Some calorimeter-energy columns carry a prefix whose meaning is not settled by the name; the empirical check should show whether it marks a region."
+      },
+      {
+       "kind": "gap",
+       "text": "Every region assignment is provisional on one source until the empirical check runs, except where a reference list agrees with the name."
+      }
+     ],
+     "repo_url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_BASELINE/tree/main/subprojects/SEAM"
+    },
     "slug": "seam"
    },
    {

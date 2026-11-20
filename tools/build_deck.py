@@ -10,6 +10,10 @@ Each project lives in projects/<id>/ :
                      codename  sub-project name shown as the title (e.g. "SIGNAL LINE")
                      synopsis  one line for the sub-project strip under the intro
                      slug      anchor override; default is the codename (or name) -> #<id>/<slug>
+                     page      optional sub-page, shown at #<id>/<slug> in place of the project body:
+                               lede (required), figure {svg, caption} (svg file in projects/<id>/),
+                               sections [{heading, text, items[{label, detail}]}], outputs [{label, detail}],
+                               repo_path (folder inside the private repo), timeline [], open []
     logo.webp      1600x1000 normalized hero                     <- generated
     thumb.webp      480x300  normalized gallery card             <- generated
 
@@ -209,6 +213,10 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
         syn = str(c.get("synopsis", "")).strip()
         if syn and len(syn.split()) > SYNOPSIS_WORDS:
             warns.append(f"{pid}: component {i} synopsis is {len(syn.split())} words (target <= {SYNOPSIS_WORDS})")
+        if "page" in c:
+            e, w = validate_page(p, c, i)
+            errs += e
+            warns += w
     named = [c for c in p.get("components", []) if c.get("codename")]
     if named and len(named) != len(p.get("components", [])):
         warns.append(f"{pid}: {len(named)} of {len(p['components'])} components have a codename (name all or none)")
@@ -220,6 +228,67 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
         if o.get("kind") not in OPEN_KINDS:
             errs.append(f"{pid}: open {i} kind must be one of {sorted(OPEN_KINDS)}")
     return errs, warns
+
+
+SVG_BAD = re.compile(r"<script|\son\w+\s*=|javascript:|<foreignObject|xlink:href\s*=\s*[\"']https?:", re.I)
+
+
+def validate_page(p: dict, c: dict, i: int) -> tuple[list[str], list[str]]:
+    """A component's sub-page (#<id>/<slug>)."""
+    errs, warns = [], []
+    pid, pg = p.get("id", "?"), c.get("page")
+    tag = f"{pid}: component {i} page"
+    if not isinstance(pg, dict):
+        return [f"{tag} must be an object"], warns
+    if not str(pg.get("lede", "")).strip():
+        errs.append(f"{tag} needs a 'lede'")
+    elif len(pg["lede"].split()) > 90:
+        warns.append(f"{tag} lede is {len(pg['lede'].split())} words (target <= 90)")
+    fig = pg.get("figure")
+    if fig:
+        svg = p["_dir"] / str(fig.get("svg", ""))
+        if not fig.get("svg") or not svg.is_file():
+            errs.append(f"{tag} figure svg '{fig.get('svg')}' not found in projects/{pid}/")
+        elif SVG_BAD.search(svg.read_text(encoding="utf-8")):
+            errs.append(f"{tag} figure svg holds script, event handlers or external links")
+    secs = pg.get("sections", [])
+    if not secs:
+        errs.append(f"{tag} needs at least one section")
+    for j, sec in enumerate(secs, 1):
+        if not str(sec.get("heading", "")).strip():
+            errs.append(f"{tag} section {j} has no heading")
+        if not (str(sec.get("text", "")).strip() or sec.get("items")):
+            errs.append(f"{tag} section {j} has neither text nor items")
+    for j, t in enumerate(pg.get("timeline", []), 1):
+        if t.get("state") not in TL_STATES or not t.get("label"):
+            errs.append(f"{tag} timeline {j} needs a label and a state in {sorted(TL_STATES)}")
+        if t.get("date") and not DATE_RE.match(t["date"]):
+            errs.append(f"{tag} timeline {j} date must be YYYY, YYYY-MM or YYYY-MM-DD")
+    for j, o in enumerate(pg.get("open", []), 1):
+        if o.get("kind") not in OPEN_KINDS:
+            errs.append(f"{tag} open {j} kind must be one of {sorted(OPEN_KINDS)}")
+    if pg.get("repo_path"):
+        if not p.get("private_repo"):
+            errs.append(f"{tag} has repo_path but the project has no private_repo")
+        if not re.fullmatch(r"[\w.-]+(/[\w.-]+)*", str(pg["repo_path"])):
+            errs.append(f"{tag} repo_path must be a relative folder path")
+    return errs, warns
+
+
+def page_text(p: dict, c: dict) -> str:
+    """Everything a visitor can read on a sub-page, the figure's text included."""
+    pg = c.get("page") or {}
+    parts = [pg.get("lede", ""), (pg.get("figure") or {}).get("caption", "")]
+    for sec in pg.get("sections", []):
+        parts += [sec.get("heading", ""), sec.get("text", "")]
+        parts += [f"{it.get('label', '')} {it.get('detail', '')}" for it in sec.get("items", [])]
+    parts += [f"{o.get('label', '')} {o.get('detail', '')}" for o in pg.get("outputs", [])]
+    parts += [t.get("label", "") for t in pg.get("timeline", [])] + [o.get("text", "") for o in pg.get("open", [])]
+    fig = pg.get("figure") or {}
+    svg = p["_dir"] / str(fig.get("svg", "")) if fig.get("svg") else None
+    if svg and svg.is_file():
+        parts.append(re.sub(r"<[^>]+>", " ", svg.read_text(encoding="utf-8")))
+    return " ".join(parts)
 
 
 def project_text(p: dict) -> str:
@@ -237,6 +306,7 @@ def project_text(p: dict) -> str:
         + [o.get("text", "") for o in p.get("open", [])]
         + [t.get("label", "") for t in p.get("timeline", [])]
         + [f"{r.get('title', '')} {r.get('venue', '')} {r.get('why', '')}" for r in p.get("literature", [])]
+        + [page_text(p, c) for c in p.get("components", []) if c.get("page")]
     )
 
 
@@ -394,8 +464,24 @@ def public_record(p: dict) -> dict:
     rec = {k: v for k, v in p.items() if not k.startswith("_")}
     rec["logo"] = f"projects/{p['id']}/logo.webp"
     rec["thumb"] = f"projects/{p['id']}/thumb.webp"
-    rec["components"] = [dict(c, slug=comp_slug(c)) for c in p.get("components", [])]
+    rec["components"] = [public_component(p, c) for c in p.get("components", [])]
     return rec
+
+
+def public_component(p: dict, c: dict) -> dict:
+    out = dict(c, slug=comp_slug(c))
+    pg = c.get("page")
+    if pg:
+        pg = dict(pg)
+        fig = pg.get("figure")
+        if fig and fig.get("svg"):           # inline the figure so the page works from file:// too
+            markup = (p["_dir"] / fig["svg"]).read_text(encoding="utf-8")
+            markup = re.sub(r"<\?xml[^>]*>\s*", "", markup)
+            pg["figure"] = dict(fig, markup=markup)
+        if pg.get("repo_path") and p.get("private_repo"):
+            pg["repo_url"] = f"{p['private_repo']}/tree/main/{pg['repo_path']}"
+        out["page"] = pg
+    return out
 
 
 def main() -> int:

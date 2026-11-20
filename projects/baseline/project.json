@@ -98,7 +98,7 @@
       "codename": "SEAM",
       "name": "Station-Encoded Assignment Map",
       "subtitle": "Which detector region each input column measures",
-      "synopsis": "Two locked lists, barrel and endcap, built from independent sources that must agree before a column is assigned.",
+      "synopsis": "Barrel and endcap column lists; a column is locked only when independent sources agree.",
       "state": "active",
       "summary": "A feature-selection pass placed endcap muon-segment counts among barrel candidates. The input files were correctly split by region; the region tag the code used knew only the words barrel and endcap and never read the muon spectrometer's station codes. SEAM assigns every column a detector region from three independent sources and writes one list per region. A candidate set for one region may not hold a name from the other region's list. Using a column outside its region on purpose is recorded as a separate choice, never made by default.",
       "items": [
@@ -122,7 +122,153 @@
           "label": "Record",
           "detail": "Every run appends to a genealogy log with a hash of both lists, so each version of the lists can be traced to its inputs"
         }
-      ]
+      ],
+      "page": {
+        "lede": "Every input column measures either the barrel, the endcap, or neither. SEAM decides which one, using three sources that do not depend on each other, and keeps the answer as two lists: one for the barrel and one for the endcap. A candidate set for one region may not take a column from the other region's list unless that use is recorded as a choice. Each version of the lists is logged, so any later model can be traced back to the lists it was given.",
+        "figure": {
+          "svg": "seam_flow.svg",
+          "caption": "Vet flow. Each column gets a vote from up to three sources. When they agree it is assigned; when they disagree it goes to hand review, and the resolution becomes a reference entry for the next run."
+        },
+        "sections": [
+          {
+            "heading": "Why it exists",
+            "text": "A feature-selection pass placed endcap muon-segment counts among the barrel candidates, and barrel counts among the endcap candidates. The input files were split by region correctly. The fault was in the code: it tagged a column's region only when the column name contained the word barrel or endcap, and it never read the muon spectrometer's station codes. Columns named by station were treated as fitting either region and were then ranked on separation alone."
+          },
+          {
+            "heading": "Sources",
+            "items": [
+              {
+                "label": "A · naming rule",
+                "detail": "Muon spectrometer nomenclature: station codes (barrel or endcap; inner, middle, outer, extended; large or small, plus the barrel's special chambers), inner-to-middle segment ratios, and chamber technology. Resistive plate chambers are barrel only. Thin gap chambers, cathode strip chambers and the New Small Wheel are endcap only. Drift tubes are in both regions."
+              },
+              {
+                "label": "B · reference lists",
+                "detail": "Lists written by people, independent of the regex: the advisor's network input lists for each region, the event selection's separate barrel and endcap segment minima, lists from earlier runs, and hand resolutions. Every line names its source."
+              },
+              {
+                "label": "C · empirical check",
+                "detail": "For each column: how often it is active, and its mean size, in barrel-vertex events against endcap-vertex events. Background and signal are measured separately. C votes only when both samples point the same way by a clear margin. It can confirm or contradict a tag, and it never resolves a conflict."
+              }
+            ]
+          },
+          {
+            "heading": "Verdict rules",
+            "items": [
+              {
+                "label": "Locked",
+                "detail": "Two or more sources agree on the region and none disagrees"
+              },
+              {
+                "label": "Provisional",
+                "detail": "One source votes a region and none disagrees"
+              },
+              {
+                "label": "Shared",
+                "detail": "No source votes a region: calorimeter, track and event-level quantities"
+              },
+              {
+                "label": "Conflict",
+                "detail": "Sources vote different regions; the column goes on neither list until it is resolved by hand"
+              },
+              {
+                "label": "Review",
+                "detail": "The name gives no region but a reference list or the data does; a person decides whether that is the column's region or only where it is used"
+              },
+              {
+                "label": "Admin",
+                "detail": "Weights, identifiers, triggers, quality flags, region selectors and known leakage columns; never inputs"
+              }
+            ]
+          },
+          {
+            "heading": "Region versus use",
+            "text": "What a column measures and where a network may use it are kept as separate facts. An endcap column can carry real information about a barrel-vertex event, for example from the second long-lived particle or from punch-through. Using it there is allowed only when it is recorded as a choice with a reason. It is never a default."
+          },
+          {
+            "heading": "Vetting",
+            "items": [
+              {
+                "label": "Unit tests",
+                "detail": "The naming rule is checked against known cases on every run, including the background term BIB, which must never be read as a barrel station. The run fails if a test fails."
+              },
+              {
+                "label": "List guard",
+                "detail": "The run fails if a name carrying an endcap code sits on the barrel list, or the reverse"
+              },
+              {
+                "label": "Rule review",
+                "detail": "Station codes extended to the barrel's special chambers, and the Run-3 New Small Wheel added as endcap only; the first lists did not change"
+              },
+              {
+                "label": "Still open",
+                "detail": "The empirical check on the analysis files, and one column listed for only one region that a person must decide"
+              }
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "label": "barrel list",
+            "detail": "Columns that measure the barrel; locked entries first, provisional after"
+          },
+          {
+            "label": "endcap list",
+            "detail": "Columns that measure the endcap; same layout"
+          },
+          {
+            "label": "conflicts",
+            "detail": "Every column still needing a decision, with each source's vote"
+          },
+          {
+            "label": "audit",
+            "detail": "Input hashes, thresholds, counts and unit-test results for the run"
+          },
+          {
+            "label": "genealogy",
+            "detail": "One line per run with a hash of both lists, never rewritten"
+          }
+        ],
+        "repo_path": "subprojects/SEAM",
+        "timeline": [
+          {
+            "date": "2026-11-20",
+            "label": "Cross-region columns found in a feature-selection pass; cause traced to the code, not the files",
+            "state": "done"
+          },
+          {
+            "date": "2026-11-20",
+            "label": "Tagger built: naming rule and reference lists; first barrel and endcap lists",
+            "state": "done"
+          },
+          {
+            "date": "2026-11-20",
+            "label": "Rule review: special barrel chambers and the New Small Wheel added; lists unchanged",
+            "state": "done"
+          },
+          {
+            "label": "Empirical check run on the analysis files",
+            "state": "active"
+          },
+          {
+            "label": "Open columns resolved by hand; lists locked",
+            "state": "next"
+          },
+          {
+            "label": "Feature-selection pools filtered by the lists",
+            "state": "next"
+          }
+        ],
+        "open": [
+          {
+            "kind": "question",
+            "text": "Some calorimeter-energy columns carry a prefix whose meaning is not settled by the name; the empirical check should show whether it marks a region."
+          },
+          {
+            "kind": "gap",
+            "text": "Every region assignment is provisional on one source until the empirical check runs, except where a reference list agrees with the name."
+          }
+        ]
+      }
     },
     {
       "name": "Loss families",
