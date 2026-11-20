@@ -13,7 +13,8 @@ Each project lives in projects/<id>/ :
                      page      optional sub-page, shown at #<id>/<slug> in place of the project body:
                                lede (required), figure {svg, caption} (svg file in projects/<id>/),
                                sections [{heading, text, items[{label, detail}]}], outputs [{label, detail}],
-                               repo_path (folder inside the private repo), timeline [], open []
+                               repo_path (folder inside the private repo), timeline [], open [],
+                               downloads [{label, path, detail}] (paths inside repo_path; links to the private repo)
     logo.webp      1600x1000 normalized hero                     <- generated
     thumb.webp      480x300  normalized gallery card             <- generated
 
@@ -267,6 +268,13 @@ def validate_page(p: dict, c: dict, i: int) -> tuple[list[str], list[str]]:
     for j, o in enumerate(pg.get("open", []), 1):
         if o.get("kind") not in OPEN_KINDS:
             errs.append(f"{tag} open {j} kind must be one of {sorted(OPEN_KINDS)}")
+    for j, d in enumerate(pg.get("downloads", []), 1):
+        if not d.get("label") or not d.get("path"):
+            errs.append(f"{tag} download {j} needs a label and a path")
+        elif not re.fullmatch(r"[\w.-]+(/[\w.-]+)*", str(d["path"])):
+            errs.append(f"{tag} download {j} path must be relative to repo_path")
+    if pg.get("downloads") and not pg.get("repo_path"):
+        errs.append(f"{tag} has downloads but no repo_path")
     if pg.get("repo_path"):
         if not p.get("private_repo"):
             errs.append(f"{tag} has repo_path but the project has no private_repo")
@@ -284,6 +292,7 @@ def page_text(p: dict, c: dict) -> str:
         parts += [f"{it.get('label', '')} {it.get('detail', '')}" for it in sec.get("items", [])]
     parts += [f"{o.get('label', '')} {o.get('detail', '')}" for o in pg.get("outputs", [])]
     parts += [t.get("label", "") for t in pg.get("timeline", [])] + [o.get("text", "") for o in pg.get("open", [])]
+    parts += [f"{d.get('label', '')} {d.get('detail', '')}" for d in pg.get("downloads", [])]
     fig = pg.get("figure") or {}
     svg = p["_dir"] / str(fig.get("svg", "")) if fig.get("svg") else None
     if svg and svg.is_file():
@@ -480,6 +489,8 @@ def public_component(p: dict, c: dict) -> dict:
             pg["figure"] = dict(fig, markup=markup)
         if pg.get("repo_path") and p.get("private_repo"):
             pg["repo_url"] = f"{p['private_repo']}/tree/main/{pg['repo_path']}"
+            pg["downloads"] = [dict(d, url=f"{p['private_repo']}/raw/main/{pg['repo_path']}/{d['path']}")
+                               for d in pg.get("downloads", [])]
         out["page"] = pg
     return out
 

@@ -551,6 +551,7 @@
     $("home-bar").hidden = !on;
     $("subpage").hidden = !on;
     $("sec-overview").hidden = on;
+    if (!on) $("sp-dl").hidden = true;
   }
 
   function routeSub(slug, instant = false) {        // #<id>/<slug>: open the sub-page, or scroll to the program entry
@@ -605,6 +606,18 @@
     $("sp-outputs").replaceChildren(...outs.flatMap((o) => [el("dt", null, o.label), el("dd", null, o.detail)]));
     $("sp-repo-note").hidden = !pg.repo_url;
     $("sp-repo-note").textContent = pg.repo_url ? "The lists and the code that writes them are kept in the private repository; they are not published here." : "";
+    const dls = pg.downloads || [];
+    $("sp-dl").hidden = !dls.length;
+    $("sp-dl-list").replaceChildren(...dls.map((d) => {
+      const a = el("a", "dl-btn");
+      a.href = d.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.title = `${d.detail || d.label} (private repository)`;
+      a.append(el("span", "dl-ico", "⤓"), el("span", "dl-name", d.label));
+      if (d.detail) a.append(el("span", "dl-det", d.detail));
+      return a;
+    }));
     renderOpen(pg.open || [], "sp-open-wrap", "sp-open");
     $("sp-tl-wrap").hidden = !(pg.timeline || []).length;
     renderTimeline(pg.timeline || [], "sp-timeline");

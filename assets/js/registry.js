@@ -214,12 +214,16 @@ window.DECK_PROJECTS = [
      ],
      "outputs": [
       {
-       "label": "barrel list",
+       "label": "barrel_features.txt",
        "detail": "Columns that measure the barrel; locked entries first, provisional after"
       },
       {
-       "label": "endcap list",
+       "label": "endcap_features.txt",
        "detail": "Columns that measure the endcap; same layout"
+      },
+      {
+       "label": "both.zip",
+       "detail": "The two lists together"
       },
       {
        "label": "conflicts",
@@ -272,6 +276,26 @@ window.DECK_PROJECTS = [
       {
        "kind": "gap",
        "text": "Every region assignment is provisional on one source until the empirical check runs, except where a reference list agrees with the name."
+      }
+     ],
+     "downloads": [
+      {
+       "label": "barrel_features.txt",
+       "path": "seam_out/barrel_features.txt",
+       "detail": "Barrel list, latest committed version",
+       "url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_BASELINE/raw/main/subprojects/SEAM/seam_out/barrel_features.txt"
+      },
+      {
+       "label": "endcap_features.txt",
+       "path": "seam_out/endcap_features.txt",
+       "detail": "Endcap list, latest committed version",
+       "url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_BASELINE/raw/main/subprojects/SEAM/seam_out/endcap_features.txt"
+      },
+      {
+       "label": "both.zip",
+       "path": "seam_out/both.zip",
+       "detail": "Both lists in one archive",
+       "url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_BASELINE/raw/main/subprojects/SEAM/seam_out/both.zip"
       }
      ],
      "repo_url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_BASELINE/tree/main/subprojects/SEAM"
