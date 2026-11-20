@@ -543,6 +543,7 @@ body.sub-mode .rogues { display: none; }
 /* each link carries its own colour (--lc), independent of the selected project's accent */
 .ext-site { --lc: #ffc83a; }
 .ext-in   { --lc: #2d9cff; }
+.ext-gl   { --lc: #39ff8f; }
 .ext-link {
   position: relative; color: var(--lc);
   border-color: var(--lc);
@@ -553,7 +554,10 @@ body.sub-mode .rogues { display: none; }
               inset 0 0 10px color-mix(in srgb, var(--lc) 16%, transparent);
   animation: ext-breathe 3.2s ease-in-out infinite;
 }
-.ext-in { animation-delay: -1.6s; }                  /* the two glows breathe out of step */
+.ext-in { animation-delay: -1.07s; }                 /* the three glows breathe out of step */
+.ext-gl { animation-delay: -2.13s; }
+.ext-gl .gl-n { color: var(--lc); opacity: .65; }
+.ext-gl:hover .gl-n, .ext-gl:focus-visible .gl-n { color: #000; opacity: 1; }
 .ext-link span[aria-hidden] { color: var(--lc); opacity: .8; font-family: var(--f-mono); letter-spacing: 0; }
 .ext-link:hover, .ext-link:focus-visible {
   outline: none; color: #000; background: var(--lc); border-color: var(--lc); text-shadow: none;
