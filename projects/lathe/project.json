@@ -8,7 +8,7 @@
   "accent2": "#ff8a2a",
   "code": "internal",
   "site": "https://n-herling-mk1.github.io/ATLAS_LATHE_explorer/",
-  "revised": "2026-11-09",
+  "revised": "2026-11-20",
   "intro": {
     "problem": "The hidden layers of the classifiers used in long-lived-particle searches are rarely examined, and we do not yet know whether visualizing them is merely striking or genuinely useful, for instance as an n-dimensional heat map showing where in latent space background closure succeeds and fails.",
     "value": "If it is useful, latent maps could diagnose failures, separate training objectives that score alike, guide architecture choices in TRUSS, and tie what a network learned back to physical inputs, as related work has begun to do for jet taggers [@khot2023][@komiske2020].",
@@ -62,6 +62,26 @@
       "state": "done"
     },
     {
+      "date": "2026-11-20",
+      "label": "Attention probe given two controls, a fixed grouping rule, and a scope limit",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-20",
+      "label": "Fingerprint adapter for the architecture-search models built; each model verified against its saved outputs before probing",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-20",
+      "label": "Curvature probe moved to Lanczos after power iteration was found to miss negative curvature",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-20",
+      "label": "First landscape fingerprints on the base models; exploratory comparison recorded in the private repo",
+      "state": "done"
+    },
+    {
       "label": "Carve out the held-out probe set and add a training dump hook",
       "state": "next"
     },
@@ -71,6 +91,18 @@
     },
     {
       "label": "Positive control along the decorrelation sweep",
+      "state": "next"
+    },
+    {
+      "label": "Declared exploratory look: fingerprints averaged over all folds against pooled closure",
+      "state": "next"
+    },
+    {
+      "label": "Seed barriers after matching hidden units between seeds",
+      "state": "next"
+    },
+    {
+      "label": "Fingerprints along training, to time where each layer stalls",
       "state": "next"
     },
     {
@@ -368,6 +400,17 @@
       "url": "https://arxiv.org/abs/1902.10186",
       "verified": "abstract",
       "why": "Attention weights often fail to identify the inputs that drive a prediction"
+    },
+    {
+      "key": "zaheer2017",
+      "category": "Attention",
+      "authors": "Zaheer et al.",
+      "year": 2017,
+      "title": "Deep Sets",
+      "venue": "NeurIPS 2017; arXiv:1703.06114",
+      "url": "https://arxiv.org/abs/1703.06114",
+      "verified": "abstract",
+      "why": "Order-free set models without attention; the shape of the uniform-attention control"
     }
   ],
   "tagline": "Exploratory: is the latent space worth looking at?",
@@ -427,6 +470,14 @@
           "detail": "Hidden units have no order, so attention runs without positions [@lee2019]; units of a plain network are single numbers and are grouped before use"
         },
         {
+          "label": "Controls",
+          "detail": "Read against two controls: a plain critic on the joined hidden layers [@lopezpaz2017], and the same model with attention fixed to uniform [@zaheer2017], LEXICON's control. A win must come from attention, not from having a learned critic or extra capacity"
+        },
+        {
+          "label": "Grouping fixed first",
+          "detail": "How hidden units are grouped into tokens is fixed before any result is seen, since a free grouping choice could manufacture structure"
+        },
+        {
           "label": "Against CKA",
           "detail": "Kept only if it separates closing from non-closing models where representation similarity does not [@kornblith2019]"
         },
@@ -437,6 +488,42 @@
         {
           "label": "Attribution",
           "detail": "Attention maps are a cross-check, not an explanation [@jain2019]"
+        },
+        {
+          "label": "Scope",
+          "detail": "Latent maps only. The loss-landscape fingerprints come from too few trained models to train an attention model, so attention is not used there"
+        }
+      ]
+    },
+    {
+      "name": "Loss landscapes",
+      "subtitle": "Fingerprints of trained models",
+      "state": "active",
+      "summary": "A second lens on the same models: measure the shape of the loss surface around each trained network, then ask whether that shape says anything about closure that the training settings do not already say. The public explorer holds the method and, later, the data.",
+      "items": [
+        {
+          "label": "Fingerprint",
+          "detail": "Per trained model: both ends of the Hessian spectrum, its trace, loss slices along filter-normalised directions [@li2018], how much the classification and decorrelation pushes cancel in each layer, and interpolation barriers between seeds [@garipov2018]"
+        },
+        {
+          "label": "Probe batch",
+          "detail": "Each model is measured on its own held-out events. Every model is first checked against the outputs saved during training, so the probe measures the network that was trained"
+        },
+        {
+          "label": "Curvature method",
+          "detail": "Lanczos on Hessian-vector products. Plain power iteration was dropped after a side-by-side check showed it stopping early and missing negative curvature"
+        },
+        {
+          "label": "Fair baseline",
+          "detail": "Fingerprints must beat what is known without them: the training settings and how long each model trained. Early exploration showed curvature partly tracks training length, so that is now part of the baseline"
+        },
+        {
+          "label": "Seed barriers",
+          "detail": "Seeds split their data differently, so each pair is compared only on events both models held out. Barriers are read only after hidden units are matched between seeds"
+        },
+        {
+          "label": "Exploration first",
+          "detail": "Each look at the design data is declared in writing before it runs and recorded afterwards; the pre-registered kill test runs once, on models not yet trained"
         }
       ]
     },
@@ -444,7 +531,7 @@
       "name": "Kill test",
       "subtitle": "Pre-registered exit",
       "state": "next",
-      "summary": "Before anything is built into a tool, test whether map-derived quantities predict closure on held-out events better than the training hyperparameters alone. If they do not, the project stops with that result written down."
+      "summary": "Before anything is built into a tool, test whether map- or landscape-derived quantities predict closure on held-out events better than the training settings and training length alone. If they do not, the project stops with that result written down."
     }
   ],
   "links": [
@@ -457,6 +544,12 @@
       "project": "kerf",
       "title": "Feature-level dependence probe",
       "text": "KERF runs the same two-sample test on the input features to check its joint background model; this is the latent-space version."
+    },
+    {
+      "project": "lexicon",
+      "title": "Attention trunk and controls",
+      "text": "LEXICON already runs attention with a uniform-attention control; the latent cross-attention probe reuses that control rather than building its own."
     }
-  ]
+  ],
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_LATHE"
 }
