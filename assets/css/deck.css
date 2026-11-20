@@ -484,6 +484,16 @@ img { display: block; max-width: 100%; height: auto; }
 }
 .gloss-link:hover, .gloss-link:focus-visible { color: var(--a); border-color: var(--a); box-shadow: 0 0 12px var(--a-soft); outline: none; }
 .gl-n { font-family: var(--f-mono); font-weight: 400; letter-spacing: .06em; color: var(--dim); }
+/* outbound links in the header (personal site, LinkedIn) */
+.ext-link span[aria-hidden] { color: var(--dim); font-family: var(--f-mono); letter-spacing: 0; }
+.ext-link:hover span[aria-hidden], .ext-link:focus-visible span[aria-hidden] { color: var(--a); }
+@media (max-width: 760px) {
+  .top { flex-wrap: wrap; }
+  .top-right { flex-wrap: wrap; justify-content: flex-end; }
+}
+@media (max-width: 600px) {
+  .ext-link span:first-child { letter-spacing: .08em; }
+}
 .k-revised { color: var(--muted); }
 .k-revised[hidden], .kicker .dot[hidden] { display: none; }
 
