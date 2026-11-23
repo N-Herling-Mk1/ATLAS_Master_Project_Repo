@@ -153,7 +153,11 @@ The glossary is leak-scanned with the same patterns as project text and falls un
 
 ## To-do panel
 
-`todo/todo.json` holds one list for the whole site. It is shown on `todo.html` (TO DO button in the header, with the open count) and, per project, as a TO DO section on each project page listing that project's unfinished items.
+`todo/todo.json` holds one list for the whole site. It appears in three places:
+
+- the **#TO_DO tile** in the gallery (`projects/todo/`, `"kind": "todo"`): a plain list grouped by status, each line tagged with its projects (click a tag to open that project) and flags. The header TO DO button (with the open count) jumps here. The tile has a logo and header only; `build_deck.py` rejects project content in it.
+- `todo.html`, the filter view (status / project / flag / text), linked as FILTER VIEW from the tile;
+- a TO DO section on each project page listing that project's unfinished items.
 
 ```json
 {

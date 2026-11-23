@@ -1,0 +1,13 @@
+{
+  "id": "todo",
+  "kind": "todo",
+  "order": 14,
+  "name": "#TO_DO",
+  "expansion": "Working List Across the Project Line",
+  "status": "active",
+  "accent": "#ff4fd8",
+  "accent2": "#22c8ff",
+  "code": "internal",
+  "revised": "2026-11-23",
+  "tagline": "Plain list of what is next, tagged by project"
+}

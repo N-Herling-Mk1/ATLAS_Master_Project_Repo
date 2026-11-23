@@ -182,6 +182,17 @@
         "repo"
       ],
       "text": "Add the ABCD plane health project page and the to-do panel to the hub"
+    },
+    {
+      "id": "T012",
+      "status": "done",
+      "added": "2026-11-23",
+      "done": "2026-11-23",
+      "projects": [],
+      "flags": [
+        "repo"
+      ],
+      "text": "Add the #TO_DO tile to the gallery: a plain-text list of these items, tagged by project"
     }
   ]
 }

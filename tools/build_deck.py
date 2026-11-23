@@ -7,6 +7,8 @@ Each project lives in projects/<id>/ :
     source.png     original logo (any size; black background)   <- you edit
     project.json   content                                       <- you edit
                    sub_label  optional: word used for this project's sub-projects (e.g. "CHAPTER"); default SUB-PROJECT
+                   kind       optional: "project" (default) or "todo" -- a tile whose page is the to-do list;
+                              it needs only id, name, expansion, status, accent and source.png
                    components[] = programs / sub-projects; optional per component:
                      codename  sub-project name shown as the title (e.g. "SIGNAL LINE")
                      synopsis  one line for the sub-project strip under the intro
@@ -113,9 +115,35 @@ def load_projects() -> list[dict]:
     return sorted(projs, key=lambda p: p.get("order", 999))
 
 
+KINDS = {"project", "todo"}     # kind "todo": a gallery tile whose page is the to-do list (todo/todo.json)
+
+
+def validate_todo_tile(p: dict) -> tuple[list[str], list[str]]:
+    """The #TO_DO tile has a logo and a header but no project content; its body comes from todo/todo.json."""
+    errs = []
+    pid = p.get("id", "?")
+    for k in ("id", "name", "expansion", "status", "accent"):
+        if k not in p:
+            errs.append(f"{pid}: missing '{k}'")
+    if p.get("id") != p["_dir"].name:
+        errs.append(f"{pid}: id does not match folder '{p['_dir'].name}'")
+    if p.get("status") not in STATUSES:
+        errs.append(f"{pid}: status must be one of {sorted(STATUSES)}")
+    if not (p["_dir"] / "source.png").exists():
+        errs.append(f"{pid}: projects/{pid}/source.png missing")
+    for k in ("intro", "questions", "components", "timeline", "literature", "open", "results", "links"):
+        if k in p:
+            errs.append(f"{pid}: a to-do tile takes no '{k}'; edit todo/todo.json instead")
+    return errs, []
+
+
 def validate(p: dict) -> tuple[list[str], list[str]]:
     errs, warns = [], []
     pid = p.get("id", "?")
+    if p.get("kind", "project") not in KINDS:
+        return [f"{pid}: kind must be one of {sorted(KINDS)}"], warns
+    if p.get("kind") == "todo":
+        return validate_todo_tile(p)
     for k in ("id", "name", "expansion", "status", "accent", "intro", "questions"):
         if k not in p:
             errs.append(f"{pid}: missing '{k}'")
@@ -451,7 +479,9 @@ def validate_todo(t: dict, projs: list[dict]) -> tuple[list[str], list[str]]:
             errs.append(f"todo flag {f.get('key')}: needs a lowercase key and a label")
         if not re.fullmatch(r"#[0-9a-fA-F]{6}", str(f.get("color", ""))):
             errs.append(f"todo flag {f.get('key')}: color must be #rrggbb")
-    pids = {p["id"] for p in projs}
+    pids = {p["id"] for p in projs if p.get("kind", "project") == "project"}
+    if sum(p.get("kind") == "todo" for p in projs) > 1:
+        errs.append("todo: more than one project has kind 'todo'")
     items = t.get("items", [])
     ids = [it.get("id") for it in items]
     if len(ids) != len(set(ids)):

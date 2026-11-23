@@ -6103,6 +6103,22 @@ window.DECK_PROJECTS = [
   ],
   "logo": "projects/abcd-plane-health/logo.webp",
   "thumb": "projects/abcd-plane-health/thumb.webp"
+ },
+ {
+  "id": "todo",
+  "kind": "todo",
+  "order": 14,
+  "name": "#TO_DO",
+  "expansion": "Working List Across the Project Line",
+  "status": "active",
+  "accent": "#ff4fd8",
+  "accent2": "#22c8ff",
+  "code": "internal",
+  "revised": "2026-11-23",
+  "tagline": "Plain list of what is next, tagged by project",
+  "logo": "projects/todo/logo.webp",
+  "thumb": "projects/todo/thumb.webp",
+  "components": []
  }
 ];
 window.DECK_GLOSSARY = {
@@ -7018,6 +7034,17 @@ window.DECK_TODO = {
     "repo"
    ],
    "text": "Add the ABCD plane health project page and the to-do panel to the hub"
+  },
+  {
+   "id": "T012",
+   "status": "done",
+   "added": "2026-11-23",
+   "done": "2026-11-23",
+   "projects": [],
+   "flags": [
+    "repo"
+   ],
+   "text": "Add the #TO_DO tile to the gallery: a plain-text list of these items, tagged by project"
   }
  ]
 };

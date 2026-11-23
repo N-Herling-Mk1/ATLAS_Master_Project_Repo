@@ -25,7 +25,9 @@
   let cur = -1, timer = 0, first = true, pendingSub = null;
 
   // ---- gallery of rogues: compact tile grid + feature panel for the selected tile ----
-  $("rogue-count").textContent = `${P.length} PROJECTS`;
+  const isBoard = (p) => p.kind === "todo";            // the #TO_DO tile: header + to-do list, no project content
+  const kicker = (p, i) => (isBoard(p) ? "TO-DO BOARD" : `PROJECT ${pad(i + 1)}`);
+  $("rogue-count").textContent = `${P.filter((p) => !isBoard(p)).length} PROJECTS`;
   if (META.revised) {
     $("site-revised").textContent = fmtDate(META.revised);
     $("site-revised-wrap").hidden = false;
@@ -66,7 +68,7 @@
     $("hero-img").src = p.logo;
     $("hero-img").alt = `${p.name} logo`;
     $("counter").textContent = `${pad(i + 1)} / ${pad(n)}`;
-    $("k-index").textContent = `PROJECT ${pad(i + 1)}`;
+    $("k-index").textContent = kicker(p, i);
     const st = $("k-status");
     st.textContent = p.status.toUpperCase();
     st.className = `status st-${p.status}`;
@@ -83,7 +85,33 @@
     tg.hidden = !p.tagline;
     tg.textContent = p.tagline || "";
     renderAccess(p);
+    document.body.classList.toggle("kind-todo", isBoard(p));
+    $("p-board").hidden = !isBoard(p);
+    if (isBoard(p)) renderBoard(p);
+    else renderBody(p);
 
+    const meta = $("p-meta");
+    meta.replaceChildren();
+    if (!isBoard(p)) {
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = p.code === "public" ? "CODE: PUBLIC" : "CODE: INTERNAL";
+      meta.appendChild(tag);
+    }
+
+    const prev = P[(i - 1 + n) % n], next = P[(i + 1) % n];
+    $("nb-prev-name").textContent = prev.name;
+    $("nb-next-name").textContent = next.name;
+
+    cards.forEach((c, k) => c.setAttribute("aria-current", k === i ? "true" : "false"));
+    renderFeature(p, i, n);
+    first = false;
+    document.title = `${p.name} · Research Deck`;
+    typeset(stage);
+    if (pendingSub) { const s = pendingSub; pendingSub = null; requestAnimationFrame(() => routeSub(s, true)); }
+  }
+
+  function renderBody(p) {
     buildCites(p);
     const t = p.intro;
     $("p-intro").replaceChildren(...citeNodes([t.problem, t.value, t.approach, t.goals].join(" ")));
@@ -101,24 +129,62 @@
     renderTimeline(p.timeline || []);
     renderLiterature(p.literature || []);
     renderMap(p);
+  }
 
-    const meta = $("p-meta");
-    meta.replaceChildren();
-    const tag = document.createElement("span");
-    tag.className = "tag";
-    tag.textContent = p.code === "public" ? "CODE: PUBLIC" : "CODE: INTERNAL";
-    meta.appendChild(tag);
+  // ---- the #TO_DO tile: todo/todo.json as a plain list, grouped by status, each line tagged by project ----
+  const BOARD_GROUPS = [["active", "IN PROGRESS"], ["open", "OPEN"], ["blocked", "BLOCKED"], ["done", "DONE"]];
+  const PK = new Map(P.map((q) => [q.id, q]));
+  const FLAGS = new Map(((window.DECK_TODO && window.DECK_TODO.flags) || []).map((f) => [f.key, f]));
 
-    const prev = P[(i - 1 + n) % n], next = P[(i + 1) % n];
-    $("nb-prev-name").textContent = prev.name;
-    $("nb-next-name").textContent = next.name;
-
-    cards.forEach((c, k) => c.setAttribute("aria-current", k === i ? "true" : "false"));
-    renderFeature(p, i, n);
-    first = false;
-    document.title = `${p.name} · Research Deck`;
-    typeset(stage);
-    if (pendingSub) { const s = pendingSub; pendingSub = null; requestAnimationFrame(() => routeSub(s, true)); }
+  function renderBoard(p) {
+    const box = $("p-board");
+    const nOpen = TODO.filter((t) => t.status !== "done").length;
+    const head = el("p", "bd-head");
+    const rv = window.DECK_TODO && window.DECK_TODO.revised;
+    head.append(el("span", null, `${nOpen} OPEN · ${TODO.length} TOTAL${rv ? ` · REVISED ${fmtDate(rv)}` : ""}`));
+    const fv = el("a", "bd-filter", "FILTER VIEW ▶");
+    fv.href = "todo.html";
+    fv.title = "Filter by status, project and flag";
+    head.append(fv);
+    const groups = BOARD_GROUPS.map(([k, label]) => [k, label, TODO.filter((t) => t.status === k)]).filter((g) => g[2].length);
+    box.replaceChildren(head, ...(TODO.length ? groups.flatMap(([k, label, items]) => {
+      const h = el("h3", `q-head bd-group bd-${k}`);
+      h.id = `bd-${k}`;
+      h.append(el("span", null, label), el("span", "rule"), el("span", "count", String(items.length)));
+      const ul = el("ul", "bd-list");
+      ul.replaceChildren(...items.map((t) => {
+        const li = el("li", `bd-item bd-${k}`);
+        const id = el("a", "bd-id", t.id);
+        id.href = `todo.html#${t.id}`;
+        id.title = "Open this item in the filter view";
+        const body = el("div", "bd-body");
+        body.append(el("p", "bd-text", t.text));
+        if (t.detail) body.append(el("p", "bd-detail", t.detail));
+        const tags = el("p", "bd-tags");
+        (t.projects && t.projects.length ? t.projects : [null]).forEach((pid) => {
+          const q = pid && PK.get(pid);
+          if (!q) { tags.append(el("span", "bd-tag", "SITE-WIDE")); return; }
+          const a = el("a", "bd-tag bd-proj", q.name);
+          a.href = `#${q.id}`;
+          a.style.setProperty("--pc", q.accent);
+          tags.append(a);
+        });
+        (t.flags || []).forEach((fk) => {
+          const f = FLAGS.get(fk);
+          const s = el("span", "bd-tag bd-flag", f ? f.label : fk);
+          s.style.setProperty("--pc", f ? f.color : "#c9c9c9");
+          tags.append(s);
+        });
+        (t.after || []).forEach((a) => tags.append(el("span", "bd-tag bd-after", `AFTER ${a}`)));
+        if (t.status === "done" && t.done) tags.append(el("span", "bd-tag bd-after", `DONE ${fmtDate(t.done)}`));
+        body.append(tags);
+        li.append(id, body);
+        return li;
+      }));
+      return [h, ul];
+    }) : [el("p", "bd-detail", "No items yet. Add them to todo/todo.json and run tools/build_deck.py.")]));
+    buildMap([{ id: "sec-overview", label: "OVERVIEW" },
+      ...groups.map(([k, label, items]) => ({ id: `bd-${k}`, label, n: items.length }))]);
   }
 
   // ---- feature panel: the selected tile, large, with the deck controls ----------
@@ -131,7 +197,7 @@
     };
     if (first || reduced) swap();
     else { shot.classList.add("swap"); setTimeout(swap, 120); }
-    $("f-index").textContent = `PROJECT ${pad(i + 1)}`;
+    $("f-index").textContent = kicker(p, i);
     const st = $("f-status");
     st.textContent = p.status.toUpperCase();
     st.className = `status st-${p.status}`;
@@ -211,7 +277,7 @@
 
   function renderTitle(p, hId = "p-name", xId = "p-exp") {
     const h = $(hId), x = $(xId);
-    const marks = acronymMarks(p.name, p.expansion || "");
+    const marks = isBoard(p) ? null : acronymMarks(p.name, p.expansion || "");
     h.setAttribute("aria-label", p.name);
     x.replaceChildren();
     if (!marks) {
