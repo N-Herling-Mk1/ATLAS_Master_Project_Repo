@@ -413,8 +413,12 @@
   // The URL becomes #<project>/<slug>, so a sub-project can be linked to directly.
   const synopsisOf = (c) => c.synopsis || (c.subtitle || "").replace(/^Program\s+\d+\s*·\s*/i, "");
 
+  // 'sub_label' (optional, per project) renames SUB-PROJECT for that project, e.g. CHAPTER
+  const subLabel = (p) => (p && p.sub_label) || "SUB-PROJECT";
+
   function renderSubs(p) {
     const comps = p.components || [];
+    $("subs-label").textContent = `${subLabel(p)}S`;
     const wrap = $("p-subs-wrap");
     wrap.hidden = comps.length < 2;
     $("subs-count").textContent = comps.length ? String(comps.length) : "";
@@ -568,7 +572,8 @@
     $("home-btn").title = `Back to ${p.name}`;
     $("cr-proj").textContent = p.name;
     $("cr-sub").textContent = c.codename || c.name;
-    $("sp-index").textContent = `${p.name} · SUB-PROJECT ${pad(k + 1)}`;
+    $("sp-index").textContent = `${p.name} · ${subLabel(p)} ${pad(k + 1)}`;
+    $("sp-prog-label").textContent = `${subLabel(p)} PROGRESS`;
     const st = $("sp-status");
     st.textContent = STATE_TAG[c.state] || "";
     st.className = `status sp-st-${c.state || "next"}`;
@@ -629,7 +634,7 @@
         sub: secs.map((sec, j) => ({ id: `sp-sec-${j}`, label: sec.heading.toUpperCase() })) },
       outs.length && { id: "sp-sec-outputs", label: "OUTPUTS", n: outs.length },
       (pg.open || []).length && { id: "sp-sec-open", label: "OPEN ITEMS", n: pg.open.length },
-      (pg.timeline || []).length && { id: "sp-sec-progress", label: "SUB-PROJECT PROGRESS", n: pg.timeline.length },
+      (pg.timeline || []).length && { id: "sp-sec-progress", label: `${subLabel(p)} PROGRESS`, n: pg.timeline.length },
       { id: "sec-progress", label: `${p.name} PROGRESS`, n: (p.timeline || []).length },
       { id: "sec-literature", label: "LITERATURE", n: (p.literature || []).length },
     ].filter(Boolean));

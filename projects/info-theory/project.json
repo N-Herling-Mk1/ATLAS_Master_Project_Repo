@@ -19,72 +19,444 @@
     "Can mutual information between latent and named features explain what a network has learned?",
     "Where does information theory add something that variance or correlation measures do not?"
   ],
+  "sub_label": "CHAPTER",
   "components": [
     {
       "name": "What Is Information?",
       "subtitle": "Chapter 1 · pp. 1–20",
       "summary": "Information measured in bits: finding a route bit by bit, twenty questions, binary digits, with worked examples from telegraphy and binary and grey-level images.",
-      "state": "next"
+      "state": "active",
+      "slug": "ch1",
+      "page": {
+        "lede": "Chapter 1 defines information as reduced uncertainty: one bit halves the alternatives, and $n$ binary questions pick out one of $2^n$ equally likely outcomes. This page argues both sides of whether that framing fits detector data, then states what survives into the glossary.",
+        "sections": [
+          {
+            "heading": "Main ideas",
+            "items": [
+              {
+                "label": "Bit",
+                "detail": "One binary question with equally likely answers resolves one bit; identifying one of $N$ equally likely alternatives takes $\\log_2 N$ bits."
+              },
+              {
+                "label": "Surprisal",
+                "detail": "An outcome of probability $p$ carries $-\\log_2 p$ bits, so rare outcomes are the informative ones."
+              },
+              {
+                "label": "Twenty questions",
+                "detail": "Well-chosen yes/no questions single out one of about a million alternatives in twenty steps."
+              },
+              {
+                "label": "Images",
+                "detail": "Binary and grey-level images measure information as bits per pixel, taken from the pixel-value histogram."
+              }
+            ]
+          },
+          {
+            "heading": "Case against",
+            "items": [
+              {
+                "label": "No sender, no alphabet",
+                "detail": "The framing assumes a source choosing from a known, finite set. A collision event is a draw from a continuous, high-dimensional distribution seen only through simulation."
+              },
+              {
+                "label": "Fixed questions",
+                "detail": "Optimal questioning is adaptive bisection. ABCD asks two fixed, axis-aligned questions, chosen for closure rather than for uncertainty removed."
+              },
+              {
+                "label": "Class entropy is an artifact",
+                "detail": "Signal versus background is a binary $Y$ with a tiny signal fraction $\\pi$, so in nature $H(Y) = H_b(\\pi) \\ll 1$ bit. The full bit seen in training comes from balanced or reweighted samples."
+              },
+              {
+                "label": "Histograms ignore structure",
+                "detail": "Pixel-histogram entropy ignores spatial arrangement. Per-feature entropy ignores joint structure in the same way, and the physics lives in the joint structure."
+              }
+            ]
+          },
+          {
+            "heading": "Case for",
+            "items": [
+              {
+                "label": "One unit for every feature",
+                "detail": "Bits put each feature's discriminating power on one scale, independent of physical units, so a hit count and an angular separation become comparable."
+              },
+              {
+                "label": "Questions are cuts",
+                "detail": "A cut flow is a sequence of binary questions, and decision trees pick each split by information gain: the chapter's idea, already standard in particle physics."
+              },
+              {
+                "label": "Readout is quantized",
+                "detail": "At the lowest level the detector records digitized counts and time stamps, so the data are finite alphabets before reconstruction."
+              },
+              {
+                "label": "Surprisal as a score",
+                "detail": "$-\\log p_{\\mathrm{bkg}}(x)$ under a background density model is a direct anomaly score: events in rarely populated regions carry the most bits."
+              },
+              {
+                "label": "Small $H(Y)$ is informative",
+                "detail": "A tiny $H_b(\\pi)$ says how little one event can reveal about its class, and supplies the denominator for normalized scores such as $I(f;Y)/H(Y)$."
+              }
+            ]
+          },
+          {
+            "heading": "Verdict",
+            "text": "The vocabulary survives; the framing does not. Surprisal, information gain and the bit as a unit-free scale are usable now. The sender, message and alphabet picture is not. Any quantity quoted in bits must say whether $H(Y)$ refers to the natural class balance or the training balance."
+          }
+        ],
+        "open": [
+          {
+            "kind": "question",
+            "text": "Is per-event surprisal under a background density model a usable score inside the signal region, or does it mostly find detector-edge effects?"
+          },
+          {
+            "kind": "question",
+            "text": "Which class balance, natural or training, should normalize the information quantities reported for the networks?"
+          }
+        ]
+      }
     },
     {
       "name": "Entropy of Discrete Variables",
       "subtitle": "Chapter 2 · pp. 21–44",
       "summary": "Shannon's desiderata, surprise and entropy, evaluating entropy and its properties, independent and identically distributed values, and the units bits, shannons and bans.",
-      "state": "next"
+      "state": "active",
+      "slug": "ch2",
+      "page": {
+        "lede": "Chapter 2 builds entropy, $H(X) = -\\sum_i p_i \\log_2 p_i$, from Shannon's desiderata and states its properties for discrete, independent and identically distributed values. This page argues both sides of whether discrete entropy applies to detector features.",
+        "sections": [
+          {
+            "heading": "Main ideas",
+            "items": [
+              {
+                "label": "Desiderata",
+                "detail": "Continuity in $p$, growth with $n$ for equally likely outcomes, and consistency under grouping fix $H$ up to the base of the logarithm."
+              },
+              {
+                "label": "Bounds",
+                "detail": "$0 \\le H(X) \\le \\log_2 n$, with the maximum at the uniform distribution."
+              },
+              {
+                "label": "Chain rule",
+                "detail": "$H(X,Y) = H(X) + H(Y \\mid X)$, which reduces to $H(X) + H(Y)$ for independent variables."
+              },
+              {
+                "label": "Units",
+                "detail": "Bits (base 2), nats (base $e$) and bans (base 10) differ only by a constant factor."
+              }
+            ]
+          },
+          {
+            "heading": "Case against",
+            "items": [
+              {
+                "label": "Continuous features",
+                "detail": "Most network inputs are continuous. Binning makes $H$ a property of the histogram, and a different bin width gives a different number with no physical meaning."
+              },
+              {
+                "label": "Blind to values",
+                "detail": "$H$ is unchanged by relabeling outcomes. A vertex at small radius and one at large radius are just two labels, while physics depends on order and distance."
+              },
+              {
+                "label": "No single source",
+                "detail": "Simulated samples are weighted (some generators produce negative weights), signal mixes several mass hypotheses, and pile-up conditions vary by period. There is no single stationary $p$."
+              },
+              {
+                "label": "Estimation bias",
+                "detail": "The plug-in estimate is biased low by about $(K-1)/(2N\\ln 2)$ bits for $K$ occupied bins, comparable to the differences worth measuring when the tails are sparse."
+              },
+              {
+                "label": "Background dominates",
+                "detail": "The entropy of the whole sample describes the bulk of the background, while the search lives in one small region."
+              }
+            ]
+          },
+          {
+            "heading": "Case for",
+            "items": [
+              {
+                "label": "Truly discrete features",
+                "detail": "Hit counts, segment counts, and vertex and track multiplicities are integers. For these $H$ is exact and the binning objection does not apply."
+              },
+              {
+                "label": "The ABCD plane is discrete",
+                "detail": "Two cuts define a four-symbol region variable $R$. Its entropy needs no binning choice: the binning is the analysis."
+              },
+              {
+                "label": "Closure identity",
+                "detail": "With cut indicators $a$ and $b$, $H(a) + H(b) - H(R) = I(a;b)$, and $I(a;b) = 0$ exactly when $p_A p_D = p_B p_C$, the ABCD closure condition at that cut."
+              },
+              {
+                "label": "Unit-free comparison",
+                "detail": "Relabeling invariance lets features with different units and ranges be compared on one scale."
+              },
+              {
+                "label": "Decomposition by source",
+                "detail": "The chain rule splits background uncertainty by source: $H(R,S) = H(S) + H(R \\mid S)$ for a source label $S$."
+              },
+              {
+                "label": "Estimators exist",
+                "detail": "Bias corrections (Miller–Madow, NSB) and effective sample sizes for positive weights are standard tools."
+              }
+            ]
+          },
+          {
+            "heading": "Verdict",
+            "text": "Discrete entropy applies exactly where the data are discrete: count features and the ABCD region variable. The closure identity is the strongest result here. Closure at a chosen cut is zero mutual information between the two cut indicators, a weaker condition than full independence of the scores. Continuous features wait for Ch 5."
+          }
+        ],
+        "open": [
+          {
+            "kind": "question",
+            "text": "How does $I(a;b)$ for background change as the cuts move, and is it a useful closure diagnostic next to the usual non-closure measure?"
+          },
+          {
+            "kind": "question",
+            "text": "Can entropy estimates handle negatively weighted simulated events, or must those samples be reweighted first?"
+          }
+        ]
+      }
     },
     {
       "name": "The Source Coding Theorem",
       "subtitle": "Chapter 3 · pp. 45–78",
       "summary": "Capacity of a noiseless channel, information rates, data compression, Huffman coding, the entropy of English letters, and Kolmogorov complexity.",
-      "state": "next"
+      "state": "active",
+      "slug": "ch3",
+      "page": {
+        "lede": "Chapter 3 gives entropy its operational meaning: no code averages fewer than $H$ bits per symbol, and codes exist that come arbitrarily close. Huffman coding, the entropy of English and Kolmogorov complexity follow. This page argues both sides of whether coding says anything about detector data.",
+        "sections": [
+          {
+            "heading": "Main ideas",
+            "items": [
+              {
+                "label": "Source coding theorem",
+                "detail": "Average code length $L \\ge H$. Symbol-by-symbol codes reach $L < H + 1$, and block codes approach $H$."
+              },
+              {
+                "label": "Information rate",
+                "detail": "Bits per second equals symbols per second times bits per symbol, bounded by the channel's capacity."
+              },
+              {
+                "label": "Huffman coding",
+                "detail": "An optimal prefix code, built by repeatedly merging the two least probable symbols."
+              },
+              {
+                "label": "Entropy of English",
+                "detail": "Estimated with $n$-gram models; the entropy per letter falls as longer context is used."
+              },
+              {
+                "label": "Kolmogorov complexity",
+                "detail": "The length of the shortest program that outputs a given string: information in one object rather than an ensemble."
+              }
+            ]
+          },
+          {
+            "heading": "Case against",
+            "items": [
+              {
+                "label": "Nothing is compressed",
+                "detail": "Entropy's claim to be the measure rests on minimum code length. Without a compression task it is one functional of $p$ among many."
+              },
+              {
+                "label": "No long sequences",
+                "detail": "The theorem needs long sequences from one stationary source. An event is a short, mixed vector of counts, angles and momenta, each with its own alphabet."
+              },
+              {
+                "label": "No natural order",
+                "detail": "$n$-gram entropy rates need a sequence order. Detector features form an unordered set, so any order is imposed."
+              },
+              {
+                "label": "Uncomputable",
+                "detail": "Kolmogorov complexity cannot be computed and gives no estimator."
+              }
+            ]
+          },
+          {
+            "heading": "Case for",
+            "items": [
+              {
+                "label": "The loss is a code length",
+                "detail": "Binary cross-entropy is the average length, in nats, of coding the labels with the network's probabilities $q$. It equals $H(Y \\mid X)$ plus the expected $D_{\\mathrm{KL}}\\big(p(y \\mid x)\\,\\|\\,q(y \\mid x)\\big)$, so training a classifier is source coding."
+              },
+              {
+                "label": "Model comparison by code length",
+                "detail": "Minimum description length ranks models by held-out code length, $-\\sum_i \\log q(x_i)$. Competing background density models can be compared this way with no compression task."
+              },
+              {
+                "label": "Imposed order can be a test",
+                "detail": "Tokenization imposes an order on purpose. The entropy rate under that order measures how much structure the tokens capture, which makes it a test of the token scheme."
+              },
+              {
+                "label": "The experiment does compress",
+                "detail": "Trigger and readout bandwidth are real information-rate limits: outside this analysis, not outside the detector."
+              },
+              {
+                "label": "Weak: compression distances",
+                "detail": "Compression-based distances approximate Kolmogorov complexity in practice, but add little where a probability model already exists."
+              }
+            ]
+          },
+          {
+            "heading": "Verdict",
+            "text": "The theorem itself is not used; its consequence is. Cross-entropy is a code length, so every network trained with it already does source coding, and held-out code length is a principled way to compare density models. Huffman coding and Kolmogorov complexity do not carry over."
+          }
+        ],
+        "open": [
+          {
+            "kind": "question",
+            "text": "Does held-out code length rank background density models the same way closure tests do?"
+          },
+          {
+            "kind": "question",
+            "text": "Can an entropy rate show whether one event tokenization captures more structure than another?"
+          }
+        ]
+      }
     },
     {
       "name": "The Noisy Channel Coding Theorem",
       "subtitle": "Chapter 4 · pp. 79–112",
       "summary": "Joint distributions, mutual information, conditional entropy, noise and cross-talk, error-correcting codes, and a first look at rate-distortion theory.",
-      "state": "next"
+      "state": "active",
+      "slug": "ch4",
+      "page": {
+        "lede": "Chapter 4 extends entropy to pairs of variables: mutual information, conditional entropy, and the capacity of a noisy channel, ending with Shannon's theorem that reliable transmission is possible at any rate below capacity. This page argues both sides; for this project it is the chapter with the most at stake.",
+        "sections": [
+          {
+            "heading": "Main ideas",
+            "items": [
+              {
+                "label": "Mutual information",
+                "detail": "$I(X;Y) = H(X) + H(Y) - H(X,Y)$: the reduction in uncertainty about one variable from knowing the other, zero exactly when they are independent."
+              },
+              {
+                "label": "Conditional entropy",
+                "detail": "$H(Y \\mid X)$ is the uncertainty about $Y$ left after observing $X$; in a channel it is the noise."
+              },
+              {
+                "label": "Capacity",
+                "detail": "$C = \\max_{p(x)} I(X;Y)$, the most information per use a channel can carry."
+              },
+              {
+                "label": "Coding theorem",
+                "detail": "Below capacity, error-correcting codes over long blocks make the error rate as small as wanted."
+              },
+              {
+                "label": "Rate distortion",
+                "detail": "A first look at how many bits a lossy description needs for a given distortion, developed in Ch 8."
+              }
+            ]
+          },
+          {
+            "heading": "Case against",
+            "items": [
+              {
+                "label": "The input is not ours",
+                "detail": "Capacity maximizes over the input distribution. Nature fixes it, so the truth-to-reconstruction channel has no encoder we control, and $C$ answers no question asked here."
+              },
+              {
+                "label": "No redundancy to add",
+                "detail": "Error-correcting codes encode before transmission. Physics arrives unencoded."
+              },
+              {
+                "label": "Not asymptotic",
+                "detail": "Reliability comes from long blocks. Decisions are made one event at a time, or on counts in a few regions."
+              },
+              {
+                "label": "Binning, twice over",
+                "detail": "Discrete $I$ needs a joint histogram for $H(X,Y)$, with sparser cells than either margin."
+              }
+            ]
+          },
+          {
+            "heading": "Case for",
+            "items": [
+              {
+                "label": "Closure condition",
+                "detail": "ABCD needs the two scores independent for background: $I(f_1; f_2 \\mid \\mathrm{bkg}) = 0$. Distance correlation, the DisCo penalty, is zero exactly at independence in the population limit; $I$ states the same condition on a scale-free footing, unchanged by any monotone transformation of either score."
+              },
+              {
+                "label": "Data processing inequality",
+                "detail": "$I(Y; f(X)) \\le I(Y; X)$: no network creates information about the class. The gap is the most any architecture search can recover, a ceiling stated in bits."
+              },
+              {
+                "label": "Fano's inequality",
+                "detail": "$H(Y \\mid \\hat Y) \\le H_b(P_e) + P_e \\log_2(|\\mathcal{Y}| - 1)$ bounds classification error from conditional entropy; for two classes the last term vanishes."
+              },
+              {
+                "label": "Irreducible noise",
+                "detail": "$H(Y \\mid X) > 0$ is class overlap no classifier can remove: the information-theoretic form of the Bayes error floor."
+              },
+              {
+                "label": "The detector is a channel",
+                "detail": "Truth to reconstruction is a noisy channel with a fixed input. Capacity is irrelevant, but $I(\\mathrm{truth};\\mathrm{reco})$ at the actual input measures resolution loss."
+              }
+            ]
+          },
+          {
+            "heading": "Verdict",
+            "text": "Capacity and coding do not carry over; the tools built on the way to them do. Conditional mutual information states the closure requirement exactly, the data processing inequality sets a ceiling for any network, and Fano's inequality ties conditional entropy to error. All three need continuous estimators, which is the work of Ch 5 and Ch 6."
+          }
+        ],
+        "open": [
+          {
+            "kind": "question",
+            "text": "Would a mutual-information decorrelation penalty behave differently from distance correlation in the tails, where the signal region sits?"
+          },
+          {
+            "kind": "question",
+            "text": "Can $I(Y;X) - I(Y;f(X))$ be estimated well enough to tell an architecture search when to stop?"
+          }
+        ]
+      }
     },
     {
       "name": "Entropy of Continuous Variables",
       "subtitle": "Chapter 5 · pp. 113–134",
       "summary": "Differential entropy, how it can under-estimate, its properties, maximum-entropy distributions, and what half a bit of information means.",
-      "state": "next"
+      "state": "next",
+      "slug": "ch5"
     },
     {
       "name": "Mutual Information: Continuous",
       "subtitle": "Chapter 6 · pp. 135–152",
       "summary": "Joint and conditional distributions, mutual information and conditional entropy, the invariance of mutual information, and Kullback-Leibler divergence and Bayes.",
-      "state": "next"
+      "state": "next",
+      "slug": "ch6"
     },
     {
       "name": "Channel Capacity: Continuous",
       "subtitle": "Chapter 7 · pp. 153–172",
       "summary": "The Gaussian channel, error rates of noisy channels, mutual information versus correlation, and the fixed-range channel.",
-      "state": "next"
+      "state": "next",
+      "slug": "ch7"
     },
     {
       "name": "Rate Distortion Theory",
       "subtitle": "Chapter 8 · pp. 173–194",
       "summary": "Binary and Gaussian rate-distortion functions, deterministic versus stochastic encoding, and an image-compression example.",
-      "state": "next"
+      "state": "next",
+      "slug": "ch8"
     },
     {
       "name": "Transfer Entropy",
       "subtitle": "Chapter 9 · pp. 195–201",
       "summary": "Directed information flow from one variable's past to another's future, worked through a pendulum and a numerical example.",
-      "state": "next"
+      "state": "next",
+      "slug": "ch9"
     },
     {
       "name": "Thermodynamic Entropy and Information",
       "subtitle": "Chapter 10 · pp. 203–215",
       "summary": "Ensembles, macrostates and microstates, the Landauer limit, the second law, Maxwell's demon, and quantum computation.",
-      "state": "next"
+      "state": "next",
+      "slug": "ch10"
     },
     {
       "name": "Information As Nature's Currency",
       "subtitle": "Chapter 11 · pp. 217–238",
       "summary": "Information in evolution, the human genome and the brain, and a short history of information theory.",
-      "state": "next"
+      "state": "next",
+      "slug": "ch11"
     }
   ],
   "timeline": [
@@ -104,8 +476,13 @@
       "state": "done"
     },
     {
+      "date": "2026-11-23",
+      "label": "Chapter map added; Ch 1-4 argued both ways, one page per chapter",
+      "state": "done"
+    },
+    {
       "label": "Ch 1-4: information, discrete entropy, source coding, noisy-channel coding",
-      "state": "next"
+      "state": "active"
     },
     {
       "label": "Ch 5-7: continuous entropy, continuous mutual information, channel capacity",

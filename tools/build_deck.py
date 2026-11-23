@@ -6,6 +6,7 @@ build_deck.py  --  normalize project logos, validate content, scan for leaks,
 Each project lives in projects/<id>/ :
     source.png     original logo (any size; black background)   <- you edit
     project.json   content                                       <- you edit
+                   sub_label  optional: word used for this project's sub-projects (e.g. "CHAPTER"); default SUB-PROJECT
                    components[] = programs / sub-projects; optional per component:
                      codename  sub-project name shown as the title (e.g. "SIGNAL LINE")
                      synopsis  one line for the sub-project strip under the intro
@@ -123,6 +124,8 @@ def validate(p: dict) -> tuple[list[str], list[str]]:
             errs.append(f"{pid}: {k} must be #rrggbb")
     if "link" in p:
         errs.append(f"{pid}: 'link' was renamed 'site' (public website)")
+    if "sub_label" in p and not re.fullmatch(r"[A-Z][A-Z -]{0,15}", str(p["sub_label"])):
+        errs.append(f"{pid}: sub_label must be capitals/space/hyphen, <= 16 chars")
     if p.get("site") and not str(p["site"]).startswith("https://"):
         errs.append(f"{pid}: site must be an https URL")
     if p.get("private_repo") and not re.fullmatch(r"https://github\.com/[\w.-]+/[\w.-]+", str(p["private_repo"])):
