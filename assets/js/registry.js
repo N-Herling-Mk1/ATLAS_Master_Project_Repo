@@ -2219,27 +2219,269 @@ window.DECK_PROJECTS = [
   "accent": "#1ff0b0",
   "accent2": "#ff2a8a",
   "code": "internal",
-  "revised": "2026-10-16",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_GAMBIT",
+  "revised": "2026-11-23",
+  "tagline": "Cooperative and adversarial feature games for the ABCD networks, refereed three ways",
+  "caveat": {
+   "date": "2026-11-23",
+   "text": "Internal, exploratory studies. Nothing on this page is an ATLAS result; results are given in words, and the numbers stay in the private repo."
+  },
   "intro": {
    "problem": "A two-network background estimate [@abcdisco2021] needs its input features split between the networks, and that split is usually made by hand even though features interact and the choice directly decides how well the estimate closes.",
    "value": "A principled, data-driven partition would make the background estimate more defensible and show which features actually drive closure, extending distance-correlation feature selection [@das2024] from one network to the assignment between two.",
-   "approach": "GAMBIT mixes two kinds of game. In the cooperative game the features are players and each is credited by its marginal contribution against permutation nulls [@shapley1953][@cohen2005]; in the adversarial game the two networks are players competing for features [@monderer1996][@rosenthal1973]. The cooperative stage prunes the pool, the adversarial stage places what remains, and every result is re-measured on seeds disjoint from the selection.",
-   "goals": "The next phase re-reads two weeks of games, all refereed by a dependence statistic, against the closure metric the analysis actually reports, then re-runs the games with closure as the referee and states plainly what improved closure costs in discrimination."
+   "approach": "GAMBIT mixes two kinds of game. In the cooperative game the features are players, each credited against permutation nulls [@shapley1953][@cohen2005]; in the adversarial game [[nn1-nn2|the two networks]] compete for features [@monderer1996][@rosenthal1973]. The statistic that referees a game sits outside it and is run as separate arms, so every answer can be checked against the choice of referee.",
+   "goals": "Run the same games under three referees (a dependence test, the reported [[closure]], and an expected significance that carries closure as its uncertainty [@cowan2011]) on the new data in both regions, grade every finalist on seeds no search used, and state plainly what improved closure costs in discrimination."
   },
   "questions": [
    "Which features actually drive background closure, rather than discrimination?",
    "Does a partition found by mixing cooperative and adversarial play beat the hand-built one on held-out seeds?",
-   "Does the choice of referee change the answer: do games scored on closure pick different partitions from games scored on dependence?"
+   "Does the referee change the answer: do games scored on dependence, on closure and on expected significance pick the same partition?"
+  ],
+  "components": [
+   {
+    "name": "August baseline",
+    "subtitle": "Three loss rungs, no game",
+    "state": "done",
+    "summary": "Before any game, both networks were trained three ways in the endcap: plain cross-entropy, with [[disco|DisCo]], and with DisCo plus a closure term. These runs set the working configuration the games inherited.",
+    "items": [
+     {
+      "label": "DisCo",
+      "detail": "Cut the closure error from hundreds of percent to a few percent. This result stands"
+     },
+     {
+      "label": "Input scaling",
+      "detail": "Rank-based scaling fitted per fold replaced min-max, which had flattened several heavy-tailed inputs to the first network"
+     },
+     {
+      "label": "Closure term (withdrawn)",
+      "detail": "Its region counts were [[hard-count|hard counts]], so it had no gradient; its weight only changed [[epoch-selection|which epoch was kept]]. Every result that leaned on it was withdrawn in September and the term rebuilt on [[soft-count|soft counts]]"
+     },
+     {
+      "label": "An early warning",
+      "detail": "The dependence test could not tell the DisCo runs from the closure-term runs while closure itself moved clearly: the first sign that the referee and the reported quantity diverge"
+     }
+    ],
+    "slug": "august-baseline"
+   },
+   {
+    "name": "Cooperative game",
+    "subtitle": "Features as players",
+    "state": "done",
+    "summary": "Each feature's worth is its average marginal contribution to the background estimate [@shapley1953], measured against permutation nulls that give every network its own zero point, so selection needs no hand-chosen threshold [@cohen2005]. Exact values on small subsets, sampled values on the full registry [@wang2022].",
+    "items": [
+     {
+      "label": "Leave-one-out",
+      "detail": "Every feature scored against shuffled copies of real columns, per network"
+     },
+     {
+      "label": "Knockout",
+      "detail": "Remove features jointly and check both discrimination and closure"
+     },
+     {
+      "label": "Pruning",
+      "detail": "Correlated feature families reduced to representatives before selection"
+     },
+     {
+      "label": "Cross-fitting",
+      "detail": "Choose on one half of the seeds and score on the other, so a winner is never graded on the noise that chose it"
+     }
+    ],
+    "slug": "cooperative-game"
+   },
+   {
+    "name": "Adversarial game",
+    "subtitle": "Networks as players",
+    "state": "done",
+    "summary": "The two networks take turns claiming, releasing or dropping features, and a move stands only if it beats a measured noise floor. Equilibrium is not guaranteed: coalitions can remove pure equilibria [@kuniavsky2011], and slow convergence can look like none [@panageas2023].",
+    "items": [
+     {
+      "label": "Moves",
+      "detail": "Claim from the other network, claim from the free pool, or drop"
+     },
+     {
+      "label": "Gate",
+      "detail": "Paired seeds, a measured floor and a null harness decide whether a move counts"
+     },
+     {
+      "label": "Worst case",
+      "detail": "Weakest signal mass point kept in the payoff, not the loss [@sagawa2019]"
+     }
+    ],
+    "slug": "adversarial-game"
+   },
+   {
+    "name": "Pipeline",
+    "subtitle": "Cooperative into adversarial",
+    "state": "active",
+    "summary": "The cooperative stage hands a pruned pool to the adversarial stage, and the result is promoted and graded on seeds neither search ever used. Built and run end to end on the barrel; the data gates in front of it and the endcap run are next.",
+    "slug": "pipeline"
+   },
+   {
+    "name": "Referee arms",
+    "subtitle": "Who scores the game",
+    "state": "active",
+    "summary": "The scoring statistic stays outside the game: a player that chose its own yardstick would pick the one that flatters it. Each statistic runs as its own arm, from the same start, seeds and data, and the finalists are compared. Agreement means the partition belongs to the data; disagreement is itself the finding.",
+    "items": [
+     {
+      "label": "Dependence (run)",
+      "detail": "The first games were refereed by a G-test on the ABCD grid, $G=2\\sum_{ij}O_{ij}\\ln(O_{ij}/E_{ij})$, chosen on purpose for a result independent of the reported closure. Its null is chi-square by Wilks' theorem [@wilks1938], so the gate's floor is derived, not measured"
+     },
+     {
+      "label": "Closure (next)",
+      "detail": "Median [[closure|non-closure]] at fixed cuts, the quantity the analysis reports. It has no derived null, so its floor is measured per region, and the other network's discrimination needs a floor of its own"
+     },
+     {
+      "label": "Expected significance (new)",
+      "detail": "Asimov significance [@cowan2011] with the [[abcd-prediction]] as background and closure folded into its uncertainty, $\\sigma_b^2=\\sigma_{\\text{pred}}^2+(\\text{nc}\\cdot A_{\\text{pred}})^2$, scored at the weakest signal mass point. Discrimination and closure then trade inside one number"
+     }
+    ],
+    "slug": "referee-arms"
+   },
+   {
+    "name": "Directions",
+    "subtitle": "What gets tested next",
+    "state": "next",
+    "summary": "The next round changes the data, the referee and the action space, one at a time where it can. Each direction is written up as a plan in the private repo before it runs.",
+    "items": [
+     {
+      "label": "New data",
+      "detail": "Move to the new signal and background files; every earlier calibration is redone"
+     },
+     {
+      "label": "Wider action space",
+      "detail": "Admit features that separate signal from background poorly on their own but are clean, and let selection against [[shuffle-null|shuffle nulls]] decide. Features that separate only through the [[htmiss]] selection stay out"
+     },
+     {
+      "label": "Asimov ordering",
+      "detail": "Per-feature expected significance from the next feature study orders the candidates; it never gates them"
+     },
+     {
+      "label": "Knockout search",
+      "detail": "Search around the endcap knockout instead of taking one ladder point, and check the high-score tail"
+     },
+     {
+      "label": "Mixed equilibrium",
+      "detail": "Test whether the barrel cycling hides a mixed equilibrium, with no-regret dynamics on the recorded payoffs [@cesabianchi2006], offline"
+     },
+     {
+      "label": "Seed allocation",
+      "detail": "Spend seeds on promising candidates by successive halving [@jamieson2016] rather than uniformly"
+     },
+     {
+      "label": "Loss rung as a move",
+      "detail": "Let each network choose its own loss rung while the measurement stays fixed; the prediction is a prisoner's dilemma"
+     },
+     {
+      "label": "Grid resolution",
+      "detail": "Re-score every recorded game with the dependence test at other grid sizes, offline"
+     },
+     {
+      "label": "Not deep reinforcement learning",
+      "detail": "The moves are few and each is scored exactly; a learner chasing noisy, costly rewards would amplify the winner's curse. Learning enters only offline, through no-regret dynamics and seed allocation"
+     }
+    ],
+    "slug": "directions"
+   }
+  ],
+  "results": [
+   {
+    "title": "August: DisCo carries the baseline",
+    "text": "In the endcap, adding DisCo to plain cross-entropy cut the closure error by well over an order of magnitude. The closure-term gains from the same month did not survive: the term had no gradient."
+   },
+   {
+    "title": "First selection-free comparison",
+    "text": "On the barrel, the pipeline's partition, graded on seeds no search had seen, roughly halved the closure error and brought over half the plane's cells within counting noise. The second network lost discrimination and the fold-to-fold scores drifted apart: a trade with a confound, not a win."
+   },
+   {
+    "title": "Removing inputs closed the endcap",
+    "text": "Stripping the first network to a handful of features, every calorimeter-energy input removed, cut the endcap closure error by more than an order of magnitude and put every cell of the plane within counting noise, at a modest cost in that network's discrimination. It comes from one knockout ladder and still needs a search and a tail check."
+   },
+   {
+    "title": "The dependence referee measures dependence",
+    "text": "Across recorded games the G-test followed distance correlation closely and closure only loosely. In the endcap its verdicts mostly agreed with closure; in the [[barrel-endcap|barrel]] they were close to random against it; across the knockout it barely moved. That is the independent result the dependence arm was run to get."
+   },
+   {
+    "title": "Picking a winner inflates it",
+    "text": "In the cooperative game, taking the best of many noisy candidates overstated the coalition's value about twofold. Cross-fitting removed the bias, and the honest barrel ranking still cleared its null, as a list of features to drop rather than to keep."
+   },
+   {
+    "title": "Discrimination is not closure",
+    "text": "Barrel features that add nothing to discrimination still do work for factorization; removing them degrades the background estimate. A feature is only safe to drop when both axes clear."
+   },
+   {
+    "title": "Equilibrium in one region, cycling in the other",
+    "text": "The endcap game settles quickly; the barrel game cycles. Two features that both networks want and neither can keep explain the cycling, and a disjoint partition cannot express a fix."
+   }
+  ],
+  "links": [
+   {
+    "project": "sig-bg",
+    "title": "Feature pool",
+    "text": "The feature study supplies GAMBIT's pool and its exclusions and, next, a per-feature expected-significance ordering."
+   },
+   {
+    "project": "baseline",
+    "title": "Loss configuration",
+    "text": "BASELINE's loss sweeps train on the partition GAMBIT proposes, and GAMBIT takes its working loss configuration from BASELINE's locks."
+   },
+   {
+    "project": "truss",
+    "title": "Architecture search",
+    "text": "The best architecture may depend on the feature set, so TRUSS and GAMBIT results are read together."
+   },
+   {
+    "project": "abcd-plane-health",
+    "title": "Grading",
+    "text": "Finalist partitions are graded with the plane-health checks as well as closure."
+   }
+  ],
+  "open": [
+   {
+    "kind": "question",
+    "text": "Is there a pure equilibrium in the barrel, or only a mixed one?"
+   },
+   {
+    "kind": "question",
+    "text": "Do the three referee arms agree on a partition?"
+   },
+   {
+    "kind": "gap",
+    "text": "Expected significance needs a signal yield per mass point; until then it ranks partitions but gives no absolute sensitivity."
+   },
+   {
+    "kind": "gap",
+    "text": "The endcap working cut is not yet the same here and in BASELINE; it must be before the two are compared."
+   }
   ],
   "timeline": [
+   {
+    "date": "2026-08",
+    "label": "Loss-rung baseline in the endcap: plain, DisCo, and DisCo plus a closure term",
+    "state": "done"
+   },
    {
     "date": "2026-08-28",
     "label": "Idea set: the two networks compete for input features, with background-estimate closure as the shared stake",
     "state": "done"
    },
    {
+    "date": "2026-08-29",
+    "label": "Three tiers fixed: networks move features, cuts are solved, the referee stays outside the game",
+    "state": "done"
+   },
+   {
     "date": "2026-09-02",
     "label": "Program fixed: plain baseline first, then one adversarial game and one cooperative game",
+    "state": "done"
+   },
+   {
+    "date": "2026-09-05",
+    "label": "Closure term found to have no gradient; rebuilt on soft counts, earlier closure-term results withdrawn",
+    "state": "done"
+   },
+   {
+    "date": "2026-09-06",
+    "label": "ABCD cuts pinned to a fixed working point instead of following the model",
     "state": "done"
    },
    {
@@ -2263,19 +2505,33 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
-    "label": "Re-read every recorded game against the closure metric, offline, with no retraining",
+    "date": "2026-10-14",
+    "label": "Every recorded game re-read against closure: the dependence referee tracks dependence, not closure",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-23",
+    "label": "Private repo opened: canon, referee arms, results ledger and plans",
+    "state": "done"
+   },
+   {
+    "label": "Re-score every recorded game at other grid sizes and under expected significance, offline",
     "state": "next"
    },
    {
-    "label": "Measure how often the dependence referee and the closure metric agree on a move",
+    "label": "Recalibrate both regions on the new data",
     "state": "next"
    },
    {
-    "label": "Re-run the games on new data with closure as the referee",
+    "label": "Run the closure and expected-significance arms from the dependence arm's start",
     "state": "next"
    },
    {
     "label": "Wire the data gates and block reduction ahead of selection; run the endcap end to end",
+    "state": "next"
+   },
+   {
+    "label": "Search around the endcap knockout and check its tail",
     "state": "next"
    }
   ],
@@ -2477,80 +2733,39 @@ window.DECK_PROJECTS = [
     "verified": "abstract",
     "why": "Keep worst-mass criteria in the payoff, not the loss",
     "key": "sagawa2019"
-   }
-  ],
-  "tagline": "Cooperative and adversarial feature games for the ABCD networks",
-  "components": [
-   {
-    "name": "Cooperative game",
-    "subtitle": "Features as players",
-    "state": "done",
-    "summary": "Each feature's worth is its average marginal contribution to the background estimate [@shapley1953], measured against permutation nulls that give every network its own zero point, so selection needs no hand-chosen threshold [@cohen2005]. Exact values on small subsets, sampled values on the full registry [@wang2022].",
-    "items": [
-     {
-      "label": "Leave-one-out",
-      "detail": "Every feature scored against shuffled copies of real columns, per network"
-     },
-     {
-      "label": "Knockout",
-      "detail": "Remove features jointly and check both discrimination and closure"
-     },
-     {
-      "label": "Pruning",
-      "detail": "Correlated feature families reduced to representatives before selection"
-     }
-    ],
-    "slug": "cooperative-game"
    },
    {
-    "name": "Adversarial game",
-    "subtitle": "Networks as players",
-    "state": "done",
-    "summary": "The two networks take turns claiming, releasing or dropping features, and a move stands only if it beats a measured noise floor. Equilibrium is not guaranteed: coalitions can remove pure equilibria [@kuniavsky2011], and slow convergence can look like none [@panageas2023].",
-    "items": [
-     {
-      "label": "Moves",
-      "detail": "Claim from the other network, claim from the free pool, or drop"
-     },
-     {
-      "label": "Gate",
-      "detail": "Paired seeds, a measured floor and a null harness decide whether a move counts"
-     },
-     {
-      "label": "Worst case",
-      "detail": "Weakest signal mass point kept in the payoff, not the loss [@sagawa2019]"
-     }
-    ],
-    "slug": "adversarial-game"
+    "category": "Statistics",
+    "authors": "Wilks",
+    "year": 1938,
+    "title": "The Large-Sample Distribution of the Likelihood Ratio for Testing Composite Hypotheses",
+    "venue": "Annals of Mathematical Statistics 9(1), 60-62",
+    "url": "https://doi.org/10.1214/aoms/1177732360",
+    "verified": "abstract",
+    "why": "Chi-square null behind the dependence referee's derived floor",
+    "key": "wilks1938"
    },
    {
-    "name": "Pipeline",
-    "subtitle": "Cooperative into adversarial",
-    "state": "active",
-    "summary": "The cooperative stage hands a pruned pool to the adversarial stage, and the result is promoted and graded on seeds neither search ever used. Built and run end to end on the barrel; the endcap run and the upstream data gates are next.",
-    "slug": "pipeline"
-   }
-  ],
-  "results": [
-   {
-    "title": "First selection-free comparison",
-    "text": "On the barrel, the partition found by the pipeline closed substantially better than the hand-built one on held-out seeds, but the second network lost discrimination. It is a trade with a confound, not a win."
+    "category": "Statistics",
+    "authors": "Cowan, Cranmer, Gross & Vitells",
+    "year": 2011,
+    "title": "Asymptotic formulae for likelihood-based tests of new physics",
+    "venue": "Eur. Phys. J. C 71, 1554; arXiv:1007.1727",
+    "url": "https://doi.org/10.1140/epjc/s10052-011-1554-0",
+    "verified": "abstract",
+    "why": "Asimov expected significance used by the third referee arm",
+    "key": "cowan2011"
    },
    {
-    "title": "Discrimination is not closure",
-    "text": "Barrel features that add nothing to discrimination still do work for factorization; removing them degrades the background estimate. A feature is only safe to drop when both axes clear."
-   },
-   {
-    "title": "Most endcap features are jointly removable",
-    "text": "In the endcap, a large share of the first network's inputs can be removed together with no cost on either axis, until a deeper knockout trades discrimination away for closure."
-   },
-   {
-    "title": "Equilibrium in one region, cycling in the other",
-    "text": "The endcap game settles quickly; the barrel game cycles. Two features that both networks want and neither can keep explain the cycling, and a disjoint partition cannot express a fix."
-   },
-   {
-    "title": "The referee was the wrong statistic",
-    "text": "Every recorded game was scored on a dependence test that tracks reported closure poorly, so all of the above is first-generation until it is re-read against closure."
+    "category": "Non-cooperative games",
+    "authors": "Jamieson & Talwalkar",
+    "year": 2016,
+    "title": "Non-stochastic Best Arm Identification and Hyperparameter Optimization",
+    "venue": "Proc. AISTATS 2016, PMLR 51, 240-248; arXiv:1502.07943",
+    "url": "https://proceedings.mlr.press/v51/jamieson16.html",
+    "verified": "abstract",
+    "why": "Successive halving for spending seeds on promising candidates",
+    "key": "jamieson2016"
    }
   ],
   "logo": "projects/gambit/logo.webp",
@@ -6190,6 +6405,7 @@ window.DECK_GLOSSARY = {
     "w-normaliser"
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
@@ -6243,6 +6459,7 @@ window.DECK_GLOSSARY = {
     "background-draw"
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
@@ -6282,6 +6499,7 @@ window.DECK_GLOSSARY = {
     "dncn-qn"
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
@@ -6337,6 +6555,7 @@ window.DECK_GLOSSARY = {
     }
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
@@ -6406,6 +6625,7 @@ window.DECK_GLOSSARY = {
     "loss-weights"
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
@@ -6444,6 +6664,7 @@ window.DECK_GLOSSARY = {
     "soft-count"
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
@@ -6506,6 +6727,7 @@ window.DECK_GLOSSARY = {
     "A shift in its distribution changes the mix of background the networks see. The queen does not survive such a shift: she works on a background mix like the one she was trained on."
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
@@ -6552,7 +6774,9 @@ window.DECK_GLOSSARY = {
     "disco",
     "bce"
    ],
-   "used_in": []
+   "used_in": [
+    "gambit"
+   ]
   },
   {
    "key": "noise-floor",
@@ -6707,6 +6931,7 @@ window.DECK_GLOSSARY = {
     "pull"
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
@@ -6739,6 +6964,7 @@ window.DECK_GLOSSARY = {
     }
    ],
    "used_in": [
+    "gambit",
     "dncn-qn"
    ]
   },
