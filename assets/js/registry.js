@@ -1643,7 +1643,7 @@ window.DECK_PROJECTS = [
   "accent2": "#ff8a2a",
   "code": "internal",
   "site": "https://n-herling-mk1.github.io/ATLAS_LATHE_explorer/",
-  "revised": "2026-11-20",
+  "revised": "2026-11-23",
   "intro": {
    "problem": "The hidden layers of the classifiers used in long-lived-particle searches are rarely examined, and we do not yet know whether visualizing them is merely striking or genuinely useful, for instance as an n-dimensional heat map showing where in latent space background closure succeeds and fails.",
    "value": "If it is useful, latent maps could diagnose failures, separate training objectives that score alike, guide architecture choices in TRUSS, and tie what a network learned back to physical inputs, as related work has begun to do for jet taggers [@khot2023][@komiske2020].",
@@ -1717,6 +1717,21 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
+    "date": "2026-11-23",
+    "label": "Declared exploratory look on all folds of the base models run and recorded in the private repo; its main lesson moved into the held-out test's design",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-23",
+    "label": "Landscape kill test pre-registered and locked: question, data, baseline, null and pass bar fixed before any held-out model was probed",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-23",
+    "label": "Landscape kill test run once on held-out models; result recorded in the private repo; loss-landscape component closed",
+    "state": "done"
+   },
+   {
     "label": "Carve out the held-out probe set and add a training dump hook",
     "state": "next"
    },
@@ -1729,19 +1744,15 @@ window.DECK_PROJECTS = [
     "state": "next"
    },
    {
-    "label": "Declared exploratory look: fingerprints averaged over all folds against pooled closure",
+    "label": "Seed barriers after matching hidden units between seeds (descriptive)",
     "state": "next"
    },
    {
-    "label": "Seed barriers after matching hidden units between seeds",
+    "label": "Fingerprints along training: only if a written reason first says what early shape could add that final shape does not",
     "state": "next"
    },
    {
-    "label": "Fingerprints along training, to time where each layer stalls",
-    "state": "next"
-   },
-   {
-    "label": "Kill test: do map coordinates predict held-out closure?",
+    "label": "Kill test for the latent maps: do map coordinates predict held-out closure?",
     "state": "next"
    },
    {
@@ -2136,8 +2147,8 @@ window.DECK_PROJECTS = [
    {
     "name": "Loss landscapes",
     "subtitle": "Fingerprints of trained models",
-    "state": "active",
-    "summary": "A second lens on the same models: measure the shape of the loss surface around each trained network, then ask whether that shape says anything about closure that the training settings do not already say. The public explorer holds the method and, later, the data.",
+    "state": "done",
+    "summary": "A second lens on the same models: measure the shape of the loss surface around each trained network, then ask whether that shape says anything about closure that the training settings do not already say. Tested once, as pre-registered, on held-out models; the result is recorded in the private repo and this component is closed. The public explorer holds the method.",
     "items": [
      {
       "label": "Fingerprint",
@@ -2153,7 +2164,7 @@ window.DECK_PROJECTS = [
      },
      {
       "label": "Fair baseline",
-      "detail": "Fingerprints must beat what is known without them: the training settings and how long each model trained. Early exploration showed curvature partly tracks training length, so that is now part of the baseline"
+      "detail": "Fingerprints must beat what is known without them: the training setting, entered as a category so a fingerprint cannot win just by recognising which setting a model came from, and how long each model trained. Early exploration showed curvature partly tracks training length, so that is part of the baseline"
      },
      {
       "label": "Seed barriers",
@@ -2161,7 +2172,11 @@ window.DECK_PROJECTS = [
      },
      {
       "label": "Exploration first",
-      "detail": "Each look at the design data is declared in writing before it runs and recorded afterwards; the pre-registered kill test runs once, on models not yet trained"
+      "detail": "Each look at the design data is declared in writing before it runs and recorded afterwards; the pre-registered kill test runs once, on models that had never been probed when it was locked"
+     },
+     {
+      "label": "Held-out test",
+      "detail": "Asked within each training setting: among models trained identically, does the fingerprint predict which ones close better? The null shuffles fingerprints only among models of the same setting, so differences between settings cannot count as signal"
      }
     ],
     "slug": "loss-landscapes"
@@ -2169,8 +2184,8 @@ window.DECK_PROJECTS = [
    {
     "name": "Kill test",
     "subtitle": "Pre-registered exit",
-    "state": "next",
-    "summary": "Before anything is built into a tool, test whether map- or landscape-derived quantities predict closure on held-out events better than the training settings and training length alone. If they do not, the project stops with that result written down.",
+    "state": "active",
+    "summary": "Before anything is built into a tool, test whether map- or landscape-derived quantities predict closure on held-out models better than the training settings and training length alone. The landscape arm has been run once, as pre-registered, and is recorded in the private repo. The latent-map arm waits on the first maps. If neither earns its keep, the project stops with both results written down.",
     "slug": "kill-test"
    }
   ],
