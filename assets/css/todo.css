@@ -1,0 +1,53 @@
+/* research-deck -- to-do page. Builds on deck.css + glossary.css (layout, side panel, chips). */
+.todo-page { --a: #ff4fd8; --a2: #22c8ff; }
+
+/* ---- side facets ---- */
+.t-facet { margin: 0 0 14px; }
+.t-facet .g-filter-k { margin: 0 0 6px; }
+.t-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.t-chip {
+  display: inline-flex; align-items: center; gap: 7px; padding: 4px 9px; cursor: pointer;
+  font: 700 10.5px var(--f-display); letter-spacing: .16em; color: var(--muted);
+  background: var(--panel); border: 1px solid color-mix(in srgb, var(--cc) 45%, var(--line));
+  transition: color .15s, border-color .15s, background .15s, box-shadow .15s;
+}
+.t-chip-n { font: 12px var(--f-mono); letter-spacing: 0; color: var(--dim); }
+.t-chip:hover, .t-chip:focus-visible { color: var(--cc); border-color: var(--cc); outline: none; }
+.t-chip[aria-pressed="true"] {
+  color: #000; background: var(--cc); border-color: var(--cc);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--cc) 55%, transparent);
+}
+.t-chip[aria-pressed="true"] .t-chip-n { color: #000; }
+.t-clear {
+  margin-top: 4px; padding: 6px 10px; cursor: pointer; font: 700 10px var(--f-display); letter-spacing: .24em;
+  color: var(--muted); background: none; border: 1px dashed var(--line);
+}
+.t-clear:hover, .t-clear:focus-visible { color: var(--a); border-color: var(--a); outline: none; }
+.t-clear[hidden] { display: none; }
+
+/* ---- groups + items ---- */
+.t-group .q-head .t-gl { color: var(--sc); }
+.t-item {
+  margin-bottom: 12px; padding: 12px 18px 12px; scroll-margin-top: 16px;
+  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--sc);
+}
+.t-item.flash { animation: progflash 1.6s ease-out; }
+.t-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.t-id { font: 13px var(--f-mono); letter-spacing: .08em; color: var(--sc); text-decoration: none; }
+.t-id:hover { text-decoration: underline; }
+.t-st { font: 700 9.5px var(--f-display); letter-spacing: .24em; color: var(--sc); padding: 2px 7px; border: 1px solid color-mix(in srgb, var(--sc) 55%, transparent); }
+.t-dates { margin-left: auto; font: 11.5px var(--f-mono); letter-spacing: .1em; color: var(--dim); }
+.t-text { margin: 8px 0 0; max-width: 82ch; font-size: 15.5px; line-height: 1.55; color: var(--text); }
+.t-detail { margin: 6px 0 0; max-width: 82ch; font-size: 14px; line-height: 1.6; color: var(--muted); }
+.t-foot { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.t-flag {
+  padding: 2px 8px; font: 700 10px var(--f-display); letter-spacing: .18em; color: var(--cc);
+  border: 1px solid color-mix(in srgb, var(--cc) 50%, transparent);
+  background: color-mix(in srgb, var(--cc) 7%, transparent);
+}
+.t-dep.dep-done { color: var(--dim); }
+.st-done .t-text { color: var(--muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent); }
+.st-done { opacity: .78; }
+@media (max-width: 600px) { .t-dates { margin-left: 0; width: 100%; } }
+.todo-page .g-sub { flex-wrap: wrap; row-gap: 2px; }
+.todo-page .g-sub > span:not(.dot) { white-space: nowrap; }

@@ -531,6 +531,26 @@
       "url": "https://doi.org/10.1002/047174882X",
       "verified": "full",
       "why": "Standard reference for proofs the tutorial text states without derivation"
+    },
+    {
+      "category": "Applications",
+      "authors": "P. Windischhofer, M. Zgubič, D. Bortoletto",
+      "year": 2020,
+      "title": "Preserving physically important variables in optimal event selections: A case study in Higgs physics",
+      "venue": "JHEP 07 (2020) 001",
+      "url": "https://arxiv.org/abs/1907.02098",
+      "verified": "full",
+      "why": "Decorrelates a classifier by minimizing a neural estimate of mutual information"
+    },
+    {
+      "category": "Applications",
+      "authors": "CMS Collaboration",
+      "year": 2025,
+      "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC",
+      "venue": "arXiv:2506.08826",
+      "url": "https://arxiv.org/abs/2506.08826",
+      "verified": "full",
+      "why": "Trains directly on non-closure, the local quantity a global dependence measure can miss"
     }
   ],
   "caveat": {

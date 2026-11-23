@@ -1,0 +1,123 @@
+{
+  "id": "abcd-plane-health",
+  "order": 13,
+  "name": "PLANE HEALTH",
+  "expansion": "ABCD Plane Health Checks for Trained Network Pairs",
+  "status": "active",
+  "accent": "#ff2a3c",
+  "accent2": "#22e3ff",
+  "code": "internal",
+  "revised": "2026-11-23",
+  "tagline": "Checks a trained network pair must pass before its background estimate is trusted",
+  "intro": {
+    "problem": "A pair of networks can pass a closure test at one working point and still have an unhealthy ABCD plane: closure that drifts as the cuts move, pull distributions shifted away from zero, or score shapes that behave unexpectedly. One closure number at one cut does not show these failures.",
+    "value": "A standard health panel gives every trained network pair the same checks before its background estimate is trusted, makes failures visible early, and lets loss functions and architectures be compared on the health of the whole plane rather than on one closure figure.",
+    "approach": "We draw many cut pairs across the plane, both fully random and within restricted quantile ranges, compute closure and pulls at each, and compare the results against a shuffle null in which the dependence between the two scores is destroyed. Global dependence measures are reported beside local closure, because the two can disagree.",
+    "goals": "The expected outcome is a written health-check list with a pass-or-flag rule for each check, a graph suite that runs on any trained pair, and health gates that feed the per-mass sensitivity target shared across the projects."
+  },
+  "questions": [
+    "Which checks catch an unhealthy plane that a single-cut closure test passes?",
+    "How should shifts in the pull distribution be judged against a shuffle null when the background sample is small?",
+    "Do global dependence measures track closure in the signal region, or can they disagree?"
+  ],
+  "components": [
+    {
+      "name": "Pull mean shift",
+      "state": "active",
+      "summary": "The distribution of closure pulls over many random cut pairs, compared against a shuffle null. An unexpected shift of its mean flags a plane whose closure is biased rather than merely noisy.",
+      "items": [
+        {
+          "label": "Cut draws",
+          "detail": "Fully random over the plane, and within restricted quantile ranges, so a failure can be located"
+        },
+        {
+          "label": "Null",
+          "detail": "The same draws on background whose two scores have been shuffled against each other, which removes their dependence"
+        }
+      ]
+    },
+    {
+      "name": "Closure across the plane",
+      "state": "active",
+      "summary": "Closure and its uncertainty mapped over many cut pairs rather than read at one working point, so drift with cut position is visible."
+    },
+    {
+      "name": "Global versus local dependence",
+      "state": "next",
+      "summary": "Distance correlation and mutual information average over the whole plane, and weight the signal region by roughly the product of the two cut efficiencies. They can sit near zero while closure in region $A$ is poor, so they are reported beside local closure, never in place of it."
+    },
+    {
+      "name": "Score-shape health",
+      "state": "next",
+      "summary": "Signal and background predicted-probability distributions checked for the expected shapes, since healthy and unhealthy planes can both hide behind the same AUC."
+    }
+  ],
+  "links": [
+    {
+      "project": "baseline",
+      "title": "Main line",
+      "text": "Plane health follows BASELINE on the main project line; the baseline models are the first pairs it checks."
+    },
+    {
+      "project": "dncn-qn",
+      "title": "Closure losses",
+      "text": "Models trained with the in-house closure term are compared with decorrelation-only models on plane health, not on a single closure figure."
+    },
+    {
+      "project": "info-theory",
+      "title": "Why global measures miss the corner",
+      "text": "The information-theory pass gives the reason global dependence measures can miss closure failures in the signal region."
+    }
+  ],
+  "timeline": [
+    {
+      "date": "2026-11",
+      "label": "Health-check list started; pull mean shift against a shuffle null added",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-18",
+      "label": "Placed on the main project line, after BASELINE",
+      "state": "done"
+    },
+    {
+      "date": "2026-11-23",
+      "label": "Hub page added; global-versus-local dependence check added from the information-theory pass",
+      "state": "done"
+    },
+    {
+      "label": "Pass-or-flag rule written for each check",
+      "state": "next"
+    },
+    {
+      "label": "Graph suite that runs on any trained network pair",
+      "state": "next"
+    },
+    {
+      "label": "Health gates feeding the per-mass sensitivity target",
+      "state": "next"
+    }
+  ],
+  "literature": [
+    {
+      "category": "ABCD method",
+      "authors": "G. Kasieczka, B. Nachman, M. D. Schwartz, D. Shih",
+      "year": 2021,
+      "title": "ABCDisCo: Automating the ABCD Method with Machine Learning",
+      "venue": "Phys. Rev. D 103, 035021",
+      "url": "https://arxiv.org/abs/2007.14400",
+      "verified": "full",
+      "why": "Defines the closure measures the checks build on"
+    },
+    {
+      "category": "ABCD method",
+      "authors": "CMS Collaboration",
+      "year": 2025,
+      "title": "Machine learning method for enforcing variable independence in background estimation with LHC data: ABCDisCoTEC",
+      "venue": "arXiv:2506.08826",
+      "url": "https://arxiv.org/abs/2506.08826",
+      "verified": "full",
+      "why": "Adds a direct non-closure term to training and validates the method on collision data"
+    }
+  ]
+}

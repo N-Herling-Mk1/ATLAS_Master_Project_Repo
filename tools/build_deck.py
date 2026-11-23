@@ -24,6 +24,8 @@ visible content, given a uniform margin, and centred on a pure-black 16:10
 canvas. All sources are on #000, so the padding is invisible.
 
 The glossary lives in glossary/glossary.json (one list of terms for the whole site).
+The to-do panel lives in todo/todo.json: items with an id (T001...), a status (open, active, blocked, done),
+the projects they apply to, and flags; shown on todo.html and, per project, on each project page.
 Project text links a term with [[key]] or [[key|shown text]]; math is $...$ (KaTeX).
 
 Usage:
@@ -31,6 +33,7 @@ Usage:
     python tools/build_deck.py --check          # validate + leak-scan only, write nothing
     python tools/build_deck.py --revise dncn-qn # stamp today's date as that project's 'revised', then build
     python tools/build_deck.py --revise glossary
+    python tools/build_deck.py --revise todo
 
 Requires: Pillow
 """
@@ -50,6 +53,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PROJ = ROOT / "projects"
 REGISTRY = ROOT / "assets" / "js" / "registry.js"
 GLOSSARY = ROOT / "glossary" / "glossary.json"
+TODO = ROOT / "todo" / "todo.json"
 
 HERO = (1600, 1000)
 THUMB = (480, 300)
@@ -420,11 +424,84 @@ def public_glossary(g: dict, projs: list[dict]) -> dict:
     return {"revised": g.get("revised", ""), "categories": cats, "terms": terms}
 
 
+# --- to-do panel ---------------------------------------------------------------
+TODO_STATUSES = ("active", "open", "blocked", "done")      # display order
+TODO_ID_RE = re.compile(r"^T\d{3}$")
+
+
+def load_todo() -> dict:
+    if not TODO.exists():
+        return {"revised": "", "flags": [], "items": []}
+    return json.loads(TODO.read_text(encoding="utf-8"))
+
+
+def validate_todo(t: dict, projs: list[dict]) -> tuple[list[str], list[str]]:
+    errs, warns = [], []
+    rv = t.get("revised")
+    if t.get("items") and not (rv and DAY_RE.match(str(rv))):
+        errs.append("todo: 'revised' must be YYYY-MM-DD (run --revise todo)")
+    elif rv and str(rv) > dt.date.today().isoformat():
+        errs.append(f"todo: revised '{rv}' is in the future")
+    flags = t.get("flags", [])
+    fkeys = [f.get("key") for f in flags]
+    if len(fkeys) != len(set(fkeys)):
+        errs.append("todo: duplicate flag keys")
+    for f in flags:
+        if not KEY_RE.match(str(f.get("key", ""))) or not str(f.get("label", "")).strip():
+            errs.append(f"todo flag {f.get('key')}: needs a lowercase key and a label")
+        if not re.fullmatch(r"#[0-9a-fA-F]{6}", str(f.get("color", ""))):
+            errs.append(f"todo flag {f.get('key')}: color must be #rrggbb")
+    pids = {p["id"] for p in projs}
+    items = t.get("items", [])
+    ids = [it.get("id") for it in items]
+    if len(ids) != len(set(ids)):
+        errs.append("todo: duplicate item ids")
+    for it in items:
+        k = it.get("id", "?")
+        if not TODO_ID_RE.match(str(k)):
+            errs.append(f"todo {k}: id must look like T001")
+        if not str(it.get("text", "")).strip():
+            errs.append(f"todo {k}: empty text")
+        if it.get("status") not in TODO_STATUSES:
+            errs.append(f"todo {k}: status must be one of {list(TODO_STATUSES)}")
+        for pid in it.get("projects", []):
+            if pid not in pids:
+                errs.append(f"todo {k}: project '{pid}' does not exist")
+        for fk in it.get("flags", []):
+            if fk not in fkeys:
+                errs.append(f"todo {k}: flag '{fk}' is not defined in flags[]")
+        for a in it.get("after", []):
+            if a not in ids:
+                errs.append(f"todo {k}: after '{a}' is not an item id")
+        if not DAY_RE.match(str(it.get("added", ""))):
+            errs.append(f"todo {k}: 'added' must be YYYY-MM-DD")
+        if it.get("status") == "done" and not DAY_RE.match(str(it.get("done", ""))):
+            errs.append(f"todo {k}: a done item needs a 'done' date (YYYY-MM-DD)")
+        if it.get("status") != "done" and it.get("done"):
+            errs.append(f"todo {k}: has a 'done' date but status is {it.get('status')}")
+        for fld in ("text", "detail"):
+            if str(it.get(fld, "")).count("$") % 2:
+                errs.append(f"todo {k}: unbalanced $ in {fld}")
+        if not it.get("projects"):
+            warns.append(f"todo {k}: no project tag (shown as site-wide)")
+    return errs, warns
+
+
+def todo_scan(t: dict) -> list[str]:
+    hits = []
+    for it in t.get("items", []):
+        text = f"{it.get('text', '')} {it.get('detail', '')}"
+        for pat, why in LEAK_PATTERNS:
+            for m in re.finditer(pat, text):
+                hits.append(f"todo {it.get('id')}: '{m.group(0)}'  -> {why}")
+    return hits
+
+
 def revise(target: str) -> int:
     today = dt.date.today().isoformat()
-    f = GLOSSARY if target == "glossary" else PROJ / target / "project.json"
+    f = {"glossary": GLOSSARY, "todo": TODO}.get(target, PROJ / target / "project.json")
     if not f.exists():
-        print(f"  ! no such project or glossary: {target}")
+        print(f"  ! no such project, glossary or todo: {target}")
         return 1
     data = json.loads(f.read_text(encoding="utf-8"))
     data["revised"] = today
@@ -456,7 +533,8 @@ def stamp_assets() -> None:
     import hashlib
     assets = {"index.html": ("assets/css/deck.css", "assets/js/deck.js", "assets/js/registry.js"),
               "glossary.html": ("assets/css/deck.css", "assets/css/glossary.css", "assets/js/registry.js",
-                                "assets/js/glossary.js")}
+                                "assets/js/glossary.js"),
+              "todo.html": ("assets/css/deck.css", "assets/css/glossary.css", "assets/css/todo.css", "assets/js/registry.js", "assets/js/todo.js")}
     for name, rels in assets.items():
         page = ROOT / name
         if not page.exists():
@@ -469,7 +547,7 @@ def stamp_assets() -> None:
             if not n:
                 print(f"  ! {rel} not referenced in {name}")
         page.write_text(html, encoding="utf-8")
-    print("  stamped asset versions in index.html and glossary.html")
+    print("  stamped asset versions in index.html, glossary.html and todo.html")
 
 
 def public_record(p: dict) -> dict:
@@ -510,7 +588,8 @@ def main() -> int:
     print("== research-deck build ==")
     projs = load_projects()
     gloss = load_glossary()
-    print(f"  found {len(projs)} projects, {len(gloss.get('terms', []))} glossary terms")
+    todo = load_todo()
+    print(f"  found {len(projs)} projects, {len(gloss.get('terms', []))} glossary terms, {len(todo.get('items', []))} to-do items")
 
     print("[1/3] validate")
     errs, warns = [], []
@@ -521,6 +600,9 @@ def main() -> int:
     e, w = validate_glossary(gloss, projs)
     errs += e
     warns += w
+    e, w = validate_todo(todo, projs)
+    errs += e
+    warns += w
     for w in warns:
         print(f"  warn  {w}")
     for e in errs:
@@ -528,7 +610,7 @@ def main() -> int:
     print(f"  {len(errs)} errors, {len(warns)} warnings")
 
     print("[2/3] leak scan")
-    leaks = [h for p in projs for h in leak_scan(p)] + gloss_scan(gloss)
+    leaks = [h for p in projs for h in leak_scan(p)] + gloss_scan(gloss) + todo_scan(todo)
     for h in leaks:
         print(f"  LEAK  {h}")
     print(f"  {len(leaks)} hits")
@@ -552,17 +634,20 @@ def main() -> int:
     REGISTRY.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps([public_record(p) for p in projs], indent=1, ensure_ascii=False)
     pub_gloss = public_glossary(gloss, projs)
-    # site-wide 'last revised' = newest of any project's or the glossary's revised date
+    # site-wide 'last revised' = newest of any project's, the glossary's or the to-do panel's revised date
     dates = [str(p["revised"]) for p in projs if p.get("revised")] + ([pub_gloss["revised"]] if pub_gloss["revised"] else [])
+    dates += [str(todo["revised"])] if todo.get("revised") else []
     meta = {"revised": max(dates) if dates else ""}
     REGISTRY.write_text(
-        "// GENERATED by tools/build_deck.py -- edit projects/<id>/project.json or glossary/glossary.json instead.\n"
+        "// GENERATED by tools/build_deck.py -- edit projects/<id>/project.json, glossary/glossary.json or todo/todo.json instead.\n"
         f"window.DECK_META = {json.dumps(meta)};\n"
         f"window.DECK_PROJECTS = {payload};\n"
-        f"window.DECK_GLOSSARY = {json.dumps(pub_gloss, indent=1, ensure_ascii=False)};\n",
+        f"window.DECK_GLOSSARY = {json.dumps(pub_gloss, indent=1, ensure_ascii=False)};\n"
+        f"window.DECK_TODO = {json.dumps(todo, indent=1, ensure_ascii=False)};\n",
         encoding="utf-8",
     )
-    print(f"  site revised {meta['revised'] or '(none)'}  |  glossary {len(pub_gloss['terms'])} terms")
+    n_open = sum(1 for it in todo.get("items", []) if it.get("status") != "done")
+    print(f"  site revised {meta['revised'] or '(none)'}  |  glossary {len(pub_gloss['terms'])} terms  |  to-do {n_open} open")
     stamp_assets()
     kb = sum((p["_dir"] / f).stat().st_size for p in projs for f in ("logo.webp", "thumb.webp")) / 1024
     print(f"  wrote {REGISTRY.relative_to(ROOT)}  |  images {kb:.0f} KB total")

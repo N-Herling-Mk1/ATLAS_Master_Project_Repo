@@ -7,10 +7,13 @@ Live structure:
 ```
 index.html                    page shell
 glossary.html                 glossary page (extended definitions, filter, deep links #<term-key>)
+todo.html                     to-do panel (items tagged by project and flag; filters; deep links)
 assets/css/deck.css           TRON Ares dark theme; accent re-tints per project
 assets/css/glossary.css       glossary page layout
+assets/css/todo.css           to-do page additions (builds on glossary.css)
 assets/js/deck.js             gallery + stage controller (routing, keys, swipe, term cards, math)
 assets/js/glossary.js         glossary page controller
+assets/js/todo.js             to-do page controller
 assets/js/registry.js         GENERATED: projects, glossary and the site's last-revised date, bundled
 assets/vendor/katex/          KaTeX 0.16.11 (MIT), vendored so math renders without a CDN
 projects/<id>/
@@ -18,6 +21,7 @@ projects/<id>/
     source.png                original logo you replace
     logo.webp  thumb.webp     GENERATED: normalized 1600x1000 / 480x300
 glossary/glossary.json        glossary terms you edit (one list for the whole site)
+todo/todo.json                to-do items you edit (one list for the whole site)
 tools/build_deck.py           normalize + validate + leak-scan + bundle
 PUBLIC_SCOPE.md               what may and may not appear here
 ```
@@ -146,6 +150,32 @@ The builder warns when a project has no `revised` and fails on a malformed or fu
 **Math.** Write `$...$` inline and `$$...$$` for a display line, in project text and in the glossary. KaTeX renders it; the build fails on an unbalanced `$`.
 
 The glossary is leak-scanned with the same patterns as project text and falls under the same public scope: method definitions, no internal numbers.
+
+## To-do panel
+
+`todo/todo.json` holds one list for the whole site. It is shown on `todo.html` (TO DO button in the header, with the open count) and, per project, as a TO DO section on each project page listing that project's unfinished items.
+
+```json
+{
+  "revised": "2026-11-23",
+  "flags": [{ "key": "analysis", "label": "ANALYSIS", "color": "#ffc83a" }],
+  "items": [{
+    "id": "T007", "status": "open", "added": "2026-11-23",
+    "projects": ["abcd-plane-health", "info-theory"], "flags": ["analysis"], "after": ["T006"],
+    "text": "One line; $math$ allowed", "detail": "Optional longer note"
+  }]
+}
+```
+
+| field | rule |
+|---|---|
+| `id` | `T` + three digits, unique; never reuse an id |
+| `status` | `active`, `open`, `blocked` or `done`; a done item needs a `done` date |
+| `projects` | project ids it applies to; empty means site-wide |
+| `flags` | keys from `flags[]` (each flag has a label and a `#rrggbb` colour) |
+| `after` | ids of items this one waits on |
+
+Deep links: `todo.html#T007` (one item), `todo.html#project=<id>`, `todo.html#flag=<key>`, `todo.html#status=open`; filters combine with `&`. After editing, `python tools/build_deck.py --revise todo`. To-do text is leak-scanned like project text: **this list is public**, so keep internal numbers out of it.
 
 ## Add a project
 

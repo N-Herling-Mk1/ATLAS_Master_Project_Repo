@@ -9,6 +9,7 @@
   const G = (window.DECK_GLOSSARY && window.DECK_GLOSSARY.terms) || [];
   const GK = new Map(G.map((t) => [t.key, t]));
   const META = window.DECK_META || {};
+  const TODO = (window.DECK_TODO && window.DECK_TODO.items) || [];
   if (!P.length) { document.getElementById("stage").textContent = "No projects found. Run tools/build_deck.py."; return; }
 
   const $ = (id) => document.getElementById(id);
@@ -30,6 +31,7 @@
     $("site-revised-wrap").hidden = false;
   }
   $("gloss-count").textContent = G.length ? String(G.length) : "";
+  { const n = TODO.filter((t) => t.status !== "done").length; $("todo-count").textContent = n ? String(n) : ""; }
   const cards = P.map((p, i) => {
     const b = document.createElement("button");
     b.className = `rogue st-${p.status}`;
@@ -94,6 +96,7 @@
     renderResults(p.results || []);
     renderLinks(p.links || []);
     renderOpen(p.open || []);
+    renderTodo(p);
     closePop();
     renderTimeline(p.timeline || []);
     renderLiterature(p.literature || []);
@@ -500,6 +503,28 @@
     }));
   }
 
+  // ---- to-do: this project's unfinished items from todo/todo.json; the full list is todo.html ----
+  const TODO_TAG = { active: "IN PROGRESS", open: "OPEN", blocked: "BLOCKED" };
+  const todoFor = (p) => TODO.filter((t) => t.status !== "done" && (t.projects || []).includes(p.id))
+    .sort((a, b) => Object.keys(TODO_TAG).indexOf(a.status) - Object.keys(TODO_TAG).indexOf(b.status));
+
+  function renderTodo(p) {
+    const items = todoFor(p);
+    $("p-todo-wrap").hidden = !items.length;
+    $("p-todo-all").href = `todo.html#project=${p.id}`;
+    $("p-todo-all").title = `Every to-do item tagged ${p.name}, including finished ones`;
+    $("p-todo").replaceChildren(...items.map((t) => {
+      const li = el("li", `td-${t.status}`);
+      const a = el("a", "td-id", t.id);
+      a.href = `todo.html#${t.id}`;
+      a.title = "Open this item on the to-do page";
+      const tx = el("span", "td-text", t.text);
+      li.append(el("span", "td-tag", TODO_TAG[t.status]), tx, a);
+      return li;
+    }));
+    typeset($("p-todo"));
+  }
+
   function renderTimeline(items, listId = "p-timeline") {
     $(listId).replaceChildren(...items.map((t) => {
       const li = el("li", `st-${t.state}`);
@@ -659,6 +684,7 @@
       (p.links || []).length && { id: "sec-links", label: "LINKED PROJECTS", n: p.links.length },
       { id: "sec-questions", label: "QUESTIONS", n: p.questions.length },
       (p.open || []).length && { id: "p-open-wrap", label: "OPEN ITEMS", n: p.open.length },
+      todoFor(p).length && { id: "p-todo-wrap", label: "TO DO", n: todoFor(p).length },
       { id: "sec-progress", label: "PROGRESS", n: (p.timeline || []).length },
       { id: "sec-literature", label: "LITERATURE", n: lit.length,
         sub: cats.map((c, gi) => ({ id: `lit-g-${gi}`, label: c.toUpperCase(), n: lit.filter((r) => r.category === c).length })) },

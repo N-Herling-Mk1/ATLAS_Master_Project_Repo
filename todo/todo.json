@@ -1,0 +1,187 @@
+{
+  "revised": "2026-11-23",
+  "flags": [
+    {
+      "key": "repo",
+      "label": "REPO",
+      "color": "#22c8ff"
+    },
+    {
+      "key": "analysis",
+      "label": "ANALYSIS",
+      "color": "#ffc83a"
+    },
+    {
+      "key": "run-local",
+      "label": "RUN LOCAL",
+      "color": "#ff4d6d"
+    },
+    {
+      "key": "write-up",
+      "label": "WRITE-UP",
+      "color": "#c43cff"
+    },
+    {
+      "key": "literature",
+      "label": "LITERATURE",
+      "color": "#ff9a2a"
+    },
+    {
+      "key": "glossary",
+      "label": "GLOSSARY",
+      "color": "#39ff8f"
+    }
+  ],
+  "items": [
+    {
+      "id": "T001",
+      "status": "done",
+      "added": "2026-11-23",
+      "done": "2026-11-23",
+      "projects": [
+        "info-theory"
+      ],
+      "flags": [
+        "repo"
+      ],
+      "text": "Commit and push the INFO THEORY chapter map and the Ch 1–4 chapter pages"
+    },
+    {
+      "id": "T002",
+      "status": "open",
+      "added": "2026-11-23",
+      "projects": [
+        "info-theory"
+      ],
+      "flags": [
+        "repo"
+      ],
+      "text": "Review the Ch 1–4 chapter pages on the live site and push back on their verdicts"
+    },
+    {
+      "id": "T003",
+      "status": "open",
+      "added": "2026-11-23",
+      "projects": [
+        "info-theory",
+        "abcd-plane-health"
+      ],
+      "flags": [
+        "repo"
+      ],
+      "text": "Add the closure identity to the Ch 2 and Ch 4 pages as its own entry",
+      "detail": "Closure at one cut is $I(a;b) = 0 \\iff \\mathrm{OR} = 1$. The log odds ratio is the pointwise-mutual-information contrast $\\mathrm{PMI}_A + \\mathrm{PMI}_D - \\mathrm{PMI}_B - \\mathrm{PMI}_C = -\\log(1+\\mathrm{nc})$, and $I(a;b)$ is suppressed by the product of the two cut efficiencies. Reword the Ch 2 verdict: mutual information is the closure condition, not a usable closure measure."
+    },
+    {
+      "id": "T004",
+      "status": "open",
+      "added": "2026-11-23",
+      "projects": [
+        "info-theory"
+      ],
+      "flags": [
+        "glossary"
+      ],
+      "text": "Glossary entries for entropy, mutual information, pointwise mutual information, odds ratio, the data processing inequality and Fano's inequality, linked from the chapter pages"
+    },
+    {
+      "id": "T005",
+      "status": "open",
+      "added": "2026-11-23",
+      "projects": [
+        "info-theory"
+      ],
+      "flags": [
+        "repo"
+      ],
+      "text": "Write the Ch 5 page (differential entropy), then Ch 6 (continuous mutual information)"
+    },
+    {
+      "id": "T006",
+      "status": "open",
+      "added": "2026-11-23",
+      "projects": [
+        "baseline",
+        "info-theory"
+      ],
+      "flags": [
+        "analysis"
+      ],
+      "text": "Check how the Legendre dependence spectrum is defined: orthonormal shifted Legendre polynomials on rank-transformed scores?",
+      "detail": "If so, near independence $I(f_1;f_2) \\approx \\tfrac12 \\sum_{j,k \\ge 1} a_{jk}^2$ nats, so the spectrum is already a second-order mutual-information estimate."
+    },
+    {
+      "id": "T007",
+      "status": "open",
+      "added": "2026-11-23",
+      "projects": [
+        "abcd-plane-health",
+        "info-theory",
+        "dncn-qn"
+      ],
+      "flags": [
+        "analysis",
+        "run-local"
+      ],
+      "after": [
+        "T006"
+      ],
+      "text": "Suppression test: per cut, compute non-closure, $I(a;b)$, distance correlation and the Legendre estimate; plot each global measure against non-closure as the cut efficiencies shrink",
+      "detail": "Confirms that mutual information is blind in the signal-region corner, and tests whether distance correlation and the Legendre spectrum behave the same way (currently a guess)."
+    },
+    {
+      "id": "T008",
+      "status": "open",
+      "added": "2026-11-23",
+      "projects": [
+        "dncn-qn"
+      ],
+      "flags": [
+        "write-up"
+      ],
+      "after": [
+        "T007"
+      ],
+      "text": "Queen write-up: add the mechanism argument for a local closure term on top of a global decorrelation penalty",
+      "detail": "Global dependence measures weight region A by roughly $\\varepsilon_a \\varepsilon_b$, which would explain the earlier endcap finding that distance correlation stayed flat while non-closure fell. Do not present it as a new metric: the log odds ratio is the standard closure ratio, and both mutual-information decorrelation and a direct non-closure loss are published."
+    },
+    {
+      "id": "T009",
+      "status": "done",
+      "added": "2026-11-23",
+      "done": "2026-11-23",
+      "projects": [
+        "info-theory"
+      ],
+      "flags": [
+        "literature"
+      ],
+      "text": "Add Windischhofer et al. (2019) and ABCDisCoTEC (2025) to the INFO THEORY literature list"
+    },
+    {
+      "id": "T010",
+      "status": "open",
+      "added": "2026-11-23",
+      "projects": [
+        "abcd-plane-health"
+      ],
+      "flags": [
+        "analysis"
+      ],
+      "text": "Write a pass-or-flag rule for each ABCD plane health check"
+    },
+    {
+      "id": "T011",
+      "status": "done",
+      "added": "2026-11-23",
+      "done": "2026-11-23",
+      "projects": [
+        "abcd-plane-health"
+      ],
+      "flags": [
+        "repo"
+      ],
+      "text": "Add the ABCD plane health project page and the to-do panel to the hub"
+    }
+  ]
+}

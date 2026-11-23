@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>To Do · Research Deck</title>
+<meta name="description" content="Working to-do list for the research projects, tagged by project and flag.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="assets/css/deck.css?v=f8015b152e">
+<link rel="stylesheet" href="assets/css/glossary.css?v=87ca16d4e9">
+<link rel="stylesheet" href="assets/css/todo.css?v=549e296354">
+</head>
+<body class="gloss-page todo-page">
+<div class="grid-bg" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand brand-link" href="index.html" title="Back to the research deck">
+    <img class="brand-mark" src="assets/icons/mark-96.png" alt="" width="44" height="44">
+    <div>
+      <h1>RESEARCH&nbsp;DECK</h1>
+      <p class="byline">Nathan Herling &middot; University of Arizona</p>
+    </div>
+  </a>
+  <div class="top-right">
+    <p class="revised" id="site-revised-wrap" hidden title="Newest revision date of any project page, the glossary or the to-do panel"><span class="rv-k">LAST REVISED</span><span class="rv-v" id="site-revised"></span></p>
+    <a class="gloss-link" href="index.html" title="Back to the project gallery"><span aria-hidden="true">&#9664;</span><span>PROJECTS</span></a>
+  </div>
+</header>
+
+<main class="gloss" id="todo">
+  <aside class="g-side">
+    <div class="g-title">
+      <h2>TO DO</h2>
+      <p class="g-sub"><span id="t-count"></span><span class="dot"></span><span id="t-revised"></span></p>
+    </div>
+    <label class="g-filter">
+      <span class="g-filter-k">FILTER</span>
+      <input id="t-q" type="search" placeholder="word, id (T003) or symbol" autocomplete="off" spellcheck="false">
+    </label>
+    <div class="t-facet"><p class="g-filter-k">STATUS</p><div class="t-chips" id="t-status"></div></div>
+    <div class="t-facet"><p class="g-filter-k">PROJECT</p><div class="t-chips" id="t-projects"></div></div>
+    <div class="t-facet"><p class="g-filter-k">FLAG</p><div class="t-chips" id="t-flags"></div></div>
+    <button class="t-clear" id="t-clear" type="button" hidden>CLEAR FILTERS</button>
+  </aside>
+
+  <section class="g-body" aria-label="To-do items">
+    <p class="g-intro">Working list for the project line. Each item carries the projects it applies to and a set of flags; items marked <em>after</em> wait on another item. Each project page shows its own open items, with a link back here.</p>
+    <p class="g-empty" id="t-empty" hidden>No item matches these filters.</p>
+    <div id="t-list"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span></span>
+  <p class="scope">Public summaries only &middot; internal code and results are not published here</p>
+  <span></span>
+</footer>
+
+<button class="to-top" id="to-top" type="button" aria-label="Back to the top of the page" title="Back to top">
+  <span class="tt-arrow" aria-hidden="true">&#9650;</span><span class="tt-label">TOP</span>
+</button>
+
+<noscript><p class="noscript">This page needs JavaScript to load the to-do list.</p></noscript>
+<script src="assets/vendor/katex/katex.min.js"></script>
+<script src="assets/vendor/katex/contrib/auto-render.min.js"></script>
+<script src="assets/js/registry.js?v=dccbf14374"></script>
+<script src="assets/js/todo.js?v=677a49e621"></script>
+</body>
+</html>
