@@ -1,0 +1,16 @@
+/* research-deck -- texts page. Builds on deck.css + glossary.css + todo.css (layout, side panel, chips, cards). */
+.texts-page { --a: #b388ff; --a2: #22c8ff; }
+
+.x-title {
+  display: inline-flex; align-items: baseline; gap: 8px; margin: 8px 0 0;
+  font-family: var(--f-display); font-weight: 700; font-size: 17px; letter-spacing: .06em;
+  color: var(--text); text-decoration: none; border-bottom: 1px solid transparent;
+  transition: color .15s, border-color .15s;
+}
+.x-title:hover, .x-title:focus-visible { color: var(--sc); border-bottom-color: var(--sc); outline: none; }
+.x-arrow { font-family: var(--f-mono); font-size: 14px; color: var(--sc); }
+.x-meta { margin: 6px 0 0; max-width: 82ch; font: 12.5px var(--f-mono); letter-spacing: .06em; line-height: 1.6; color: var(--muted); }
+.x-host { font-family: var(--f-mono); letter-spacing: .04em; }
+.texts-page .t-id { font-size: 15px; }
+.texts-page .g-sub { flex-wrap: wrap; row-gap: 2px; }
+.texts-page .g-sub > span:not(.dot) { white-space: nowrap; }

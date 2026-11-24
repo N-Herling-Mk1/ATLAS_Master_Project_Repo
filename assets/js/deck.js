@@ -34,6 +34,7 @@
   }
   $("gloss-count").textContent = G.length ? String(G.length) : "";
   { const n = TODO.filter((t) => t.status !== "done").length; $("todo-count").textContent = n ? String(n) : ""; }
+  { const n = ((window.DECK_TEXTS || {}).texts || []).length; const c = $("texts-count"); if (c) c.textContent = n ? String(n) : ""; }
   const cards = P.map((p, i) => {
     const b = document.createElement("button");
     b.className = `rogue st-${p.status}`;

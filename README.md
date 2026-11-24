@@ -8,12 +8,15 @@ Live structure:
 index.html                    page shell
 glossary.html                 glossary page (extended definitions, filter, deep links #<term-key>)
 todo.html                     to-do panel (items tagged by project and flag; filters; deep links)
+texts.html                    reference texts (reviews, papers, books; filters; deep links #<key>)
 assets/css/deck.css           TRON Ares dark theme; accent re-tints per project
 assets/css/glossary.css       glossary page layout
 assets/css/todo.css           to-do page additions (builds on glossary.css)
+assets/css/texts.css          texts page additions (builds on glossary.css + todo.css)
 assets/js/deck.js             gallery + stage controller (routing, keys, swipe, term cards, math)
 assets/js/glossary.js         glossary page controller
 assets/js/todo.js             to-do page controller
+assets/js/texts.js            texts page controller
 assets/js/registry.js         GENERATED: projects, glossary and the site's last-revised date, bundled
 assets/vendor/katex/          KaTeX 0.16.11 (MIT), vendored so math renders without a CDN
 projects/<id>/
@@ -22,6 +25,7 @@ projects/<id>/
     logo.webp  thumb.webp     GENERATED: normalized 1600x1000 / 480x300
 glossary/glossary.json        glossary terms you edit (one list for the whole site)
 todo/todo.json                to-do items you edit (one list for the whole site)
+texts/texts.json              reference texts you edit (one list for the whole site)
 tools/build_deck.py           normalize + validate + leak-scan + bundle
 PUBLIC_SCOPE.md               what may and may not appear here
 ```
@@ -150,6 +154,24 @@ The builder warns when a project has no `revised` and fails on a malformed or fu
 **Math.** Write `$...$` inline and `$$...$$` for a display line, in project text and in the glossary. KaTeX renders it; the build fails on an unbalanced `$`.
 
 The glossary is leak-scanned with the same patterns as project text and falls under the same public scope: method definitions, no internal numbers.
+
+## Texts
+
+`texts/texts.json` holds the reference texts (reviews, papers, books) behind the projects. The header **TEXTS** button (with the count) opens `texts.html`: entries grouped by category, filterable by category, project and text, each linking to the original in a new tab. Deep links: `texts.html#<key>`, `texts.html#project=<id>`, `texts.html#category=<key>`.
+
+```json
+{
+  "revised": "2026-11-24",
+  "categories": [{ "key": "statistics", "label": "Statistics", "color": "#b388ff" }],
+  "texts": [{
+    "key": "pdg-statistics", "title": "40. Statistics", "url": "https://...", "category": "statistics",
+    "authors": "...", "source": "...", "revision": "...", "format": "PDF",
+    "projects": ["sig-bg"], "note": "One or two lines", "added": "2026-11-24"
+  }]
+}
+```
+
+Required: `key` (lowercase, hyphenated, unique), `title`, `url` (https), `category` (defined in `categories[]`). Everything else is optional; `projects` must name existing projects. Text fields are leak-scanned like everything else. After editing, run `python tools/build_deck.py --revise texts`.
 
 ## To-do panel
 

@@ -1,0 +1,21 @@
+{
+  "revised": "2026-11-24",
+  "categories": [
+    { "key": "statistics", "label": "Statistics", "color": "#b388ff" }
+  ],
+  "texts": [
+    {
+      "key": "pdg-statistics",
+      "title": "40. Statistics",
+      "authors": "G. Cowan, L. Lista",
+      "source": "Review of Particle Physics, Particle Data Group, 2026 edition",
+      "revision": "Revised June 2025",
+      "format": "PDF",
+      "url": "https://pdg.lbl.gov/2026/reviews/rpp2026-rev-statistics.pdf",
+      "category": "statistics",
+      "projects": ["sig-bg", "gambit"],
+      "note": "The Particle Data Group's review of the statistical methods used in particle physics: parameter estimation, frequentist and Bayesian inference, hypothesis tests, intervals and limits.",
+      "added": "2026-11-24"
+    }
+  ]
+}
