@@ -6235,13 +6235,14 @@ window.DECK_PROJECTS = [
   "accent": "#ff3030",
   "accent2": "#d6d6d6",
   "code": "public",
+  "private_repo": "https://github.com/N-Herling-Mk1/ATLAS_project_private_SigBG",
   "site": "https://n-herling-mk1.github.io/ATLAS_SIGBG_Explorer/#/home",
   "revised": "2026-11-24",
   "tagline": "Which inputs separate signal from background, and which only appear to",
   "intro": {
    "problem": "The networks are only as good as their inputs, yet each input list was chosen before the current signal and background files existed. Some variables separate the samples because of physics; others separate them only because of how each sample was selected, and a ranking cannot tell the two apart on its own.",
    "value": "A per-feature map of separation, region dependence and redundancy, with every selection effect flagged, gives the network-input work a trustworthy starting pool. It tells the barrel and endcap programs where the two regions carry different physics, and it hands the feature-competition game candidate sets that are already screened.",
-   "approach": "A public pipeline scores every shared column with the two-sample Kolmogorov–Smirnov distance [@smirnov1948] per region and mass point, against its own noise floor. Spearman correlation on background [@spearman1904] groups redundant features into blocks, and a gradient-boosted surrogate [@friedman2001] scores candidate input sets, with distance correlation [@szekely2007] between the two networks' surrogate scores.",
+   "approach": "A public pipeline scores every shared column with the two-sample Kolmogorov–Smirnov distance [@smirnov1948] per region and mass point, against its own noise floor; an Asimov expected-significance score [@cowan2011] with a permutation floor is next. Spearman correlation on background [@spearman1904] groups redundant features into blocks, and a gradient-boosted surrogate [@friedman2001] scores candidate input sets, with distance correlation [@szekely2007] between the two networks' surrogate scores.",
    "goals": "A companion site where every plot is viewable and downloadable, the full development history is kept, and the excluded-feature list is editable; data-health checks that inform without removing features; and screened candidate pools handed to GAMBIT, which makes the final choice [@guyon2003]."
   },
   "questions": [
@@ -6306,9 +6307,9 @@ window.DECK_PROJECTS = [
    },
    {
     "name": "Scores for GAMBIT",
-    "subtitle": "Next · a score table for the closure-blind design",
+    "subtitle": "Next · score table and scoring layer",
     "state": "next",
-    "summary": "A per-feature score table handed to GAMBIT: separation per region and mass point, an expected-significance score [@cowan2011], surrogate drop-column change, redundancy block, selection flags and exclusion reason. Scores never gate a feature; they order GAMBIT's moves. They are computed on the selection half of a shared event split only, so the held-out half stays unseen.",
+    "summary": "A per-feature score table handed to GAMBIT: separation per region and mass point, an Asimov expected-significance score with a permutation noise floor [@cowan2011], surrogate drop-column change, redundancy block, selection flags and exclusion reason. Scores never gate a feature; they order GAMBIT's moves. They are computed on the selection half of a shared event split only, so the held-out half stays unseen. KS and Asimov are compared side by side, never blended into one number.",
     "items": [
      {
       "label": "High and low",
@@ -6321,9 +6322,202 @@ window.DECK_PROJECTS = [
      {
       "label": "Feedback",
       "detail": "GAMBIT's random partitions test which score predicts the end-to-end outcome; scores that predict nothing are demoted here in the next iteration"
+     },
+     {
+      "label": "Scoring layer",
+      "detail": "Binned Asimov first, against a permutation floor [@phipson2010]; then unbinned Asimov and Kullback–Leibler divergence [@kullback1951] on per-feature maximum-entropy densities from KERF [@jaynes1957]; the KS and Asimov orderings compared by rank concordance [@kendall1938]. The full design is on the sub-page"
      }
     ],
-    "slug": "scores-for-gambit"
+    "slug": "scores",
+    "page": {
+     "lede": "KS distance sees differences in the bulk of a distribution and is nearly blind to its tails, where displaced-vertex quantities tend to live. An Asimov expected-significance score rewards purity wherever it occurs, tails included. This page describes the scoring layer that adds it: binned first, with a permutation noise floor, then unbinned on maximum-entropy densities from KERF. The scores are compared with KS, never blended, and they order GAMBIT's moves without ever gating a feature. Nothing here has run yet.",
+     "sections": [
+      {
+       "heading": "Why a second separation score",
+       "text": "KS is the largest gap between the two cumulative distributions, $D_{\\mathrm{KS}}=\\sup_x|F_s(x)-F_b(x)|$ [@smirnov1948]. A feature whose signal sits in a thin, nearly background-free tail moves the cumulative distributions very little, so it can rank low on KS and still make the best single cut. Expected significance measures that purity directly [@cowan2011]."
+      },
+      {
+       "heading": "Asimov per feature",
+       "text": "Each feature is histogrammed in bins of equal background weight, and the bins are combined as independent counting experiments: $Z_A^2=2\\sum_i\\big[(s_i+b_i)\\ln(1+s_i/b_i)-s_i\\big]$. For a small signal, $(1+r)\\ln(1+r)-r\\approx\\tfrac12 r^2$, so $Z_A^2\\approx\\sum_i s_i^2/b_i=(S^2/B)\\big(1+\\chi^2(p_s\\|p_b)\\big)$. The ordering of features then does not depend on the unknown signal yield $S$: it ranks shapes by their $\\chi^2$ divergence, and that yield-free divergence is reported beside $Z_A$.",
+       "items": [
+        {
+         "label": "Binning",
+         "detail": "Edges at [[background-quantile|background quantiles]] with a minimum effective background count per bin, so no bin is empty of background. The outer bins are open, so signal beyond the background's range earns no extra credit"
+        },
+        {
+         "label": "Background uncertainty",
+         "detail": "A second column uses the form with a background uncertainty, set from the Monte Carlo statistics in each bin, which penalises thinly populated bins"
+        },
+        {
+         "label": "Mass points",
+         "detail": "Every mass point gets the same signal yield, so mass points weigh equally, as in the KS maps; the mean and the worst mass point are both reported"
+        }
+       ]
+      },
+      {
+       "heading": "Noise floor",
+       "text": "KS has a critical value; Asimov does not. Signal and background labels are shuffled within each region and mass point, keeping counts and weights; the binning is redone and the score recomputed. Each feature is reported against the upper tail of that permutation distribution, with permutation p-values that are never zero [@phipson2010]."
+      },
+      {
+       "heading": "Maximum-entropy layer",
+       "text": "Histograms make Asimov depend on the binning. Step two replaces them with smooth per-feature densities for signal and background: [[maxent|maximum-entropy]] envelopes [@jaynes1957] supplied by KERF's Signal Line, imported here and never refit. The same densities give an unbinned $Z_A$ and the Kullback–Leibler divergence $D_{\\mathrm{KL}}(p_s\\|p_b)=\\mathbb{E}_s[\\ln(p_s/p_b)]$, the expected log-likelihood ratio per signal event [@kullback1951].",
+       "items": [
+        {
+         "label": "Tails",
+         "detail": "The divergence weights the regions where background is scarce, and there an envelope's tail comes from its functional form, not from data. The integrals stop where background statistics run out, and a tail-fraction column reports how much of each score comes from that region"
+        },
+        {
+         "label": "Cross-fitting",
+         "detail": "Densities are fitted on one fold and scored on the other, then swapped: fitting and scoring on the same events inflates every divergence"
+        },
+        {
+         "label": "Shape-fit flag",
+         "detail": "A feature that a smooth envelope cannot fit (discrete, spiky or sculpted by a cut) is flagged; like every flag here, it informs and never removes"
+        },
+        {
+         "label": "Binned against unbinned",
+         "detail": "Where the two Asimov scores disagree, the feature is flagged as sensitive to its binning or its tails"
+        }
+       ]
+      },
+      {
+       "heading": "Compare, not blend",
+       "text": "KS, Asimov and KL are all functionals of the same pair of one-dimensional densities, so a weighted composite would add arbitrary weights and no information. The scores are read side by side.",
+       "items": [
+        {
+         "label": "Pareto front",
+         "detail": "Per region and mass point, the features that no other feature beats on both KS and Asimov"
+        },
+        {
+         "label": "Disagreement map",
+         "detail": "High KS with low Asimov: separation in the bulk without purity, a shape input rather than a cut. High Asimov with low KS: separation in a low-background tail, which is the signature itself, a statistical fluke or a selection effect, and is inspected by hand"
+        },
+        {
+         "label": "Rank concordance",
+         "detail": "Kendall's $\\tau$ between the two orderings, per region [@kendall1938]; a low value says the scores measure different things there, which is itself a finding"
+        }
+       ]
+      },
+      {
+       "heading": "What it cannot see",
+       "text": "Every score here is marginal: one feature at a time. The networks use the joint distribution, and closure depends on dependence between feature blocks, which marginals do not carry. The gap between a feature's marginal rank and its weight in the surrogate points to interaction carriers and to redundant strong separators. Dependence itself is modelled in KERF and scored in GAMBIT."
+      },
+      {
+       "heading": "Discipline",
+       "items": [
+        {
+         "label": "Split rule",
+         "detail": "Scores use only the selection half of the shared event split, assigned by a hash of event identifiers, so the held-out half stays unseen"
+        },
+        {
+         "label": "Order, never gate",
+         "detail": "Scores order GAMBIT's moves; only the column rules ever remove a feature"
+        },
+        {
+         "label": "Record",
+         "detail": "Specs and decisions are dated and append-only in the private repository; superseded scripts are archived, not overwritten"
+        }
+       ]
+      }
+     ],
+     "outputs": [
+      {
+       "label": "ideas",
+       "detail": "How KS, Asimov, the $\\chi^2$ divergence and KL relate; what maximum-entropy densities add; risks and build order"
+      },
+      {
+       "label": "run spec",
+       "detail": "Binned Asimov per feature: split, binning, normalisation, floor, outputs"
+      },
+      {
+       "label": "decisions",
+       "detail": "Dated log: locked, proposed, dropped"
+      },
+      {
+       "label": "open questions",
+       "detail": "What must be settled before the first run"
+      }
+     ],
+     "repo_path": "docs",
+     "downloads": [
+      {
+       "label": "Ideas",
+       "path": "01_SCORING_IDEAS_2026-11-23.md",
+       "detail": "Scoring-layer design notes",
+       "url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_SigBG/raw/main/docs/01_SCORING_IDEAS_2026-11-23.md"
+      },
+      {
+       "label": "Run spec",
+       "path": "02_ASIMOV_RUN_SPEC_2026-11-24.md",
+       "detail": "Step one, selection half only",
+       "url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_SigBG/raw/main/docs/02_ASIMOV_RUN_SPEC_2026-11-24.md"
+      },
+      {
+       "label": "Decisions",
+       "path": "DECISIONS_LOG.md",
+       "detail": "Append-only",
+       "url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_SigBG/raw/main/docs/DECISIONS_LOG.md"
+      },
+      {
+       "label": "Open questions",
+       "path": "OPEN_QUESTIONS.md",
+       "detail": "Living list",
+       "url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_SigBG/raw/main/docs/OPEN_QUESTIONS.md"
+      }
+     ],
+     "timeline": [
+      {
+       "date": "2026-11-23",
+       "label": "Asimov expected significance added to the plan; private repository created",
+       "state": "done"
+      },
+      {
+       "date": "2026-11-23",
+       "label": "Scoring layer designed: binned and unbinned Asimov, KL on maximum-entropy densities, permutation floor, compare rather than blend",
+       "state": "done"
+      },
+      {
+       "date": "2026-11-24",
+       "label": "Binned Asimov tool written on the selection half of the shared split; not yet run",
+       "state": "done"
+      },
+      {
+       "label": "Fill the run configuration from the public pipeline's file schema and match GAMBIT's split rule",
+       "state": "next"
+      },
+      {
+       "label": "First binned Asimov pass over every shared column, selection half only",
+       "state": "next"
+      },
+      {
+       "label": "Import KERF envelopes: unbinned Asimov, KL and tail fraction",
+       "state": "next"
+      },
+      {
+       "label": "KS-against-Asimov disagreement page on the companion site",
+       "state": "next"
+      }
+     ],
+     "open": [
+      {
+       "kind": "gap",
+       "text": "The event-split rule must match GAMBIT's exactly: same identifiers, same order, same hash and salt"
+      },
+      {
+       "kind": "question",
+       "text": "Fix the signal yield per mass point, or take it from a benchmark? For a small signal the ordering does not depend on it; the values do"
+      },
+      {
+       "kind": "question",
+       "text": "Where does background become too scarce to trust an envelope's tail?"
+      },
+      {
+       "kind": "question",
+       "text": "Two folds or five for cross-fitting the envelopes?"
+      }
+     ],
+     "repo_url": "https://github.com/N-Herling-Mk1/ATLAS_project_private_SigBG/tree/main/docs"
+    }
    }
   ],
   "links": [
@@ -6341,6 +6535,11 @@ window.DECK_PROJECTS = [
     "project": "baseline",
     "title": "Data-health checks",
     "text": "The informational unit tests here are the same kind of alert-not-stop checks BASELINE runs on its own files."
+   },
+   {
+    "project": "kerf",
+    "title": "Maximum-entropy densities",
+    "text": "KERF's Signal Line supplies the per-feature maximum-entropy signal and background envelopes behind the unbinned Asimov and KL scores. SIG/BG imports them and never refits them, so the two projects cannot drift apart."
    }
   ],
   "timeline": [
@@ -6375,15 +6574,25 @@ window.DECK_PROJECTS = [
     "state": "done"
    },
    {
+    "date": "2026-11-23",
+    "label": "Private repository for working files created",
+    "state": "done"
+   },
+   {
+    "date": "2026-11-23",
+    "label": "Asimov scoring layer designed: binned and unbinned expected significance, permutation floor, compared with KS rather than blended",
+    "state": "done"
+   },
+   {
     "label": "Barrel–endcap feature separation carried into the barrel program's pretraining design",
     "state": "active"
    },
    {
-    "label": "Private repository for working files",
+    "label": "Score table for GAMBIT's closure-blind design, computed on the selection half of the shared split",
     "state": "next"
    },
    {
-    "label": "Score table for GAMBIT's closure-blind design, computed on the selection half of the shared split",
+    "label": "Binned Asimov pass on the selection half; then unbinned scores on KERF's maximum-entropy densities",
     "state": "next"
    }
   ],
@@ -6453,6 +6662,50 @@ window.DECK_PROJECTS = [
     "verified": "abstract",
     "why": "Asimov expected significance behind the per-feature score",
     "key": "cowan2011"
+   },
+   {
+    "key": "jaynes1957",
+    "category": "Maximum entropy",
+    "authors": "Jaynes",
+    "year": 1957,
+    "title": "Information Theory and Statistical Mechanics",
+    "venue": "Phys. Rev. 106, 620",
+    "url": "https://doi.org/10.1103/PhysRev.106.620",
+    "verified": "abstract",
+    "why": "Maximum-entropy principle behind the per-feature signal and background densities"
+   },
+   {
+    "key": "kullback1951",
+    "category": "Separation",
+    "authors": "S. Kullback, R. A. Leibler",
+    "year": 1951,
+    "title": "On Information and Sufficiency",
+    "venue": "Ann. Math. Statist. 22(1), 79–86",
+    "url": "https://doi.org/10.1214/aoms/1177729694",
+    "verified": "abstract",
+    "why": "Kullback–Leibler divergence: the expected log-likelihood ratio per signal event"
+   },
+   {
+    "key": "kendall1938",
+    "category": "Dependence",
+    "authors": "M. G. Kendall",
+    "year": 1938,
+    "title": "A New Measure of Rank Correlation",
+    "venue": "Biometrika 30(1–2), 81–93",
+    "url": "https://doi.org/10.1093/biomet/30.1-2.81",
+    "verified": "abstract",
+    "why": "Rank concordance between the KS and Asimov orderings"
+   },
+   {
+    "key": "phipson2010",
+    "category": "Statistics",
+    "authors": "B. Phipson, G. K. Smyth",
+    "year": 2010,
+    "title": "Permutation P-values Should Never Be Zero: Calculating Exact P-values When Permutations Are Randomly Drawn",
+    "venue": "Stat. Appl. Genet. Mol. Biol. 9(1), Art. 39; arXiv:1603.05766",
+    "url": "https://doi.org/10.2202/1544-6115.1585",
+    "verified": "abstract",
+    "why": "Permutation p-values for the Asimov noise floor"
    }
   ],
   "logo": "projects/sig-bg/logo.webp",
@@ -6955,7 +7208,8 @@ window.DECK_GLOSSARY = {
     "trained-band"
    ],
    "used_in": [
-    "dncn-qn"
+    "dncn-qn",
+    "sig-bg"
    ]
   },
   {
@@ -7381,7 +7635,8 @@ window.DECK_GLOSSARY = {
     }
    ],
    "used_in": [
-    "gambit"
+    "gambit",
+    "sig-bg"
    ]
   },
   {
