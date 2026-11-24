@@ -1,5 +1,5 @@
 {
-  "revised": "2026-11-23",
+  "revised": "2026-11-24",
   "flags": [
     {
       "key": "repo",
@@ -193,6 +193,87 @@
         "repo"
       ],
       "text": "Add the #TO_DO tile to the gallery: a plain-text list of these items, tagged by project"
+    },
+    {
+      "id": "T013",
+      "status": "open",
+      "added": "2026-11-24",
+      "projects": [
+        "gambit"
+      ],
+      "flags": [
+        "run-local"
+      ],
+      "text": "Time one end-to-end partition on the new data, and the alert flags on one partition",
+      "detail": "Replaces the cost estimate in the closure-blind design before the pre-registration is locked."
+    },
+    {
+      "id": "T014",
+      "status": "open",
+      "added": "2026-11-24",
+      "projects": [
+        "gambit"
+      ],
+      "flags": [
+        "write-up"
+      ],
+      "after": [
+        "T013",
+        "T015"
+      ],
+      "text": "Fill and lock the closure-blind pre-registration: primary endpoint, hypotheses, thresholds, budgets"
+    },
+    {
+      "id": "T015",
+      "status": "open",
+      "added": "2026-11-24",
+      "projects": [
+        "sig-bg",
+        "gambit"
+      ],
+      "flags": [
+        "repo"
+      ],
+      "text": "Feature study writes its score table on the selection half of the shared event split",
+      "detail": "High and low scores both kept; the table never gates a feature."
+    },
+    {
+      "id": "T016",
+      "status": "open",
+      "added": "2026-11-24",
+      "projects": [
+        "gambit",
+        "kerf"
+      ],
+      "flags": [
+        "analysis"
+      ],
+      "text": "Build the per-block likelihood ratios and the tail-weighted copula test for the closure-blind arm",
+      "detail": "Joint maximum-entropy fits reuse KERF's machinery."
+    },
+    {
+      "id": "T017",
+      "status": "open",
+      "added": "2026-11-24",
+      "projects": [
+        "gambit"
+      ],
+      "flags": [
+        "run-local"
+      ],
+      "text": "Run the alert flags on the inherited partition and the random reference, on the endcap"
+    },
+    {
+      "id": "T018",
+      "status": "open",
+      "added": "2026-11-24",
+      "projects": [
+        "gambit"
+      ],
+      "flags": [
+        "analysis"
+      ],
+      "text": "Optional: posterior sampler over partitions (Metropolis–Hastings with parallel tempering) on the closure-blind target"
     }
   ]
 }

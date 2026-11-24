@@ -8,7 +8,7 @@
   "accent2": "#d6d6d6",
   "code": "public",
   "site": "https://n-herling-mk1.github.io/ATLAS_SIGBG_Explorer/#/home",
-  "revised": "2026-11-09",
+  "revised": "2026-11-24",
   "tagline": "Which inputs separate signal from background, and which only appear to",
   "intro": {
     "problem": "The networks are only as good as their inputs, yet each input list was chosen before the current signal and background files existed. Some variables separate the samples because of physics; others separate them only because of how each sample was selected, and a ranking cannot tell the two apart on its own.",
@@ -71,13 +71,33 @@
       "subtitle": "Public, static, every plot downloadable",
       "state": "active",
       "summary": "The site shows every feature page, ranking, correlation block and candidate set, every page of every PDF the work produced, and an archive of every earlier script version and run, unchanged. The code is public and runs on anyone's own copy of the files."
+    },
+    {
+      "name": "Scores for GAMBIT",
+      "subtitle": "Next · a score table for the closure-blind design",
+      "state": "next",
+      "summary": "A per-feature score table handed to GAMBIT: separation per region and mass point, an expected-significance score [@cowan2011], surrogate drop-column change, redundancy block, selection flags and exclusion reason. Scores never gate a feature; they order GAMBIT's moves. They are computed on the selection half of a shared event split only, so the held-out half stays unseen.",
+      "items": [
+        {
+          "label": "High and low",
+          "detail": "High scores are discrimination candidates; clean low scores are candidates for shaping the background, since a feature with little signal information can still carry background structure"
+        },
+        {
+          "label": "Weak features kept",
+          "detail": "Clean features that separate poorly on their own stay in the pool; redundancy blocks keep their least selection-tied representative"
+        },
+        {
+          "label": "Feedback",
+          "detail": "GAMBIT's random partitions test which score predicts the end-to-end outcome; scores that predict nothing are demoted here in the next iteration"
+        }
+      ]
     }
   ],
   "links": [
     {
       "project": "gambit",
       "title": "Feature competition",
-      "text": "SIG/BG screens and nominates; GAMBIT takes the candidate pools and blocks and decides the partition on closure."
+      "text": "SIG/BG screens and nominates; GAMBIT takes the candidate pools and blocks and decides the partition. For GAMBIT's closure-blind design the scores become feedback: high scores order discrimination moves, clean low scores order moves that cut dependence between the networks, and GAMBIT's random partitions report back which scores predict the end-to-end outcome."
     },
     {
       "project": "stave",
@@ -127,6 +147,10 @@
     },
     {
       "label": "Private repository for working files",
+      "state": "next"
+    },
+    {
+      "label": "Score table for GAMBIT's closure-blind design, computed on the selection half of the shared split",
       "state": "next"
     }
   ],
@@ -185,6 +209,17 @@
       "url": "https://www.jmlr.org/papers/v3/guyon03a.html",
       "verified": "abstract",
       "why": "Filter versus wrapper selection: why a univariate screen nominates and a downstream method decides"
+    },
+    {
+      "category": "Statistics",
+      "authors": "Cowan, Cranmer, Gross & Vitells",
+      "year": 2011,
+      "title": "Asymptotic formulae for likelihood-based tests of new physics",
+      "venue": "Eur. Phys. J. C 71, 1554; arXiv:1007.1727",
+      "url": "https://doi.org/10.1140/epjc/s10052-011-1554-0",
+      "verified": "abstract",
+      "why": "Asimov expected significance behind the per-feature score",
+      "key": "cowan2011"
     }
   ]
 }

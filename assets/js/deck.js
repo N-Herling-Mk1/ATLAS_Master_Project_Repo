@@ -701,7 +701,7 @@
     $("sp-outputs-wrap").hidden = !outs.length;
     $("sp-outputs").replaceChildren(...outs.flatMap((o) => [el("dt", null, o.label), el("dd", null, o.detail)]));
     $("sp-repo-note").hidden = !pg.repo_url;
-    $("sp-repo-note").textContent = pg.repo_url ? "The lists and the code that writes them are kept in the private repository; they are not published here." : "";
+    $("sp-repo-note").textContent = pg.repo_url ? "The files behind this page are kept in the private repository; they are not published here." : "";
     const dls = pg.downloads || [];
     $("sp-dl").hidden = !dls.length;
     $("sp-dl-list").replaceChildren(...dls.map((d) => {

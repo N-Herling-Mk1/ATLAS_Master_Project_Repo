@@ -1,5 +1,5 @@
 {
-  "revised": "2026-11-20",
+  "revised": "2026-11-24",
   "terms": [
     {
       "key": "abcd-method",
@@ -631,6 +631,137 @@
       "short": "The magnitude of the negative vector sum of the jets' transverse momenta: missing transverse momentum computed from jets.",
       "long": [
         "A shift in its distribution changes the mix of background the networks see. The queen does not survive such a shift: she works on a background mix like the one she was trained on."
+      ]
+    },
+    {
+      "key": "mutual-information",
+      "term": "Mutual information",
+      "category": "Dependence and selection",
+      "aka": [
+        "MI",
+        "$I(X;Y)$"
+      ],
+      "short": "How much knowing one variable tells you about another: zero exactly when they are independent, and unchanged by any invertible relabelling of either one.",
+      "long": [
+        "$I(X;Y)=\\iint p(x,y)\\,\\ln\\dfrac{p(x,y)}{p(x)\\,p(y)}\\,dx\\,dy$, in nats with the natural log. It is the relative entropy between the joint distribution and the product of its marginals.",
+        "For the ABCD method the relevant quantity is the mutual information between the two networks' inputs, or their scores, on background: closure needs it to vanish. A binned G-test statistic is exactly $2N$ times the plug-in estimate on the bins, so a G-test is a mutual-information test.",
+        "It is a good condition and a weak measure. In the signal-region corner a small amount of information becomes a large non-closure, so a global estimate can rank partitions but not certify closure."
+      ],
+      "see": [
+        "data-processing-inequality",
+        "copula",
+        "closure"
+      ],
+      "refs": [
+        {
+          "title": "Elements of Information Theory (2nd ed.)",
+          "venue": "Cover & Thomas, Wiley 2006",
+          "url": "https://gov.wiley.com/WileyCDA/WileyTitle/productCd-0471241954,descCd-tableOfContents.html"
+        },
+        {
+          "title": "Estimating mutual information",
+          "venue": "Kraskov, Stögbauer & Grassberger, Phys. Rev. E 69, 066138 (2004)",
+          "url": "https://doi.org/10.1103/PhysRevE.69.066138"
+        }
+      ]
+    },
+    {
+      "key": "data-processing-inequality",
+      "term": "Data processing inequality",
+      "category": "Dependence and selection",
+      "aka": [
+        "DPI"
+      ],
+      "short": "Processing cannot create information: for any functions $f$ and $g$, $I(f(X);g(Y))\\le I(X;Y)$.",
+      "long": [
+        "Applied to the ABCD networks: the dependence between any two networks' scores on background is capped by the dependence between their input feature blocks, whatever the networks and whatever their loss. A partition whose blocks are independent on background closes for every pair of networks built on it.",
+        "Mutual information obeys the inequality; distance correlation does not, so input-side distance correlation carries no such guarantee. The converse fails: dependent inputs do not force dependent networks, because a decorrelating loss can suppress the dependence at a cost in discrimination."
+      ],
+      "see": [
+        "mutual-information",
+        "disco"
+      ],
+      "refs": [
+        {
+          "title": "Elements of Information Theory (2nd ed.)",
+          "venue": "Cover & Thomas, Wiley 2006",
+          "url": "https://gov.wiley.com/WileyCDA/WileyTitle/productCd-0471241954,descCd-tableOfContents.html"
+        }
+      ]
+    },
+    {
+      "key": "copula",
+      "term": "Copula",
+      "category": "Dependence and selection",
+      "aka": [
+        "$C(u,v)$",
+        "empirical copula"
+      ],
+      "short": "The joint distribution of two variables after each is mapped to its own quantile, so only their dependence is left. Independence is the product copula $C(u,v)=uv$.",
+      "long": [
+        "ABCD closure at one cut pair says that the background copula of the two scores equals $uv$ at one point. Testing $C\\equiv uv$ over the whole upper quadrant aims at the signal region without fixing a cut, so the test cannot tune itself to the working point.",
+        "A Cramér–von Mises statistic $N\\iint w(u,v)\\,[\\hat C(u,v)-uv]^2\\,d\\hat C$ with a weight $w$ that rises toward the upper tail is the form used by GAMBIT's closure-blind arm. A G-test on quantile bins is a binned, unweighted version of the same idea."
+      ],
+      "see": [
+        "mutual-information",
+        "closure",
+        "background-quantile"
+      ],
+      "refs": [
+        {
+          "title": "Test of independence and randomness based on the empirical copula process",
+          "venue": "Genest & Rémillard, TEST 13(2), 335-369 (2004)",
+          "url": "https://doi.org/10.1007/BF02595777"
+        }
+      ]
+    },
+    {
+      "key": "classifier-two-sample-test",
+      "term": "Classifier two-sample test",
+      "category": "Dependence and selection",
+      "aka": [
+        "C2ST"
+      ],
+      "short": "A test that trains a classifier to tell two samples apart: held-out accuracy at chance means the samples look the same.",
+      "long": [
+        "To test whether two feature blocks are independent, one sample holds the real pairs of blocks and the other holds pairs with one block shuffled against the other. A classifier that beats a permutation null has found dependence, including dependence that pairwise screening cannot see.",
+        "The two samples must be built from different events. If the same rows appear in both, the classifier memorises them and the null sits below chance."
+      ],
+      "see": [
+        "shuffle-null",
+        "mutual-information"
+      ],
+      "refs": [
+        {
+          "title": "Revisiting Classifier Two-Sample Tests",
+          "venue": "Lopez-Paz & Oquab, ICLR 2017",
+          "url": "https://arxiv.org/abs/1610.06545"
+        }
+      ]
+    },
+    {
+      "key": "maxent",
+      "term": "Maximum-entropy model",
+      "category": "Dependence and selection",
+      "inline": "maximum-entropy model",
+      "aka": [
+        "MaxEnt"
+      ],
+      "short": "The least committal distribution that reproduces a chosen set of averages: an exponential family whose parameters are fitted to those constraints.",
+      "long": [
+        "With single-feature and pairwise constraints, $p(x)\\propto\\exp\\big(\\sum_j\\lambda_j\\phi_j(x_j)+\\sum_{j<k}\\lambda_{jk}\\phi_{jk}(x_j,x_k)\\big)$. The couplings $\\lambda_{jk}$ form a graph, and two feature blocks are independent within the model exactly when no coupling crosses between them.",
+        "Single-feature models alone say nothing about dependence between features; they give smoothed densities and the marginal transform. A pairwise model misses dependence that needs two features jointly."
+      ],
+      "see": [
+        "mutual-information",
+        "copula"
+      ],
+      "refs": [
+        {
+          "title": "Information Theory and Statistical Mechanics",
+          "venue": "Jaynes, Phys. Rev. 106, 620 (1957)",
+          "url": "https://doi.org/10.1103/PhysRev.106.620"
+        }
       ]
     }
   ]
